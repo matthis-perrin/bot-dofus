@@ -24,7 +24,7 @@ async function execAsync(cmd: string): Promise<void> {
 
 async function takeScreenshot(): Promise<Buffer> {
     const filePath = join(tmpdir(), `${Math.random().toString(36).slice(2)}.bmp`)
-    const cmd = `screencapture -D 1 -t bmp -x ${filePath}`
+    const cmd = `screencapture -t bmp -x ${filePath}`
     await execAsync(cmd);
     const file = await readFile(filePath);
     await unlink(filePath);
