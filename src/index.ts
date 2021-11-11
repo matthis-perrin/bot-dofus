@@ -54,7 +54,7 @@ async function initDofusWindow(): Promise<void> {
         throw new Error(`Failure to find Dofus window`)
     }
     windowManager.requestAccessibility();
-    dofusWindow.setBounds({x: width / 2 - targetWidth, y: height / 2 - targetHeight, width: targetWidth, height: targetHeight})
+    dofusWindow.setBounds({x: width / 2 - targetWidth, y: 0, width: targetWidth, height: targetHeight})
     dofusWindow.bringToTop();
 }
 
@@ -88,11 +88,12 @@ async function getTextInImage(img: Jimp, x: number, y: number, width: number, he
 }
 
 try {
-mkdirSync('./images');
+    mkdirSync('./images');
 } catch {}
 
 async function saveCroppedImage(img: Jimp, fileName: string, x: number, y: number, width: number, height: number): Promise<void> {
     await img.crop(x * 2, y * 2, width * 2, height * 2).writeAsync(join('./images', fileName));
+    console.log(`Saved ${fileName}`)
 }
 
 async function saveCoordinateImage(): Promise<void> {
@@ -112,8 +113,6 @@ gk.on('close', () => {console.log('closed');});
 
 
 run().catch(console.error)
-
-console.log('Test')
 
 setInterval(() => {}, 1000)
 
