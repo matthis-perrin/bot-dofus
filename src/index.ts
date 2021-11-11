@@ -1,11 +1,12 @@
 import {tmpdir} from 'os'
 import {exec} from 'child_process'
-import {promises} from 'fs';
+import {mkdirSync, promises} from 'fs';
 import {join} from 'path';
 
 import Jimp from 'jimp'
 import { windowManager } from "node-window-manager";
 import {} from 'robotjs'
+import GK from 'global-keypress';
 
 
 const {readFile, unlink, writeFile} = promises
@@ -43,9 +44,6 @@ async function getScreenSize(): Promise<{width: number, height: number}> {
     return {width: parsed.getWidth(), height: parsed.getHeight()}
 }
 
-let xOffset = 0;
-let yOffset = 0;
-
 async function initDofusWindow(): Promise<void> {
     const {width, height} = await getScreenSize();
     const targetWidth = 1130;
@@ -68,10 +66,10 @@ function setIntervalAsync(fn: () => Promise<void>, ms: number): void {
 
 async function run(): Promise<void> {
     await initDofusWindow();
-    setIntervalAsync(async () => {
-        const img = await Jimp.read(await takeScreenshot());
-        getTextInImage(img, 452, 102, 65, 25);
-    }, 1000);
+    // setIntervalAsync(async () => {
+    //     const img = await Jimp.read(await takeScreenshot());
+    //     getTextInImage(img, 452, 102, 65, 25);
+    // }, 1000);
 }
 
 async function getTextInImage(img: Jimp, x: number, y: number, width: number, height: number): Promise<void> {
@@ -88,6 +86,28 @@ async function getTextInImage(img: Jimp, x: number, y: number, width: number, he
         unlink(`${resPath}.txt`),
     ])
 }
+
+mkdirSync('./images');
+
+async function saveCroppedImage(img: Jimp, fileName: string, x: number, y: number, width: number, height: number): Promise<void> {
+    await img.crop(x * 2, y * 2, width * 2, height * 2).writeAsync(join('./images', fileName));
+}
+
+async function saveCoordinateImage(): Promise<void> {
+    const img = await Jimp.read(await takeScreenshot());
+    saveCroppedImage(img, `${Date.now()}.bmp`, 452, 102, 65, 25);
+}
+
+const gk = new GK();
+gk.start();
+gk.on('press', data => {
+  if (data.data === '<Space>') {
+    saveCoordinateImage().catch(console.error);
+  }
+});
+gk.on('error', error => {console.error(error);});
+gk.on('close', () => {console.log('closed');});
+
 
 run().catch(console.error)
 
