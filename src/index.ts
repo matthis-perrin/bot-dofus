@@ -87,7 +87,9 @@ async function getTextInImage(img: Jimp, x: number, y: number, width: number, he
     ])
 }
 
+try {
 mkdirSync('./images');
+} catch {}
 
 async function saveCroppedImage(img: Jimp, fileName: string, x: number, y: number, width: number, height: number): Promise<void> {
     await img.crop(x * 2, y * 2, width * 2, height * 2).writeAsync(join('./images', fileName));
@@ -110,6 +112,10 @@ gk.on('close', () => {console.log('closed');});
 
 
 run().catch(console.error)
+
+console.log('Test')
+
+setInterval(() => {}, 1000)
 
 // // // Move the mouse across the screen as a sine wave.
 // // var robot = require("robotjs");
