@@ -259,4 +259,4 @@ async function run(): Promise<void> {
   console.log(createHash("md5").update(finalHash).digest("hex"));
 }
 
-run().catch(console.error);
+run().catch(err => console.error(err));

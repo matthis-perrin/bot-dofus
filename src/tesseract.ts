@@ -1,5 +1,5 @@
 import { readFile, unlink } from "fs/promises";
-import Jimp from 'jimp'
+import Jimp from "jimp";
 import { execAsync } from "./utils";
 
 export async function getTextInImage(img: Jimp, x: number, y: number, width: number, height: number): Promise<void> {

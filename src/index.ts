@@ -8,11 +8,12 @@ import { takeScreenshot } from "./screenshot";
 async function run(): Promise<void> {
   await initDofusWindow();
   startScreenshotTaker();
-  const ml = await loadModel();
-  setIntervalAsync(async () => {
-    const screenshot = await takeScreenshot();
-    console.log(await ml(screenshot));
-  }, 3000);
+//   const ml = await loadModel();
+//   setIntervalAsync(async () => {
+//     const screenshot = await takeScreenshot(true);
+//     console.log(await ml(screenshot));
+//   }, 3000);
 }
 
-run().catch(console.error);
+run().catch(err => console.error(err));
+
