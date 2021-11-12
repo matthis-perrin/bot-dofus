@@ -84,7 +84,7 @@ async function loadImages(dir: string): Promise<ImageInfo[]> {
     })
   );
 
-  return imagesAndLabels.sort(() => Math.random());
+  return imagesAndLabels.sort(() => Math.random() > 0.5 ? -1 : 1);
 }
 
 function processImageInfo(
@@ -175,7 +175,7 @@ function prepareModel(labels: number, targetSize: number): tf.Sequential {
 async function run(): Promise<void> {
   const modelDir = "../models/map-coordinates";
   const imageDir = "../images/map";
-  const imageTargetSize = 64;
+  const imageTargetSize = 128;
 
   console.log("Start");
   console.log("Loading image");
@@ -196,8 +196,8 @@ async function run(): Promise<void> {
   const model = prepareModel(labelIndex.size, imageTargetSize);
   console.log("Model summary");
   model.summary();
-  const epochs = 5;
-  const batchSize = 2;
+  const epochs = 20;
+  const batchSize = 4;
   const validationSplit = 0.15;
   console.log("Start learning");
   await model.fit(images, labels, {
