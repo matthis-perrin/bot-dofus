@@ -171,8 +171,8 @@ function prepareModel(labels: number, targetSize: number): tf.Sequential {
 
 async function run(): Promise<void> {
 
-  const imageDir = "./images/map"
-  const imageTargetSize = 512;
+  const imageDir = "../images/map"
+  const imageTargetSize = 256;
 
   console.log('Start')
   console.log('Loading image')
@@ -184,23 +184,23 @@ async function run(): Promise<void> {
     [...labelIndex.entries()].map(([label, index]) => [index, label])
   );
 
-  console.log('Preparing model')
-  const model = prepareModel(labelIndex.size, imageTargetSize);
-  console.log('Model summary')
-  model.summary();
-  const epochs = 10;
-  const batchSize = 4;
-  const validationSplit = 0.15;
-  console.log('Start learning')
-  await model.fit(images, labels, {
-    epochs,
-    batchSize,
-    validationSplit,
-  });
-  console.log('Saving model')
-  await model.save('file://./models/map-coordinates');
+  // console.log('Preparing model')
+  // const model = prepareModel(labelIndex.size, imageTargetSize);
+  // console.log('Model summary')
+  // model.summary();
+  // const epochs = 3;
+  // const batchSize = 1;
+  // const validationSplit = 0.15;
+  // console.log('Start learning')
+  // await model.fit(images, labels, {
+  //   epochs,
+  //   batchSize,
+  //   validationSplit,
+  // });
+  // console.log('Saving model')
+  // await model.save('file://./models/map-coordinates');
 
-  // const model = await tf.loadLayersModel('file://./coordinates_model/model.json') as unknown as tf.Sequential
+  const model = await tf.loadLayersModel('file://../models/map-coordinates/model.json') as unknown as tf.Sequential
 
     let finalHash: string = '';
 
@@ -208,7 +208,7 @@ async function run(): Promise<void> {
     const res = model.predict(
       tf.node
         .decodeImage(data)
-        .resizeNearestNeighbor([96, 96])
+        .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
         .toFloat()
         .div(tf.scalar(255.0))
         .expandDims()

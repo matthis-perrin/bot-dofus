@@ -1,14 +1,11 @@
 {
-  "name": "bot-dofus",
+  "name": "tensorflow",
   "version": "1.0.0",
   "scripts": {
     "start": "tsc && sudo node dist/index.js"
   },
   "dependencies": {
-    "global-keypress": "^0.0.8",
-    "jimp": "^0.16.1",
-    "node-window-manager": "^2.2.4",
-    "robotjs": "^0.6.0"
+    "@tensorflow/tfjs-node": "^3.11.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.7",
