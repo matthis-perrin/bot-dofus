@@ -158,7 +158,7 @@ function prepareModel(labels: number, targetSize: number): tf.Sequential {
 
   model.add(tf.layers.flatten());
 
-  model.add(tf.layers.dense({ units: 256, activation: "relu" }));
+  model.add(tf.layers.dense({ units: targetSize, activation: "relu" }));
   model.add(tf.layers.dropout({ rate: dropout_dense }));
   model.add(tf.layers.dense({ units: labels, activation: "softmax" }));
 
@@ -175,7 +175,7 @@ function prepareModel(labels: number, targetSize: number): tf.Sequential {
 async function run(): Promise<void> {
   const modelDir = "../models/map-coordinates";
   const imageDir = "../images/map";
-  const imageTargetSize = 256;
+  const imageTargetSize = 64;
 
   console.log("Start");
   console.log("Loading image");
@@ -183,41 +183,41 @@ async function run(): Promise<void> {
 
   //
 
-  // console.log("Processing images");
-  // const { images, labels, labelIndex } = processImageInfo(
-  //   imageInfo,
-  //   imageTargetSize
-  // );
-  // const labelByNumber = new Map(
-  //   [...labelIndex.entries()].map(([label, index]) => [index, label])
-  // );
+  console.log("Processing images");
+  const { images, labels, labelIndex } = processImageInfo(
+    imageInfo,
+    imageTargetSize
+  );
+  const labelByNumber = new Map(
+    [...labelIndex.entries()].map(([label, index]) => [index, label])
+  );
 
-  // console.log("Preparing model");
-  // const model = prepareModel(labelIndex.size, imageTargetSize);
-  // console.log("Model summary");
-  // model.summary();
-  // const epochs = 3;
-  // const batchSize = 2;
-  // const validationSplit = 0.15;
-  // console.log("Start learning");
-  // await model.fit(images, labels, {
-  //   epochs,
-  //   batchSize,
-  //   validationSplit,
-  // });
-  // console.log("Saving model");
-  // await Promise.all([
-  //   model.save(`file://${modelDir}`),
-  //   writeFile(
-  //     join(modelDir, "labels.json"),
-  //     JSON.stringify([...labelByNumber.entries()])
-  //   ),
-  // ]);
+  console.log("Preparing model");
+  const model = prepareModel(labelIndex.size, imageTargetSize);
+  console.log("Model summary");
+  model.summary();
+  const epochs = 5;
+  const batchSize = 2;
+  const validationSplit = 0.15;
+  console.log("Start learning");
+  await model.fit(images, labels, {
+    epochs,
+    batchSize,
+    validationSplit,
+  });
+  console.log("Saving model");
+  await Promise.all([
+    model.save(`file://${modelDir}`),
+    writeFile(
+      join(modelDir, "labels.json"),
+      JSON.stringify([...labelByNumber.entries()])
+    ),
+  ]);
 
   //
 
-  const model = await tf.loadLayersModel(`file://${modelDir}/model.json`) as unknown as tf.Sequential
-  const labelByNumber = new Map<number, string>(JSON.parse((await (await readFile(join(modelDir, 'labels.json'))).toString())))
+  // const model = await tf.loadLayersModel(`file://${modelDir}/model.json`) as unknown as tf.Sequential
+  // const labelByNumber = new Map<number, string>(JSON.parse((await (await readFile(join(modelDir, 'labels.json'))).toString())))
 
   //
 
