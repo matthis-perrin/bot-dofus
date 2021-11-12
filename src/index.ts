@@ -98,7 +98,7 @@ async function saveCroppedImage(img: Jimp, fileName: string, x: number, y: numbe
 
 async function saveCoordinateImage(): Promise<void> {
     const img = await Jimp.read(await takeScreenshot());
-    saveCroppedImage(img, `${Date.now()}.bmp`, 452, 102, 65, 25);
+    saveCroppedImage(img, `${Date.now()}.bmp`, 310, 54, 1130, 657);
 }
 
 const gk = new GK();
