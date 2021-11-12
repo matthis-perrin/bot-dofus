@@ -2,7 +2,7 @@ import * as tf from "@tensorflow/tfjs-node";
 
 import { join, resolve } from "path";
 import { promises } from "fs";
-import {createHash} from 'crypto'
+import { createHash } from "crypto";
 
 const { readdir, readFile, writeFile } = promises;
 
@@ -84,10 +84,13 @@ async function loadImages(dir: string): Promise<ImageInfo[]> {
     })
   );
 
-  return imagesAndLabels.sort((i1, i2) => i1.fileName.localeCompare(i2.fileName));
+  return imagesAndLabels.sort(() => Math.random());
 }
 
-function processImageInfo(imageInfo: ImageInfo[], targetSize: number): {
+function processImageInfo(
+  imageInfo: ImageInfo[],
+  targetSize: number
+): {
   images: tf.Tensor<tf.Rank>;
   labels: tf.Tensor<tf.Rank>;
   labelIndex: Map<string, number>;
@@ -170,39 +173,55 @@ function prepareModel(labels: number, targetSize: number): tf.Sequential {
 }
 
 async function run(): Promise<void> {
-
-  const imageDir = "../images/map"
+  const modelDir = "../models/map-coordinates";
+  const imageDir = "../images/map";
   const imageTargetSize = 256;
 
-  console.log('Start')
-  console.log('Loading image')
+  console.log("Start");
+  console.log("Loading image");
   const imageInfo = await loadImages(imageDir);
-  
-  console.log('Processing images')
-  const { images, labels, labelIndex } = processImageInfo(imageInfo, imageTargetSize);
-  const labelByNumber = new Map(
-    [...labelIndex.entries()].map(([label, index]) => [index, label])
-  );
 
-  // console.log('Preparing model')
+  //
+
+  // console.log("Processing images");
+  // const { images, labels, labelIndex } = processImageInfo(
+  //   imageInfo,
+  //   imageTargetSize
+  // );
+  // const labelByNumber = new Map(
+  //   [...labelIndex.entries()].map(([label, index]) => [index, label])
+  // );
+
+  // console.log("Preparing model");
   // const model = prepareModel(labelIndex.size, imageTargetSize);
-  // console.log('Model summary')
+  // console.log("Model summary");
   // model.summary();
   // const epochs = 3;
-  // const batchSize = 1;
+  // const batchSize = 2;
   // const validationSplit = 0.15;
-  // console.log('Start learning')
+  // console.log("Start learning");
   // await model.fit(images, labels, {
   //   epochs,
   //   batchSize,
   //   validationSplit,
   // });
-  // console.log('Saving model')
-  // await model.save('file://./models/map-coordinates');
+  // console.log("Saving model");
+  // await Promise.all([
+  //   model.save(`file://${modelDir}`),
+  //   writeFile(
+  //     join(modelDir, "labels.json"),
+  //     JSON.stringify([...labelByNumber.entries()])
+  //   ),
+  // ]);
 
-  const model = await tf.loadLayersModel('file://../models/map-coordinates/model.json') as unknown as tf.Sequential
+  //
 
-    let finalHash: string = '';
+  const model = await tf.loadLayersModel(`file://${modelDir}/model.json`) as unknown as tf.Sequential
+  const labelByNumber = new Map<number, string>(JSON.parse((await (await readFile(join(modelDir, 'labels.json'))).toString())))
+
+  //
+
+  let finalHash: string = "";
 
   for (const { data, label } of imageInfo) {
     const res = model.predict(
@@ -223,21 +242,21 @@ async function run(): Promise<void> {
         label: labelByNumber.get(i)!,
       }))
       .sort((v1, v2) => v2.score - v1.score);
-      const prediction = predictions[0]
+    const prediction = predictions[0];
 
-      const isCorrect = prediction.label === label;
-    finalHash += '_' + [...scores].map(s => String(s)).join(',');
+    const isCorrect = prediction.label === label;
+    finalHash += "_" + [...scores].map((s) => String(s)).join(",");
     console.log(
-      `${isCorrect ? '✅' : '❌'} Input ${label} - Output ${prediction.label} (Confidence ${
-        Math.round(prediction.score * 1000) / 10
-      }%)`
+      `${isCorrect ? "✅" : "❌"} Input ${label} - Output ${
+        prediction.label
+      } (Confidence ${Math.round(prediction.score * 1000) / 10}%)`
     );
     if (prediction.score < 0.5) {
-      console.log(predictions.slice(0, 3))
+      console.log(predictions.slice(0, 3));
     }
   }
 
-  console.log(createHash('md5').update(finalHash).digest('hex'))
+  console.log(createHash("md5").update(finalHash).digest("hex"));
 }
 
 run().catch(console.error);
