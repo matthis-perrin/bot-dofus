@@ -1,18 +1,18 @@
-import {tmpdir} from 'os'
-import {mkdirSync, promises} from 'fs';
-import {join} from 'path';
 
-import Jimp from 'jimp'
-import { windowManager } from "node-window-manager";
-import {} from 'robotjs'
-import GK from 'global-keypress';
-import { execAsync } from './utils';
-import { initDofusWindow } from './dofus_window';
-import { startScreenshotTaker } from './screenshot_taker';
+import { setIntervalAsync } from "./utils";
+import { initDofusWindow } from "./dofus_window";
+import { startScreenshotTaker } from "./screenshot_taker";
+import { loadModel } from "./tensorflow";
+import { takeScreenshot } from "./screenshot";
 
 async function run(): Promise<void> {
-    await initDofusWindow();
-    startScreenshotTaker();
+  await initDofusWindow();
+  startScreenshotTaker();
+  const ml = await loadModel();
+  setIntervalAsync(async () => {
+    const screenshot = await takeScreenshot();
+    console.log(await ml(screenshot));
+  }, 3000);
 }
 
-run().catch(console.error)
+run().catch(console.error);
