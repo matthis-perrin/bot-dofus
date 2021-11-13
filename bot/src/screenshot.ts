@@ -1,10 +1,11 @@
-import { promises } from "fs";
-import Jimp from "jimp";
-import { tmpdir } from "os";
-import { join } from "path";
-import { execAsync } from "./utils";
+import {promises} from 'fs';
+import Jimp from 'jimp';
+import {tmpdir} from 'os';
+import {join} from 'path';
 
-const { readFile, unlink } = promises;
+import {execAsync} from './utils';
+
+const {readFile, unlink} = promises;
 
 export async function takeScreenshot(): Promise<Buffer> {
   const filePath = join(tmpdir(), `${Math.random().toString(36).slice(2)}.png`);
