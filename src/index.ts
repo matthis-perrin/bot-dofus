@@ -15,8 +15,8 @@ async function printCoordinatePrediction(ml: Predictor): Promise<void> {
 async function run(): Promise<void> {
   await initDofusWindow();
   startScreenshotTaker();
-  const ml = await loadModel();
-  printCoordinatePrediction(ml);
+  // const ml = await loadModel();
+  // printCoordinatePrediction(ml);
 }
 
 run().catch((err) => console.error(err));
