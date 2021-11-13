@@ -1,13 +1,16 @@
 import * as tf from "@tensorflow/tfjs-node";
+import { channel } from "diagnostics_channel";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
-export async function loadModel(): Promise<(buffer: Buffer) => Promise<{
-    score: number;
-    label: string;
-}>> {
+export type Predictor = (buffer: Buffer) => Promise<{
+  score: number;
+  label: string;
+}>
+
+export async function loadModel(): Promise<Predictor> {
   const modelDir = "./models/map-coordinates";
-  const imageTargetSize = 256;
+  const imageTargetSize = 128;
 
   const model = await tf.loadLayersModel(`file://${modelDir}/model.json`) as unknown as tf.Sequential
   const labelByNumber = new Map<number, string>(JSON.parse((await (await readFile(join(modelDir, 'labels.json'))).toString())))
@@ -15,7 +18,7 @@ export async function loadModel(): Promise<(buffer: Buffer) => Promise<{
   return async (buffer: Buffer) => {
     const res = model.predict(
         tf.node
-          .decodeImage(buffer)
+          .decodeImage(buffer, 3)
           .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
           .toFloat()
           .div(tf.scalar(255.0))

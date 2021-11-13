@@ -1,35 +1,17 @@
 import { mkdirSync } from "fs";
+import { writeFile } from "fs/promises";
 import GK from "global-keypress";
-import Jimp from "jimp";
 import { join } from "path";
-import { takeScreenshot } from "./screenshot";
-
-const savedImageHeight = 256;
+import { takeGameScreenshot } from "./screenshot";
 
 export function startScreenshotTaker(): void {
   try {
     mkdirSync("./images");
   } catch {}
 
-  async function saveCroppedImage(
-    img: Jimp,
-    fileName: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number
-  ): Promise<void> {
-    const ratio = savedImageHeight / (height * 2);
-    await img
-      .crop(x * 2, y * 2, width * 2, height * 2)
-      .resize(Math.round(width * 2 * ratio), savedImageHeight)
-      .writeAsync(join("./images/map", fileName));
-    console.log(`Saved ${fileName}`);
-  }
-
   async function saveCoordinateImage(): Promise<void> {
-    const img = await Jimp.read(await takeScreenshot());
-    saveCroppedImage(img, `${Date.now()}.png`, 310, 54, 1130, 657);
+    const img = await takeGameScreenshot(true);
+    await writeFile(img, join("./images/map", `${Date.now()}.png`));
   }
 
   const gk = new GK();
