@@ -2,7 +2,8 @@
   "name": "tensorflow",
   "version": "1.0.0",
   "scripts": {
-    "start": "tsc && node dist/index.js"
+    "start-map": "tsc && node dist/map.js",
+    "start-soleil": "tsc && node dist/soleil.js"
   },
   "dependencies": {
     "@tensorflow/tfjs-node": "^3.11.0"
