@@ -1,6 +1,6 @@
 import { initDofusWindow } from "./dofus_window";
 import { startScreenshotTaker } from "./screenshot_taker";
-import { loadModel, Predictor } from "./tensorflow";
+import { loadMapModel, loadSoleilModel, Predictor } from "./tensorflow";
 import { takeGameScreenshot } from "./screenshot";
 
 async function printCoordinatePrediction(ml: Predictor): Promise<void> {
@@ -14,7 +14,8 @@ async function printCoordinatePrediction(ml: Predictor): Promise<void> {
 
 async function run(): Promise<void> {
   await initDofusWindow();
-  startScreenshotTaker();
+  const predictor = await loadSoleilModel();
+  startScreenshotTaker(predictor);
   // const ml = await loadModel();
   // printCoordinatePrediction(ml);
 }

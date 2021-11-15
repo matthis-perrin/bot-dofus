@@ -18,7 +18,7 @@ export async function takeScreenshot(): Promise<Buffer> {
 
 const savedImageHeight = 256;
 
-const gameCoordinates = {
+export const gameCoordinates = {
   x: 310,
   y: 54,
   width: 1130,
@@ -42,18 +42,25 @@ export async function takeGameScreenshot(resize: boolean): Promise<Buffer> {
 const HORIZONTAL_SQUARES = 14;
 const VERTICAL_SQUARES = 16;
 
-const SQUARE_SIZE = {
-  width: 2 * gameCoordinates.width / HORIZONTAL_SQUARES,
-  height: 2 * gameCoordinates.height / VERTICAL_SQUARES,
+export const SQUARE_SIZE = {
+  width: (2 * gameCoordinates.width) / HORIZONTAL_SQUARES,
+  height: (2 * gameCoordinates.height) / VERTICAL_SQUARES,
 };
 
-export async function takeBorderSquaresScreenshots(): Promise<Buffer[]> {
-  const { x, y, width, height } = gameCoordinates;
+interface BorderSquareImage {
+  data: Buffer;
+  coordinates: { x: number; y: number };
+}
+
+export async function takeBorderSquaresScreenshots(): Promise<
+  BorderSquareImage[]
+> {
+  const { x: gameX, y: gameY, width, height } = gameCoordinates;
   const fullScreen = await takeScreenshot();
   let img = await Jimp.read(fullScreen);
-  img = img.crop(x * 2, y * 2, width * 2, height * 2);
+  img = img.crop(gameX * 2, gameY * 2, width * 2, height * 2);
 
-  const bufferPromises: Promise<Buffer>[] = [];
+  const bufferPromises: Promise<BorderSquareImage>[] = [];
   for (let x = 0; x < HORIZONTAL_SQUARES; x++) {
     bufferPromises.push(
       img
@@ -65,6 +72,7 @@ export async function takeBorderSquaresScreenshots(): Promise<Buffer[]> {
           SQUARE_SIZE.height
         )
         .getBufferAsync(Jimp.MIME_PNG)
+        .then((data) => ({ data, coordinates: { x, y: 0 } }))
     );
     bufferPromises.push(
       img
@@ -76,6 +84,7 @@ export async function takeBorderSquaresScreenshots(): Promise<Buffer[]> {
           SQUARE_SIZE.height
         )
         .getBufferAsync(Jimp.MIME_PNG)
+        .then((data) => ({ data, coordinates: { x, y: VERTICAL_SQUARES - 1 } }))
     );
   }
   for (let y = 1; y < VERTICAL_SQUARES - 1; y++) {
@@ -89,6 +98,7 @@ export async function takeBorderSquaresScreenshots(): Promise<Buffer[]> {
           SQUARE_SIZE.height
         )
         .getBufferAsync(Jimp.MIME_PNG)
+        .then((data) => ({ data, coordinates: { x: 0, y } }))
     );
     bufferPromises.push(
       img
@@ -100,6 +110,7 @@ export async function takeBorderSquaresScreenshots(): Promise<Buffer[]> {
           SQUARE_SIZE.height
         )
         .getBufferAsync(Jimp.MIME_PNG)
+        .then((data) => ({ data, coordinates: { x: HORIZONTAL_SQUARES - 1, y } }))
     );
   }
 
