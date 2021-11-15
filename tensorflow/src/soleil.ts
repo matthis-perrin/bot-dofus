@@ -1,8 +1,7 @@
 import * as tf from "@tensorflow/tfjs-node";
 
-import { join, resolve } from "path";
+import { join } from "path";
 import { promises } from "fs";
-import { createHash } from "crypto";
 
 const { readdir, readFile, writeFile, mkdir } = promises;
 
@@ -183,48 +182,48 @@ async function run(): Promise<void> {
 
   //
 
-    // console.log("Processing images");
-    // const { images, labels, labelIndex } = processImageInfo(
-    //   trainingInfo,
-    //   imageTargetSize
-    // );
-    // const labelByNumber = new Map(
-    //   [...labelIndex.entries()].map(([label, index]) => [index, label])
-    // );
+    console.log("Processing images");
+    const { images, labels, labelIndex } = processImageInfo(
+      trainingInfo,
+      imageTargetSize
+    );
+    const labelByNumber = new Map(
+      [...labelIndex.entries()].map(([label, index]) => [index, label])
+    );
 
-    // console.log("Preparing model");
-    // const model = prepareModel(labelIndex.size, imageTargetSize);
-    // console.log("Model summary");
-    // model.summary();
-    // const epochs = 15;
-    // const batchSize = 8;
-    // const validationSplit = 0.15;
-    // console.log("Start learning");
-    // await model.fit(images, labels, {
-    //   epochs,
-    //   batchSize,
-    //   validationSplit,
-    // });
-    // console.log("Saving model");
-    // try {
-    //     await mkdir(modelDir, {recursive: true});
-    // } catch {}
-    // await Promise.all([
-    //   model.save(`file://${modelDir}`),
-    //   writeFile(
-    //     join(modelDir, "labels.json"),
-    //     JSON.stringify([...labelByNumber.entries()])
-    //   ),
-    // ]);
+    console.log("Preparing model");
+    const model = prepareModel(labelIndex.size, imageTargetSize);
+    console.log("Model summary");
+    model.summary();
+    const epochs = 10;
+    const batchSize = 4;
+    const validationSplit = 0.15;
+    console.log("Start learning");
+    await model.fit(images, labels, {
+      epochs,
+      batchSize,
+      validationSplit,
+    });
+    console.log("Saving model");
+    try {
+        await mkdir(modelDir, {recursive: true});
+    } catch {}
+    await Promise.all([
+      model.save(`file://${modelDir}`),
+      writeFile(
+        join(modelDir, "labels.json"),
+        JSON.stringify([...labelByNumber.entries()])
+      ),
+    ]);
 
   //
 
-  const model = (await tf.loadLayersModel(
-    `file://${modelDir}/model.json`
-  )) as unknown as tf.Sequential;
-  const labelByNumber = new Map<number, string>(
-    JSON.parse(await (await readFile(join(modelDir, "labels.json"))).toString())
-  );
+  // const model = (await tf.loadLayersModel(
+  //   `file://${modelDir}/model.json`
+  // )) as unknown as tf.Sequential;
+  // const labelByNumber = new Map<number, string>(
+  //   JSON.parse(await (await readFile(join(modelDir, "labels.json"))).toString())
+  // );
 
   //
 
