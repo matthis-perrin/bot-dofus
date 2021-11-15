@@ -84,10 +84,20 @@ export function startScreenshotTaker(predictor: Predictor): void {
         moveMouseSmooth(soleilCoordinates.x, soleilCoordinates.y);
         mouseClick();
 
-        // const soleils = predictions.filter((p) => p.label === "OK");
-        // const notSoleils = predictions.filter((p) => p.label !== "OK");
-        // console.log(soleils);
-        // console.log(notSoleils.sort((s1, s2) => s1.score - s2.score).slice(0, 10));
+        const soleils = predictions.filter((p) => p.label === "OK");
+        const notSoleils = predictions.filter((p) => p.label !== "OK");
+        console.log(soleils);
+        console.log(notSoleils.sort((s1, s2) => s1.score - s2.score).slice(0, 10));
+      }
+      if (["<Enter>"].includes(data.data)) {
+        const borderSquares = await takeBorderSquaresScreenshots();
+        const predictions = await Promise.all(
+          borderSquares.map(async (borderSquare) => {
+            const prediction = await predictor(borderSquare.data);
+            return { ...prediction, ...borderSquare.coordinates };
+          })
+        );
+        console.log(predictions.sort((p1, p2) => p1.score - p2.score));
       }
       // console.log(data.data);
     })().catch(console.error);
