@@ -2,7 +2,10 @@
   "name": "bot-dofus",
   "version": "1.0.0",
   "scripts": {
-    "start": "tsc && sudo node dist/index.js"
+    "start": "yarn build-bot-ui && yarn build-bot && yarn start-bot",
+    "start-bot": "node bot/dist/main.js",
+    "build-bot": "pushd bot && yarn install && yarn build && popd",
+    "build-bot-ui": "pushd bot-ui && yarn install && yarn build && popd"
   },
   "dependencies": {
     "global-keypress": "^0.0.8",

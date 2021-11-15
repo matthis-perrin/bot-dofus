@@ -1,12 +1,12 @@
 {
-  "name": "tensorflow",
+  "name": "bot",
   "license": "UNLICENSED",
   "scripts": {
     "lint": "eslint --ext ts,tsx src",
     "tsc": "tsc -p tsconfig.json",
     "build": "NODE_ENV=production webpack build",
     "watch": "NODE_ENV=development webpack watch",
-    "start": "node dist/main.js"
+    "start": "NODE_ENV=production webpack build && node dist/main.js"
   },
   "prettier": "@matthis/prettier-config",
   "eslintConfig": {
@@ -15,9 +15,9 @@
     ],
     "rules": {
       "@typescript-eslint/no-magic-numbers": "off",
-      "no-console": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
-      "import/no-namespace": "off"
+      "import/no-namespace": "off",
+      "no-console": "off"
     }
   },
   "devDependencies": {
@@ -28,6 +28,10 @@
     "@types/node": "16.11.x"
   },
   "dependencies": {
-    "@tensorflow/tfjs-node": "^3.11.0"
+    "@tensorflow/tfjs-node": "^3.11.0",
+    "global-keypress": "^0.0.8",
+    "jimp": "^0.16.1",
+    "node-window-manager": "^2.2.4",
+    "robotjs": "^0.6.0"
   }
 }

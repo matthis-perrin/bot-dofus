@@ -1,0 +1,32 @@
+{
+  "name": "bot-ui",
+  "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint --ext ts,tsx src",
+    "tsc": "tsc -p tsconfig.json",
+    "build": "NODE_ENV=production webpack build",
+    "start": "NODE_ENV=development webpack serve"
+  },
+  "prettier": "@matthis/prettier-config",
+  "eslintConfig": {
+    "extends": [
+      "@matthis/eslint-config-web"
+    ]
+  },
+  "devDependencies": {
+    "@matthis/eslint-config-web": "latest",
+    "@matthis/prettier-config": "latest",
+    "@matthis/tsconfig-web": "latest",
+    "@matthis/webpack-web": "latest",
+    "@types/react": "17.0.x",
+    "@types/react-dom": "17.0.x",
+    "@types/styled-components": "5.1.x"
+  },
+  "dependencies": {
+    "react": "17.0.x",
+    "react-dom": "17.0.x",
+    "react-router": "5.2.x",
+    "react-router-dom": "5.2.x",
+    "styled-components": "5.1.x"
+  }
+}
