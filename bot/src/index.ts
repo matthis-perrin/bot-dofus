@@ -1,31 +1,49 @@
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
-import {takeGameScreenshot} from './screenshot';
+import {findBorderSquares} from './screenshot';
 import {screenhotManager} from './screenshot_manager';
-import {startScreenshotTaker} from './screenshot_taker';
 import {sendEvent, startServer} from './server';
-import {loadMapModel, loadSoleilModel, Predictor} from './tensorflow';
-
-async function printCoordinatePrediction(ml: Predictor): Promise<void> {
-  const screenshot = await takeGameScreenshot(true);
-  const prediction = await ml(screenshot);
-  console.log(`${prediction.label} ${Math.round(1000 * prediction.score) / 10}%`);
-  setTimeout(() => {
-    printCoordinatePrediction(ml).catch(handleError);
-  }, 5000);
-}
+import {loadMapModel, loadSoleilModel} from './tensorflow';
 
 async function run(): Promise<void> {
   startServer();
+  const [soleilModel, mapModel] = await Promise.all([
+    loadSoleilModel(),
+    loadMapModel(),
+    initDofusWindow(),
+  ]);
+
   screenhotManager.start();
   screenhotManager.addListener(buffer => {
-    sendEvent({type: 'screenshot', data: buffer.toString('base64')});
+    // SCREENSHOT
+    sendEvent({
+      type: 'screenshot',
+      data: buffer.toString('base64'),
+    });
+    // SOLEIL
+    (async () => {
+      const borderSquares = await findBorderSquares(buffer);
+      const predictions = await Promise.all(
+        borderSquares.map(async borderSquare => {
+          const prediction = await soleilModel(borderSquare.data);
+          return {...prediction, ...borderSquare.coordinates};
+        })
+      );
+      predictions.sort((p1, p2) => p1.score - p2.score);
+      sendEvent({
+        type: 'soleil',
+        data: predictions,
+      });
+    })().catch(handleError);
+    // COORDINATE
+    (async () => {
+      const prediction = await mapModel(buffer);
+      sendEvent({
+        type: 'coordinate',
+        data: prediction,
+      });
+    })().catch(handleError);
   });
-  // await initDofusWindow();
-  // const predictor = await loadSoleilModel();
-  // startScreenshotTaker(predictor);
-  // const ml = await loadMapModel();
-  // printCoordinatePrediction(ml).catch(handleError);
 }
 
 run().catch(handleError);

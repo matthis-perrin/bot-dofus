@@ -17,7 +17,8 @@
       "@typescript-eslint/no-magic-numbers": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "import/no-namespace": "off",
-      "no-console": "off"
+      "no-console": "off",
+      "import/no-relative-packages": "off"
     }
   },
   "devDependencies": {

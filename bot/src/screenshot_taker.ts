@@ -3,13 +3,9 @@ import GK from 'global-keypress';
 import {join} from 'path';
 import {mouseClick, moveMouseSmooth} from 'robotjs';
 
+import {gameCoordinates, SQUARE_SIZE} from '../../common/model';
 import {handleError} from './error';
-import {
-  gameCoordinates,
-  SQUARE_SIZE,
-  takeBorderSquaresScreenshots,
-  takeGameScreenshot,
-} from './screenshot';
+import {takeBorderSquaresScreenshots, takeGameScreenshot} from './screenshot';
 import {Predictor} from './tensorflow';
 
 const {writeFile} = promises;

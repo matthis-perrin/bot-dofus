@@ -3,6 +3,7 @@ import {createServer, ServerResponse} from 'http';
 import {networkInterfaces} from 'os';
 import {join} from 'path';
 
+import {Message} from '../../common/model';
 import {handleError} from './error';
 
 const {readFile} = promises;
@@ -15,7 +16,7 @@ setInterval(() => {
   }
 }, 20 * 1000);
 
-export function sendEvent(obj: unknown): void {
+export function sendEvent(obj: Message): void {
   const msg = JSON.stringify(obj);
   for (const res of eventsSubscribers) {
     res.write(`data: ${msg}\n\n`);

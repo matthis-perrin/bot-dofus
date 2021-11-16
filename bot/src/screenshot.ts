@@ -3,6 +3,12 @@ import Jimp from 'jimp';
 import {tmpdir} from 'os';
 import {join} from 'path';
 
+import {
+  gameCoordinates,
+  HORIZONTAL_SQUARES,
+  SQUARE_SIZE,
+  VERTICAL_SQUARES,
+} from '../../common/model';
 import {execAsync} from './utils';
 
 const {readFile, unlink} = promises;
@@ -18,13 +24,6 @@ export async function takeScreenshot(): Promise<Buffer> {
 
 const savedImageHeight = 256;
 
-export const gameCoordinates = {
-  x: 310,
-  y: 54,
-  width: 1130,
-  height: 657,
-};
-
 export async function takeGameScreenshot(resize: boolean): Promise<Buffer> {
   const {x, y, width, height} = gameCoordinates;
 
@@ -39,25 +38,13 @@ export async function takeGameScreenshot(resize: boolean): Promise<Buffer> {
   return img.getBufferAsync(Jimp.MIME_PNG);
 }
 
-const HORIZONTAL_SQUARES = 14;
-const VERTICAL_SQUARES = 16;
-
-export const SQUARE_SIZE = {
-  width: (2 * gameCoordinates.width) / HORIZONTAL_SQUARES,
-  height: (2 * gameCoordinates.height) / VERTICAL_SQUARES,
-};
-
 interface BorderSquareImage {
   data: Buffer;
   coordinates: {x: number; y: number};
 }
 
-export async function takeBorderSquaresScreenshots(): Promise<BorderSquareImage[]> {
-  const {x: gameX, y: gameY, width, height} = gameCoordinates;
-  const fullScreen = await takeScreenshot();
-  let img = await Jimp.read(fullScreen);
-  img = img.crop(gameX * 2, gameY * 2, width * 2, height * 2);
-
+export async function findBorderSquares(buffer: Buffer): Promise<BorderSquareImage[]> {
+  const img = await Jimp.read(buffer);
   const bufferPromises: Promise<BorderSquareImage>[] = [];
   for (let x = 0; x < HORIZONTAL_SQUARES; x++) {
     bufferPromises.push(
@@ -99,4 +86,8 @@ export async function takeBorderSquaresScreenshots(): Promise<BorderSquareImage[
   }
 
   return Promise.all(bufferPromises);
+}
+
+export async function takeBorderSquaresScreenshots(): Promise<BorderSquareImage[]> {
+  return findBorderSquares(await takeGameScreenshot(false));
 }
