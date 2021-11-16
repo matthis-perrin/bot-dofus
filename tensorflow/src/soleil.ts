@@ -147,8 +147,8 @@ function prepareModel(labels: number, targetSize: number): tf.Sequential {
 }
 
 export async function runSoleil(): Promise<void> {
-  const modelDir = '../models/soleil';
-  const imageDir = '../images/soleil';
+  const modelDir = './models/soleil';
+  const imageDir = './images/soleil';
   const imageTargetSize = 40;
 
   console.log('Start');

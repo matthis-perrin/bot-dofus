@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {createGlobalStyle} from 'styled-components';
 
 import {App} from './app';
+import {subscribeToEvents} from './events';
 
 const GlobalCss = createGlobalStyle`
   html, body {
@@ -24,3 +25,5 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
+
+subscribeToEvents();

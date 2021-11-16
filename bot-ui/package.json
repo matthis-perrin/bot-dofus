@@ -5,13 +5,17 @@
     "lint": "eslint --ext ts,tsx src",
     "tsc": "tsc -p tsconfig.json",
     "build": "NODE_ENV=production webpack build",
+    "watch": "NODE_ENV=production webpack watch",
     "start": "NODE_ENV=development webpack serve"
   },
   "prettier": "@matthis/prettier-config",
   "eslintConfig": {
     "extends": [
       "@matthis/eslint-config-web"
-    ]
+    ],
+    "parserOptions": {
+      "sourceType": "module"
+    }
   },
   "devDependencies": {
     "@matthis/eslint-config-web": "latest",
