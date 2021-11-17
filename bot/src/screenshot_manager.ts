@@ -6,11 +6,32 @@ type Listener = (res: Buffer) => void;
 class ScreenshotManager {
   private lastScreenshot: Buffer = Buffer.from([]);
   private readonly listeners: Set<Listener> = new Set();
+  private loopTimeout: NodeJS.Timeout | undefined;
+  private running = false;
 
   public constructor(private readonly periodMs: number) {}
 
   public start(): void {
+    if (this.loopTimeout) {
+      clearTimeout(this.loopTimeout);
+      this.loopTimeout = undefined;
+    }
+    this.running = true;
     this.screenshotLoop();
+    this.emit();
+  }
+
+  public stop(): void {
+    if (this.loopTimeout) {
+      clearTimeout(this.loopTimeout);
+      this.loopTimeout = undefined;
+    }
+    this.running = false;
+    this.emit();
+  }
+
+  public isRunning(): boolean {
+    return this.running;
   }
 
   public addListener(cb: Listener): () => void {
@@ -19,13 +40,22 @@ class ScreenshotManager {
   }
 
   private screenshotLoop(): void {
+    if (!this.running) {
+      return;
+    }
     takeGameScreenshot(false)
       .then(res => {
-        this.lastScreenshot = res;
-        this.emit();
+        if (this.running) {
+          this.lastScreenshot = res;
+          this.emit();
+        }
       })
       .catch(handleError)
-      .finally(() => setTimeout(() => this.screenshotLoop(), this.periodMs));
+      .finally(() => {
+        if (this.running) {
+          this.loopTimeout = setTimeout(() => this.screenshotLoop(), this.periodMs);
+        }
+      });
   }
 
   private emit(): void {

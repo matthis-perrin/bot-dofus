@@ -4,11 +4,6 @@ import styled from 'styled-components';
 import {gameCoordinates, SQUARE_SIZE} from '../../common/model';
 import {useServerState} from './events';
 
-// const soleilCoordinates = {
-//   x: gameCoordinates.x + ((best.x + 0.5) * SQUARE_SIZE.width) / 2,
-//   y: gameCoordinates.y + ((best.y + 0.5) * SQUARE_SIZE.height) / 2,
-// };
-
 export const ScreenshotView: React.FC = () => {
   const serverState = useServerState();
   const soleils = serverState.soleil.filter(s => s.label === 'OK');
@@ -17,7 +12,7 @@ export const ScreenshotView: React.FC = () => {
     <Wrapper>
       <Img
         style={{width: gameCoordinates.width, height: gameCoordinates.height}}
-        src={`data:image/png;base64,${serverState.screenshot}`}
+        src={`data:image/png;base64,${serverState.screenshot.image}`}
       />
       {soleils.map(s => (
         <SoleilWrapper
@@ -35,6 +30,7 @@ ScreenshotView.displayName = 'ScreenshotView';
 
 const Wrapper = styled.div`
   position: relative;
+  flex-shrink: 0;
 `;
 const Img = styled.img``;
 const SoleilWrapper = styled.div`

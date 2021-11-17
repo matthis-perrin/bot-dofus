@@ -15,7 +15,10 @@ export const SQUARE_SIZE = {
 
 export interface ScreenshotMessage {
   type: "screenshot";
-  data: string;
+  data: {
+    image: string;
+    isRunning: boolean;
+  };
 }
 
 export interface SoleilMessage {

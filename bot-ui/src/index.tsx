@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {createGlobalStyle} from 'styled-components';
 
 import {App} from './app';
+import {BLUE_GRAY_16, WHITE_AA} from './colors';
 import {subscribeToEvents} from './events';
 
 const GlobalCss = createGlobalStyle`
@@ -14,7 +15,8 @@ const GlobalCss = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
-    background-color: #fbfbfb;
+    background-color: ${BLUE_GRAY_16};
+    color: ${WHITE_AA}
   }
 `;
 

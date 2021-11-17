@@ -18,7 +18,10 @@ async function run(): Promise<void> {
     // SCREENSHOT
     sendEvent({
       type: 'screenshot',
-      data: buffer.toString('base64'),
+      data: {
+        image: buffer.toString('base64'),
+        isRunning: screenhotManager.isRunning(),
+      },
     });
     // SOLEIL
     (async () => {

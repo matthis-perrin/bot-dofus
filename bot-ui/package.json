@@ -17,7 +17,15 @@
       "sourceType": "module"
     },
     "rules": {
-      "import/no-relative-packages": "off"
+      "import/no-relative-packages": "off",
+      "@typescript-eslint/no-magic-numbers": "off",
+      "no-console": "off",
+      "react/jsx-handler-names": [
+        "warn",
+        {
+          "eventHandlerPropPrefix": "handle"
+        }
+      ]
     }
   },
   "devDependencies": {
