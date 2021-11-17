@@ -5,6 +5,7 @@ import {join} from 'path';
 
 import {Message} from '../../common/model';
 import {handleError} from './error';
+import {Intelligence} from './intelligence';
 import {screenhotManager} from './screenshot_manager';
 
 const {readFile} = promises;
@@ -37,7 +38,7 @@ export async function apiHandler(url: string, params: any): Promise<unknown> {
   return Promise.resolve(`unknown URL ${url}`);
 }
 
-export function startServer(): void {
+export function startServer(ai: Intelligence): void {
   const localIp = getLocalIp();
   const port = 3000;
   if (localIp === undefined) {
@@ -79,6 +80,7 @@ export function startServer(): void {
           /* eslint-enable @typescript-eslint/naming-convention */
           res.flushHeaders();
           res.write('\n');
+          ai.triggerManually();
           return;
         }
         if (file === '/' || file === '/index.html') {

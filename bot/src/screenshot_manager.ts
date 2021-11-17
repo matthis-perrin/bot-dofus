@@ -34,6 +34,10 @@ class ScreenshotManager {
     return this.running;
   }
 
+  public getLastScreenshot(): Buffer {
+    return this.lastScreenshot;
+  }
+
   public addListener(cb: Listener): () => void {
     this.listeners.add(cb);
     return () => this.listeners.delete(cb);

@@ -3,7 +3,9 @@ import styled from 'styled-components';
 
 import {apiCall} from './api';
 import {useServerState} from './events';
-import {formatScore} from './format';
+import {formatScoreWithIcon} from './format';
+import {Block} from './fragments';
+import {Spacing} from './spacing';
 import {Toggle} from './toggle';
 
 export const ScreenshotInfo: React.FC = () => {
@@ -34,26 +36,32 @@ export const ScreenshotInfo: React.FC = () => {
         />
       </ToggleWrapper>
       {/* <RunningWrapper></RunningWrapper> */}
-      <div>{`Coordonnées : ${serverState.coordinate.label} (${formatScore(
-        serverState.coordinate.score
-      )})`}</div>
-      <div>{`Soleils : `}</div>
-      <table>
-        <tr>
-          <th>x</th>
-          <th>y</th>
-          <th>label</th>
-          <th>score</th>
-        </tr>
-        {serverState.soleil.map(s => (
-          <tr key={`${s.x},${s.y}`}>
-            <td>{s.x}</td>
-            <td>{s.y}</td>
-            <td>{s.label}</td>
-            <td>{s.score}</td>
+      <Block>
+        <div>{`Coordonnées : ${serverState.coordinate.label} (${formatScoreWithIcon(
+          serverState.coordinate.score,
+          0.95
+        )})`}</div>
+      </Block>
+      <Spacing height={16} />
+      <Block>
+        <div>{`Soleils : `}</div>
+        <table>
+          <tr>
+            <th>x</th>
+            <th>y</th>
+            <th>label</th>
+            <th>score</th>
           </tr>
-        ))}
-      </table>
+          {serverState.soleil.map(s => (
+            <tr key={`${s.x},${s.y}`}>
+              <td>{s.x}</td>
+              <td>{s.y}</td>
+              <td>{s.label}</td>
+              <td>{s.score}</td>
+            </tr>
+          ))}
+        </table>
+      </Block>
     </Wrapper>
   );
 };
@@ -61,7 +69,7 @@ ScreenshotInfo.displayName = 'ScreenshotInfo';
 
 const Wrapper = styled.div`
   position: relative;
-  padding: 16px;
+  margin-left: 16px;
   flex-grow: 1;
 `;
 

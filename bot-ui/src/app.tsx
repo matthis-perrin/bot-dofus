@@ -16,4 +16,6 @@ App.displayName = 'App';
 
 const Wrapper = styled.div`
   display: flex;
+  align-items: flex-start;
+  padding: 16px;
 `;
