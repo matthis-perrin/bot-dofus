@@ -7,3 +7,5 @@ export const Block = styled.div`
   padding: 16px;
   background-color: ${BLUE_GRAY_0D};
 `;
+
+export const Button = styled.button``;

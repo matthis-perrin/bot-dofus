@@ -2,9 +2,11 @@ import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components';
 
 import {apiCall} from './api';
+import {ORANGE} from './colors';
 import {useServerState} from './events';
 import {formatScoreWithIcon} from './format';
 import {Block} from './fragments';
+import {SoleilInfo} from './soleil_info';
 import {Spacing} from './spacing';
 import {Toggle} from './toggle';
 
@@ -37,30 +39,17 @@ export const ScreenshotInfo: React.FC = () => {
       </ToggleWrapper>
       {/* <RunningWrapper></RunningWrapper> */}
       <Block>
-        <div>{`Coordonnées : ${serverState.coordinate.label} (${formatScoreWithIcon(
-          serverState.coordinate.score,
-          0.95
-        )})`}</div>
+        <div>
+          <Title>Coordonnées</Title>
+          <span>{` : ${serverState.coordinate.label} (${formatScoreWithIcon(
+            serverState.coordinate.score,
+            0.95
+          )})`}</span>
+        </div>
       </Block>
       <Spacing height={16} />
       <Block>
-        <div>{`Soleils : `}</div>
-        <table>
-          <tr>
-            <th>x</th>
-            <th>y</th>
-            <th>label</th>
-            <th>score</th>
-          </tr>
-          {serverState.soleil.map(s => (
-            <tr key={`${s.x},${s.y}`}>
-              <td>{s.x}</td>
-              <td>{s.y}</td>
-              <td>{s.label}</td>
-              <td>{s.score}</td>
-            </tr>
-          ))}
-        </table>
+        <SoleilInfo />
       </Block>
     </Wrapper>
   );
@@ -86,4 +75,8 @@ const ToggleLabel = styled.div`
   line-height: 100%;
   font-size: 14px;
   font-weight: 500;
+`;
+
+const Title = styled.span`
+  color: ${ORANGE};
 `;
