@@ -1,1 +1,513 @@
-{}
+{
+  "11/1": [],
+  "7/-4": [
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 8
+      }
+    }
+  ],
+  "9/-3": [
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 21
+      },
+      "type": "Mer",
+      "size": "Petit",
+      "distance": 1
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 9
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 4
+      }
+    },
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 5
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 9
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 1
+      },
+      "type": "Mer",
+      "size": "Grand"
+    }
+  ],
+  "9/-4": [
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 3
+      },
+      "type": "Mer",
+      "size": "Grand",
+      "distance": 4
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 8
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 10
+      }
+    }
+  ],
+  "10/-5": [
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 20
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 17
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 9
+      }
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 4
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 9
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 21
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 22
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 25
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 19
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 4
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 16
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 22
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 26
+      },
+      "type": "Mer",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 30
+      }
+    }
+  ],
+  "11/-6": [
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 21
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 18
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 15
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 11
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 9
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 5
+      },
+      "type": "Mer",
+      "size": "Grand"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 6
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 4
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 22
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 19
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 21
+      },
+      "type": "Mer",
+      "size": "Grand"
+    },
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 20
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 2
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 26
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 16
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 8
+      }
+    }
+  ],
+  "12/-7": [
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 28
+      }
+    },
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 21
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 17
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 28
+      },
+      "type": "Mer",
+      "size": "Grand"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 18
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 20
+      }
+    }
+  ],
+  "9/-2": [
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 28
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 25
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 25
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 24
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 22
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 11
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 5
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 4
+      }
+    }
+  ]
+}
