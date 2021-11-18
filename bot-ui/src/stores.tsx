@@ -27,7 +27,7 @@ export const setServerState = serverStateStore.setData;
 //
 
 interface ClientState {
-  action?: 'editing-fish';
+  action?: 'editing-fish' | 'take-screenshot';
 }
 
 const clientStateStore = createDataStore<ClientState>({});

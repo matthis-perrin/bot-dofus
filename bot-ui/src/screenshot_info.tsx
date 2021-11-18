@@ -1,8 +1,8 @@
-import React, {Fragment, useCallback, useState} from 'react';
+import React, {Fragment, useCallback, useRef, useState} from 'react';
 import styled from 'styled-components';
 
 import {apiCall} from './api';
-import {ORANGE} from './colors';
+import {BLUE_GRAY_16, ORANGE, WHITE_AA} from './colors';
 import {FishModule} from './fish_module';
 import {formatScoreWithIcon} from './format';
 import {Block, Button} from './fragments';
@@ -12,6 +12,12 @@ import {setClientState, useClientState, useServerState} from './stores';
 import {Toggle} from './toggle';
 
 export const ScreenshotInfo: React.FC = () => {
+  // eslint-disable-next-line no-null/no-null
+  const screenshotInputX = useRef<HTMLInputElement>(null);
+  // eslint-disable-next-line no-null/no-null
+  const screenshotInputY = useRef<HTMLInputElement>(null);
+  const [isTakingScreenshot, setIsTakingScreenshot] = useState(false);
+
   const serverState = useServerState();
   const [isRunning, setIsRunning] = useState(serverState.screenshot.isRunning);
   const [useInternal, setUseInternal] = useState<number | false>(false);
@@ -31,6 +37,26 @@ export const ScreenshotInfo: React.FC = () => {
 
   const handleFishModeClick = useCallback(() => setClientState({action: 'editing-fish'}), []);
   const handleStop = useCallback(() => setClientState({action: undefined}), []);
+  const handleMapScreenshotClick = useCallback(
+    () => setClientState({action: 'take-screenshot'}),
+    []
+  );
+  const handleTakeScreenshotClick = useCallback(() => {
+    if (!screenshotInputX.current || !screenshotInputY.current) {
+      return;
+    }
+    const x = parseFloat(screenshotInputX.current.value);
+    const y = parseFloat(screenshotInputY.current.value);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      return;
+    }
+
+    setIsTakingScreenshot(true);
+    apiCall('/take-screenshot', {x, y})
+      .then(() => setClientState({action: undefined}))
+      .catch(console.error)
+      .finally(() => setIsTakingScreenshot(false));
+  }, []);
 
   return (
     <Wrapper>
@@ -60,12 +86,34 @@ export const ScreenshotInfo: React.FC = () => {
             Mode poissons
           </Button>
           <Spacing width={16} />
+          <Button onClick={handleMapScreenshotClick} disabled={clientState.action !== undefined}>
+            Map screenshot
+          </Button>
+          <Spacing width={16} />
           {clientState.action !== undefined ? (
             <Button onClick={handleStop}>Stop</Button>
           ) : (
             <Fragment />
           )}
         </ModuleActions>
+        {clientState.action === 'take-screenshot' ? (
+          <Fragment>
+            <Spacing height={16} />
+            <Line>
+              <Title>x : </Title>
+              <CoordinateInput type="text" ref={screenshotInputX} />
+              <Spacing width={16} />
+              <Title>y : </Title>
+              <CoordinateInput type="text" ref={screenshotInputY} />
+              <Spacing width={16} />
+              <Button disabled={isTakingScreenshot} onClick={handleTakeScreenshotClick}>
+                Prendre screenshot
+              </Button>
+            </Line>
+          </Fragment>
+        ) : (
+          <Fragment />
+        )}
       </Block>
       <Spacing height={16} />
       <Block>
@@ -106,6 +154,20 @@ const Title = styled.span`
 `;
 
 const ModuleActions = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const CoordinateInput = styled.input`
+  width: 24px;
+  background-color: ${BLUE_GRAY_16};
+  color: ${WHITE_AA};
+  border: solid 1px ${ORANGE};
+  border-radius: 4px;
+  margin-left: 4px;
+  padding: 4px;
+`;
+const Line = styled.div`
   display: flex;
   align-items: center;
 `;

@@ -8,9 +8,10 @@ import {Message} from '../../common/src/model';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
+import {takeGameScreenshot} from './screenshot';
 import {screenhotManager} from './screenshot_manager';
 
-const {readFile} = promises;
+const {readFile, writeFile, mkdir} = promises;
 
 const eventsSubscribers: Set<ServerResponse> = new Set();
 setInterval(() => {
@@ -41,6 +42,13 @@ export async function apiHandler(url: string, params: any): Promise<unknown> {
     return {};
   } else if (url === '/delete-fish') {
     await fishDb.delete(params.map as Coordinate, params.fish as Coordinate);
+    return {};
+  } else if (url === '/take-screenshot') {
+    const {x, y} = params as Coordinate;
+    const buffer = await takeGameScreenshot(true);
+    const path = join('images', 'map', `${x}h${y}`);
+    await mkdir(path, {recursive: true});
+    await writeFile(join(path, `${Date.now()}.png`), buffer);
     return {};
   }
   return Promise.resolve(`unknown URL ${url}`);
