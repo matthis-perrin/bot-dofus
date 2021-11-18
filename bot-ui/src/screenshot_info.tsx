@@ -1,13 +1,14 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {Fragment, useCallback, useState} from 'react';
 import styled from 'styled-components';
 
 import {apiCall} from './api';
 import {ORANGE} from './colors';
-import {useServerState} from './events';
+import {FishModule} from './fish_module';
 import {formatScoreWithIcon} from './format';
-import {Block} from './fragments';
+import {Block, Button} from './fragments';
 import {SoleilInfo} from './soleil_info';
 import {Spacing} from './spacing';
+import {setClientState, useClientState, useServerState} from './stores';
 import {Toggle} from './toggle';
 
 export const ScreenshotInfo: React.FC = () => {
@@ -24,7 +25,12 @@ export const ScreenshotInfo: React.FC = () => {
       .finally(() => setUseInternal(internalId => (internalId === id ? false : internalId)));
   }, []);
 
-  useEffect(() => {}, [serverState]);
+  //
+
+  const clientState = useClientState();
+
+  const handleFishModeClick = useCallback(() => setClientState({action: 'editing-fish'}), []);
+  const handleStop = useCallback(() => setClientState({action: undefined}), []);
 
   return (
     <Wrapper>
@@ -46,6 +52,22 @@ export const ScreenshotInfo: React.FC = () => {
             0.95
           )})`}</span>
         </div>
+      </Block>
+      <Spacing height={16} />
+      <Block>
+        <ModuleActions>
+          <Button onClick={handleFishModeClick} disabled={clientState.action !== undefined}>
+            Définition poissons
+          </Button>
+          <Spacing width={16} />
+          {clientState.action !== undefined ? (
+            <Button onClick={handleStop}>Stop</Button>
+          ) : (
+            <Fragment />
+          )}
+        </ModuleActions>
+        {clientState.action !== undefined ? <Spacing height={8} /> : <Fragment />}
+        {clientState.action === 'editing-fish' ? <FishModule /> : <Fragment />}
       </Block>
       <Spacing height={16} />
       <Block>
@@ -79,4 +101,9 @@ const ToggleLabel = styled.div`
 
 const Title = styled.span`
   color: ${ORANGE};
+`;
+
+const ModuleActions = styled.div`
+  display: flex;
+  align-items: center;
 `;

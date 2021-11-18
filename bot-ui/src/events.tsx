@@ -1,21 +1,6 @@
-import {CoordinateMessage, Message, ScreenshotMessage, SoleilMessage} from '../../common/model';
-import {createDataStore} from './data_store';
+import {Message} from '../../common/src/model';
 import {env} from './env';
-
-interface ServerState {
-  screenshot: ScreenshotMessage['data'];
-  soleil: SoleilMessage['data'];
-  coordinate: CoordinateMessage['data'];
-}
-
-const serverStateStore = createDataStore<ServerState>({
-  screenshot: {image: '', isRunning: false},
-  soleil: [],
-  coordinate: {label: '', score: 0},
-});
-export const useServerState = serverStateStore.useData;
-export const getServerState = serverStateStore.getData;
-export const setServerState = serverStateStore.setData;
+import {getServerState, setServerState} from './stores';
 
 export function subscribeToEvents(): void {
   const eventSource = new EventSource(`http://${env.apiUrl}/events`);
@@ -28,6 +13,8 @@ export function subscribeToEvents(): void {
       setServerState({...getServerState(), soleil: event.data});
     } else if (event.type === 'coordinate') {
       setServerState({...getServerState(), coordinate: event.data});
+    } else if (event.type === 'fish') {
+      setServerState({...getServerState(), fish: event.data});
     } else {
       console.log('Unknown event', event);
     }

@@ -1,0 +1,26 @@
+{
+  "name": "common",
+  "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint --ext ts,tsx src",
+    "tsc": "tsc -p tsconfig.json"
+  },
+  "prettier": "@matthis/prettier-config",
+  "eslintConfig": {
+    "extends": [
+      "@matthis/eslint-config-lib"
+    ],
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "rules": {
+      "@typescript-eslint/no-magic-numbers": "off"
+    }
+  },
+  "devDependencies": {
+    "@matthis/eslint-config-lib": "latest",
+    "@matthis/prettier-config": "latest",
+    "@matthis/tsconfig-lib": "latest"
+  },
+  "dependencies": {}
+}

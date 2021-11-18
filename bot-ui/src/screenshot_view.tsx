@@ -1,83 +1,68 @@
-import React, {MouseEventHandler, useCallback, useState} from 'react';
+import React, {Fragment, MouseEvent, MouseEventHandler, useCallback, useState} from 'react';
 import styled from 'styled-components';
 
-import {gameCoordinates, SQUARE_SIZE} from '../../common/model';
-import {useServerState} from './events';
+import {
+  Coordinate,
+  imageCoordinateToMapCoordinate,
+  mapCoordinateToImageCoordinate,
+  soleilCoordinateToMapCoordinate,
+} from '../../common/src/coordinates';
+import {gameCoordinates, HORIZONTAL_SQUARES, VERTICAL_SQUARES} from '../../common/src/model';
+import {formatCoordinate} from './format';
 import {Block} from './fragments';
 import {SquareHighlight} from './square_highlight';
+import {useServerState, useSquareFetching} from './stores';
 
-interface Position {
-  x: number;
-  y: number;
-}
-
-function soleilCoordinateToMapCoordinate(coordinate: Position): Position {
+function mapCoordinateToCssStyles(coordinate: Coordinate): React.CSSProperties {
+  const {x, y} = mapCoordinateToImageCoordinate(coordinate);
   return {
-    x: coordinate.x,
-    y: coordinate.y * 2,
+    position: 'absolute',
+    left: x,
+    top: y,
   };
-}
-
-function mapCoordinateToImageCoordinate(coordinate: Position): Position {
-  const {x, y} = coordinate;
-
-  return {
-    x: ((y % 2 === 0 ? x : x + 0.5) * SQUARE_SIZE.width) / 2,
-    y: (y * SQUARE_SIZE.height) / 4,
-  };
-}
-
-function imageCoordinateToMapCoordinate(coordinate: Position): Position {
-  let {x, y} = coordinate;
-
-  // Get the "soleil" coordinate (i.e coordinate as if we had square tiles)
-  let px = Math.floor(x / (SQUARE_SIZE.width / 2));
-  let py = Math.floor(y / (SQUARE_SIZE.height / 2));
-
-  // Normalize the x/y coordinate to get the location within the "soleil" coordinate (min 0, max 1)
-  x = x / (SQUARE_SIZE.width / 2) - px;
-  y = y / (SQUARE_SIZE.height / 2) - py;
-
-  console.log(px, py, x, y);
-
-  // Transform the soleil coordinate to map coordinate
-  py *= 2;
-
-  // Adjuste the final coordinate based on which "triangle" we are
-  if (y >= 0.5) {
-    if (x >= 0.5) {
-      if (x - 0.5 + (y - 0.5) > 0.5) {
-        py++;
-      }
-    } else if (0.5 - x + (y - 0.5) > 0.5) {
-      px--;
-      py++;
-    }
-  } else if (x >= 0.5) {
-    if (x - 0.5 + (0.5 - y) > 0.5) {
-      py--;
-    }
-  } else if (0.5 - x + (0.5 - y) > 0.5) {
-    px--;
-    py--;
-  }
-  console.log(px, py);
-  return {x: px, y: py};
 }
 
 export const ScreenshotView: React.FC = () => {
   const serverState = useServerState();
-  const soleils = serverState.soleil.filter(s => s.label === 'OK');
-  const [hoveredSquare, setHoveredSquare] = useState<Position>({x: 0, y: 0});
+  const {fetcher} = useSquareFetching();
 
-  const handleMouseMove = useCallback<MouseEventHandler>(e => {
+  const soleils = serverState.soleil.filter(s => s.label === 'OK');
+
+  const getCoordinate = useCallback((e: MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.x;
     const y = e.clientY - rect.y;
-    setHoveredSquare(imageCoordinateToMapCoordinate({x, y}));
+
+    const c = imageCoordinateToMapCoordinate({x, y});
+    if (c.x < 0 || c.x >= HORIZONTAL_SQUARES || c.y < 0 || c.y >= VERTICAL_SQUARES) {
+      return;
+    }
+    return c;
   }, []);
 
-  const hoveredSquareCoordinate = mapCoordinateToImageCoordinate(hoveredSquare);
+  const [hoveredSquare, setHoveredSquare] = useState<Coordinate | undefined>();
+  const handleMouseMove = useCallback<MouseEventHandler>(
+    e => {
+      const c = getCoordinate(e);
+      if (c === undefined || fetcher === undefined) {
+        return;
+      }
+      setHoveredSquare(c);
+    },
+    [fetcher, getCoordinate]
+  );
+  const handleClick = useCallback<MouseEventHandler>(
+    e => {
+      const c = getCoordinate(e);
+      if (c === undefined || fetcher === undefined) {
+        return;
+      }
+      fetcher.onSquareClick(c);
+    },
+    [fetcher, getCoordinate]
+  );
+
+  const selectedSquares = fetcher?.selectedSquares ?? [];
 
   return (
     <Block style={{flexShrink: 0}}>
@@ -86,6 +71,7 @@ export const ScreenshotView: React.FC = () => {
           style={{width: gameCoordinates.width, height: gameCoordinates.height}}
           src={`data:image/png;base64,${serverState.screenshot.image}`}
           onMouseMove={handleMouseMove}
+          onClick={handleClick}
         />
         {soleils.map(s => {
           const pixelCoordinates = mapCoordinateToImageCoordinate(
@@ -97,23 +83,26 @@ export const ScreenshotView: React.FC = () => {
               style={{position: 'absolute', left: pixelCoordinates.x, top: pixelCoordinates.y}}
               color="red"
             ></SquareHighlight>
-            // <SoleilWrapper
-            //   key={`${s.x},${s.y}`}
-            //   style={{
-            //     left: (s.x * SQUARE_SIZE.width) / 2,
-            //     top: (s.y * SQUARE_SIZE.height) / 2,
-            //   }}
-            // >{`${Math.round(s.score * 100 * 100) / 100}%`}</SoleilWrapper>
           );
         })}
-        <SquareHighlight
-          style={{
-            position: 'absolute',
-            left: hoveredSquareCoordinate.x,
-            top: hoveredSquareCoordinate.y,
-          }}
-          color="#223679"
-        ></SquareHighlight>
+        {fetcher && hoveredSquare ? (
+          <SquareHighlight
+            style={mapCoordinateToCssStyles(hoveredSquare)}
+            color={fetcher.hoverColor}
+            filled
+          ></SquareHighlight>
+        ) : (
+          <Fragment />
+        )}
+        {selectedSquares.map(s => (
+          <SquareHighlight
+            key={formatCoordinate(s.coordinate)}
+            style={mapCoordinateToCssStyles(s.coordinate)}
+            color={s.color}
+          >
+            {s.content}
+          </SquareHighlight>
+        ))}
       </Wrapper>
     </Block>
   );
@@ -124,15 +113,3 @@ const Wrapper = styled.div`
   position: relative;
 `;
 const Img = styled.img``;
-const SoleilWrapper = styled.div`
-  position: absolute;
-  border: solid 2px red;
-  width: ${SQUARE_SIZE.width / 2}px;
-  height: ${SQUARE_SIZE.height / 2}px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  font-size: 10px;
-  font-weight: 500;
-`;

@@ -1,9 +1,8 @@
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
+import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
-import {findBorderSquares} from './screenshot';
-import {screenhotManager} from './screenshot_manager';
-import {sendEvent, startServer} from './server';
+import {startServer} from './server';
 import {loadMapModel, loadSoleilModel} from './tensorflow';
 
 async function run(): Promise<void> {
@@ -11,6 +10,7 @@ async function run(): Promise<void> {
     loadSoleilModel(),
     loadMapModel(),
     initDofusWindow(),
+    fishDb.init(),
   ]);
   const ai = new Intelligence(soleilModel, mapModel);
   startServer(ai);

@@ -1,7 +1,7 @@
 import React, {ChangeEventHandler, Fragment, useCallback, useMemo} from 'react';
 import styled from 'styled-components';
 
-import {BLUE_GRAY_0D, BLUE_GRAY_16, ORANGE, WHITE_AA} from './colors';
+import {BLUE_GRAY_16, ORANGE, WHITE_AA} from './colors';
 
 const height = 20;
 const width = 40;

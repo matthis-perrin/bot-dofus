@@ -2,10 +2,10 @@ import React, {MouseEventHandler, useCallback, useState} from 'react';
 import styled from 'styled-components';
 
 import {ORANGE} from './colors';
-import {useServerState} from './events';
 import {formatScore} from './format';
 import {Button} from './fragments';
 import {Spacing} from './spacing';
+import {useServerState} from './stores';
 
 export const SoleilInfo: React.FC = () => {
   const serverState = useServerState();
@@ -30,6 +30,8 @@ export const SoleilInfo: React.FC = () => {
         ))}
       </Column>
       <Spacing width={16} />
+      <Sep />
+      <Spacing width={16} />
       <Column>
         <Title>Pas Soleil</Title>
         {(showAll ? notSoleils : notSoleils.slice(0, 4)).map(s => (
@@ -48,7 +50,6 @@ SoleilInfo.displayName = 'SoleilInfo';
 
 const Wrapper = styled.div`
   display: flex;
-  align-items: flex-start;
 `;
 
 const Column = styled.div`
@@ -67,3 +68,8 @@ const Pos = styled.div`
   width: 56px;
 `;
 const Score = styled.div``;
+
+const Sep = styled.div`
+  width: 1px;
+  background-color: #ffffff44;
+`;

@@ -1,15 +1,16 @@
 import React, {CSSProperties, FC} from 'react';
 import styled from 'styled-components';
 
-import {SQUARE_SIZE} from '../../common/model';
+import {SQUARE_SIZE} from '../../common/src/model';
 
 interface SquareProps {
   color: string;
+  filled?: boolean;
   style?: CSSProperties;
   children?: JSX.Element;
 }
 
-export const SquareHighlight: FC<SquareProps> = ({color, style, children}) => {
+export const SquareHighlight: FC<SquareProps> = ({color, filled, style, children}) => {
   const w = SQUARE_SIZE.width;
   const h = SQUARE_SIZE.height;
   return (
@@ -17,7 +18,7 @@ export const SquareHighlight: FC<SquareProps> = ({color, style, children}) => {
       <Svg viewBox={`0 0 ${w} ${h}`}>
         {/* left, top, right, bottom */}
         <path
-          fill="none"
+          fill={filled ? color : 'none'}
           stroke={color}
           strokeWidth={4}
           d={`

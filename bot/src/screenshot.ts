@@ -8,7 +8,7 @@ import {
   HORIZONTAL_SQUARES,
   SQUARE_SIZE,
   VERTICAL_SQUARES,
-} from '../../common/model';
+} from '../../common/src/model';
 import {execAsync} from './utils';
 
 const {readFile, unlink} = promises;

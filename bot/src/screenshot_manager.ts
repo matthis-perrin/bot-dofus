@@ -4,7 +4,7 @@ import {takeGameScreenshot} from './screenshot';
 type Listener = (res: Buffer) => void;
 
 class ScreenshotManager {
-  private lastScreenshot: Buffer = Buffer.from([]);
+  private lastScreenshot: Buffer | undefined;
   private readonly listeners: Set<Listener> = new Set();
   private loopTimeout: NodeJS.Timeout | undefined;
   private running = false;
@@ -34,13 +34,25 @@ class ScreenshotManager {
     return this.running;
   }
 
-  public getLastScreenshot(): Buffer {
+  public getLastScreenshot(): Buffer | undefined {
     return this.lastScreenshot;
   }
 
   public addListener(cb: Listener): () => void {
     this.listeners.add(cb);
     return () => this.listeners.delete(cb);
+  }
+
+  public async waitForFirstScreenshot(): Promise<Buffer> {
+    if (this.lastScreenshot) {
+      return this.lastScreenshot;
+    }
+    return new Promise(resolve => {
+      const removeListener = this.addListener(buffer => {
+        resolve(buffer);
+        removeListener();
+      });
+    });
   }
 
   private screenshotLoop(): void {
@@ -63,6 +75,9 @@ class ScreenshotManager {
   }
 
   private emit(): void {
+    if (!this.lastScreenshot) {
+      return;
+    }
     for (const listener of this.listeners) {
       listener(this.lastScreenshot);
     }

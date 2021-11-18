@@ -3,8 +3,10 @@ import {createServer, ServerResponse} from 'http';
 import {networkInterfaces} from 'os';
 import {join} from 'path';
 
-import {Message} from '../../common/model';
+import {Coordinate} from '../../common/src/coordinates';
+import {Message} from '../../common/src/model';
 import {handleError} from './error';
+import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
 import {screenhotManager} from './screenshot_manager';
 
@@ -33,6 +35,12 @@ export async function apiHandler(url: string, params: any): Promise<unknown> {
     return {};
   } else if (url === '/start-screenshot') {
     screenhotManager.start();
+    return {};
+  } else if (url === '/set-fish') {
+    await fishDb.set(params.map as Coordinate, params.fish);
+    return {};
+  } else if (url === '/delete-fish') {
+    await fishDb.delete(params.map as Coordinate, params.fish as Coordinate);
     return {};
   }
   return Promise.resolve(`unknown URL ${url}`);

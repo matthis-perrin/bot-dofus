@@ -3,7 +3,7 @@ import GK from 'global-keypress';
 import {join} from 'path';
 import {mouseClick, moveMouseSmooth} from 'robotjs';
 
-import {gameCoordinates, SQUARE_SIZE} from '../../common/model';
+import {gameCoordinates, SQUARE_SIZE} from '../../common/src/model';
 import {handleError} from './error';
 import {takeBorderSquaresScreenshots, takeGameScreenshot} from './screenshot';
 import {Predictor} from './tensorflow';
