@@ -96,7 +96,7 @@
         "y": 1
       },
       "type": "Mer",
-      "size": "Grand"
+      "size": "Gros"
     }
   ],
   "9/-4": [
@@ -106,7 +106,7 @@
         "y": 3
       },
       "type": "Mer",
-      "size": "Grand",
+      "size": "Gros",
       "distance": 4
     },
     {
@@ -325,7 +325,7 @@
         "y": 5
       },
       "type": "Mer",
-      "size": "Grand"
+      "size": "Gros"
     },
     {
       "coordinate": {
@@ -373,7 +373,7 @@
         "y": 21
       },
       "type": "Mer",
-      "size": "Grand"
+      "size": "Gros"
     },
     {
       "coordinate": {
@@ -443,7 +443,7 @@
         "y": 28
       },
       "type": "Mer",
-      "size": "Grand"
+      "size": "Gros"
     },
     {
       "coordinate": {

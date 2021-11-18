@@ -158,13 +158,15 @@ const height = 128;
 const Wrapper = styled(Block)`
   position: absolute;
   top: ${SQUARE_SIZE.height / 2}px;
-  left: -${(width - SQUARE_SIZE.width / 2) / 2}px;
+  /* left: -${(width - SQUARE_SIZE.width / 2) / 2}px; */
+  left: 0;
   width: ${width}px;
   height: ${height}px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   pointer-events: all;
+  z-index: 1000;
 `;
 
 const Title = styled.div`

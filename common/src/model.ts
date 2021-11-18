@@ -20,7 +20,7 @@ export const SQUARE_SIZE = {
 export enum FishSize {
   Small = 'Petit',
   Medium = 'Normal',
-  Big = 'Grand',
+  Big = 'Gros',
   Giant = 'Géant',
 }
 export const allFishSize = Object.values(FishSize);
