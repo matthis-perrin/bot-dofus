@@ -113,17 +113,21 @@ export const FishModule: React.FC = () => {
   return (
     <Wrapper>
       <Title>Poissons :</Title>
-      {fish.map(f => {
-        const pos = formatCoordinate(f.coordinate);
-        return (
-          <FishLine key={pos}>
-            <FishPos>{pos}</FishPos>
-            <FishInfo>{`${f.size ?? '?'} de ${f.type ?? '?'} à ${
-              f.distance ?? '?'
-            } cases`}</FishInfo>
-          </FishLine>
-        );
-      })}
+      {fish.length === 0 ? (
+        <NoFish>Aucun poissons répertoriés sur cette map</NoFish>
+      ) : (
+        fish.map(f => {
+          const pos = formatCoordinate(f.coordinate);
+          return (
+            <FishLine key={pos}>
+              <FishPos>{pos}</FishPos>
+              <FishInfo>{`${f.size ?? '?'} de ${f.type ?? '?'} à ${
+                f.distance ?? '?'
+              } cases`}</FishInfo>
+            </FishLine>
+          );
+        })
+      )}
     </Wrapper>
   );
 };
@@ -158,3 +162,4 @@ const FishPos = styled.div`
   width: 56px;
 `;
 const FishInfo = styled.div``;
+const NoFish = styled.div``;

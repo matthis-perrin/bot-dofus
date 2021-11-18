@@ -57,7 +57,7 @@ export const ScreenshotInfo: React.FC = () => {
       <Block>
         <ModuleActions>
           <Button onClick={handleFishModeClick} disabled={clientState.action !== undefined}>
-            Définition poissons
+            Mode poissons
           </Button>
           <Spacing width={16} />
           {clientState.action !== undefined ? (
