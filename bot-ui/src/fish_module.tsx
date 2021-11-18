@@ -6,10 +6,19 @@ import {apiCall} from './api';
 import {ORANGE} from './colors';
 import {FishForm} from './fish_form';
 import {formatCoordinate} from './format';
-import {getServerState, getSquareFetching, setSquareFetching, useServerState} from './stores';
+import {
+  getServerState,
+  getSquareFetching,
+  setSquareFetching,
+  useClientState,
+  useServerState,
+} from './stores';
 
 export const FishModule: React.FC = () => {
   const {coordinate, fish} = useServerState();
+  const {action} = useClientState();
+  const isRunning = action === 'editing-fish';
+
   const [currentFish, setCurrentFish] = useState<Fish | undefined>();
   const [initial, setInitial] = useState(false);
 
@@ -95,20 +104,25 @@ export const FishModule: React.FC = () => {
   ]);
 
   useEffect(() => {
-    setSquareFetching({
-      fetcher: {
-        ...(getSquareFetching().fetcher ?? {selectedSquares: []}),
-        // hoverColor: '#223679',
-        hoverColor: '#ffffff55',
-        onSquareClick: c => {
-          const current =
-            getServerState().fish.find(f => f.coordinate.x === c.x && f.coordinate.y === c.y) ?? {};
-          setCurrentFish({...current, coordinate: c});
+    if (isRunning) {
+      setSquareFetching({
+        fetcher: {
+          ...(getSquareFetching().fetcher ?? {selectedSquares: []}),
+          // hoverColor: '#223679',
+          hoverColor: '#ffffff55',
+          onSquareClick: c => {
+            const current =
+              getServerState().fish.find(f => f.coordinate.x === c.x && f.coordinate.y === c.y) ??
+              {};
+            setCurrentFish({...current, coordinate: c});
+          },
         },
-      },
-    });
-    setInitial(true);
-  }, []);
+      });
+      setInitial(true);
+    } else {
+      setSquareFetching({fetcher: undefined});
+    }
+  }, [isRunning]);
 
   return (
     <Wrapper>

@@ -34,7 +34,7 @@ export const ScreenshotView: React.FC = () => {
     const y = e.clientY - rect.y;
 
     const c = imageCoordinateToMapCoordinate({x, y});
-    if (c.x < 0 || c.x >= HORIZONTAL_SQUARES || c.y < 0 || c.y >= VERTICAL_SQUARES) {
+    if (c.x < 0 || c.x >= HORIZONTAL_SQUARES || c.y < 0 || c.y >= 2 * VERTICAL_SQUARES - 1) {
       return;
     }
     return c;

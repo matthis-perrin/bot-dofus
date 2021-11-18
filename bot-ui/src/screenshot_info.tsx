@@ -66,8 +66,10 @@ export const ScreenshotInfo: React.FC = () => {
             <Fragment />
           )}
         </ModuleActions>
-        {clientState.action !== undefined ? <Spacing height={8} /> : <Fragment />}
-        {clientState.action === 'editing-fish' ? <FishModule /> : <Fragment />}
+      </Block>
+      <Spacing height={16} />
+      <Block>
+        <FishModule />
       </Block>
       <Spacing height={16} />
       <Block>
