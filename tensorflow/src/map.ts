@@ -95,7 +95,7 @@ function processImageInfo(
   const images = tf.concat(
     imageInfo.map(d =>
       tf.node
-        .decodeImage(d.data)
+        .decodeImage(d.data, 3)
         .resizeNearestNeighbor([targetSize, targetSize])
         .toFloat()
         .div(tf.scalar(255))
@@ -203,7 +203,7 @@ export async function runMap(): Promise<void> {
   for (const {data, label} of imageInfo) {
     const res = model.predict(
       tf.node
-        .decodeImage(data)
+        .decodeImage(data, 3)
         .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
         .toFloat()
         .div(tf.scalar(255))

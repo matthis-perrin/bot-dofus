@@ -84,7 +84,7 @@ function processImageInfo(
   const images = tf.concat(
     imageInfo.map(d =>
       tf.node
-        .decodeImage(d.data)
+        .decodeImage(d.data, 3)
         .resizeNearestNeighbor([targetSize, targetSize])
         .toFloat()
         .div(tf.scalar(255))
@@ -114,7 +114,7 @@ function prepareModel(labels: number, targetSize: number): tf.Sequential {
   const model = tf.sequential();
   model.add(
     tf.layers.conv2d({
-      inputShape: [targetSize, targetSize, 4],
+      inputShape: [targetSize, targetSize, 3],
       filters,
       kernelSize,
       activation: 'relu',
@@ -204,7 +204,7 @@ export async function runSoleil(): Promise<void> {
   for (const {data, label, fileName} of testInfo) {
     const res = model.predict(
       tf.node
-        .decodeImage(data)
+        .decodeImage(data, 3)
         .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
         .toFloat()
         .div(tf.scalar(255))
