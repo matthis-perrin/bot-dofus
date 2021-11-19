@@ -23,7 +23,7 @@ export async function loadMapModel(): Promise<Predictor> {
   return async (buffer: Buffer) => {
     const res = model.predict(
       tf.node
-        .decodeImage(buffer)
+        .decodeImage(buffer, 3)
         .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
         .toFloat()
         .div(tf.scalar(255))

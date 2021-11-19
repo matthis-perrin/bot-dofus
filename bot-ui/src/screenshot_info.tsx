@@ -12,6 +12,7 @@ import {setClientState, useClientState, useServerState} from './stores';
 import {Toggle} from './toggle';
 
 export const ScreenshotInfo: React.FC = () => {
+  const [lastCoordinate, setLastCoordinate] = useState({x: '', y: ''});
   // eslint-disable-next-line no-null/no-null
   const screenshotInputX = useRef<HTMLInputElement>(null);
   // eslint-disable-next-line no-null/no-null
@@ -53,7 +54,10 @@ export const ScreenshotInfo: React.FC = () => {
 
     setIsTakingScreenshot(true);
     apiCall('/take-screenshot', {x, y})
-      .then(() => setClientState({action: undefined}))
+      .then(() => {
+        setClientState({action: undefined});
+        setLastCoordinate({x: String(x), y: String(y)});
+      })
       .catch(console.error)
       .finally(() => setIsTakingScreenshot(false));
   }, []);
@@ -101,10 +105,10 @@ export const ScreenshotInfo: React.FC = () => {
             <Spacing height={16} />
             <Line>
               <Title>x : </Title>
-              <CoordinateInput type="text" ref={screenshotInputX} />
+              <CoordinateInput defaultValue={lastCoordinate.x} type="text" ref={screenshotInputX} />
               <Spacing width={16} />
               <Title>y : </Title>
-              <CoordinateInput type="text" ref={screenshotInputY} />
+              <CoordinateInput defaultValue={lastCoordinate.y} type="text" ref={screenshotInputY} />
               <Spacing width={16} />
               <Button disabled={isTakingScreenshot} onClick={handleTakeScreenshotClick}>
                 Prendre screenshot
