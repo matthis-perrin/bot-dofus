@@ -1,8 +1,11 @@
+import {Coordinate} from '../../common/src/coordinates';
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
-import {startServer} from './server';
+import {fishMapScenario} from './scenario';
+import {ScenarioRunner} from './scenario_runner';
+import {sendEvent, startServer} from './server';
 import {loadMapModel, loadSoleilModel} from './tensorflow';
 
 async function run(): Promise<void> {
@@ -12,9 +15,21 @@ async function run(): Promise<void> {
     initDofusWindow(),
     fishDb.init(),
   ]);
+
   const ai = new Intelligence(soleilModel, mapModel);
-  startServer(ai);
+  const runner = new ScenarioRunner(ai, fishMapScenario);
+  startServer(ai, runner);
+
   ai.start();
+
+  fishDb.addListener(() => {
+    const lastData = ai.getLastData();
+    if (!lastData) {
+      return;
+    }
+    const coordinate: Coordinate = lastData.coordinate.coordinate;
+    sendEvent({type: 'fish', data: fishDb.get(coordinate)});
+  });
 }
 
 run().catch(handleError);

@@ -3,34 +3,21 @@ import styled from 'styled-components';
 
 import {apiCall} from './api';
 import {BLUE_GRAY_16, ORANGE, WHITE_AA} from './colors';
-import {FishModule} from './fish_module';
-import {formatScoreWithIcon} from './format';
 import {Block, Button} from './fragments';
-import {SoleilInfo} from './soleil_info';
+import {CoordinateModule} from './modules/coordinate_module';
+import {FishModule} from './modules/fish_module';
+import {ScenarioModule} from './modules/scenario_module';
+import {SoleilModule} from './modules/soleil_module';
 import {Spacing} from './spacing';
-import {setClientState, useClientState, useServerState} from './stores';
-import {Toggle} from './toggle';
+import {setClientState, useClientState} from './stores';
 
-export const ScreenshotInfo: React.FC = () => {
+export const Modules: React.FC = () => {
   const [lastCoordinate, setLastCoordinate] = useState({x: '', y: ''});
   // eslint-disable-next-line no-null/no-null
   const screenshotInputX = useRef<HTMLInputElement>(null);
   // eslint-disable-next-line no-null/no-null
   const screenshotInputY = useRef<HTMLInputElement>(null);
   const [isTakingScreenshot, setIsTakingScreenshot] = useState(false);
-
-  const serverState = useServerState();
-  const [isRunning, setIsRunning] = useState(serverState.screenshot.isRunning);
-  const [useInternal, setUseInternal] = useState<number | false>(false);
-
-  const handleIsRunningToggle = useCallback((toggled: boolean) => {
-    setIsRunning(toggled);
-    const id = Math.random();
-    setUseInternal(id);
-    apiCall(`/${toggled ? 'start' : 'stop'}-screenshot`)
-      .catch(console.error)
-      .finally(() => setUseInternal(internalId => (internalId === id ? false : internalId)));
-  }, []);
 
   //
 
@@ -61,44 +48,14 @@ export const ScreenshotInfo: React.FC = () => {
       .finally(() => setIsTakingScreenshot(false));
   }, []);
 
-  //
-
-  const handleStartFishing = useCallback(() => {
-    apiCall('/start-scenario', {}).catch(console.error);
-  }, []);
-
-  const handleStopFishing = useCallback(() => {
-    apiCall('/stop-scenario', {}).catch(console.error);
-  }, []);
-
   return (
     <Wrapper>
-      <ToggleWrapper>
-        <Toggle
-          toggled={useInternal === false ? serverState.screenshot.isRunning : isRunning}
-          syncState={handleIsRunningToggle}
-          label={
-            <ToggleLabel>{serverState.screenshot.isRunning ? 'Running' : 'Stopped'}</ToggleLabel>
-          }
-        />
-      </ToggleWrapper>
-      {/* <RunningWrapper></RunningWrapper> */}
       <Block>
-        <div>
-          <Title>Coordonnées</Title>
-          <span>{` : ${serverState.coordinate.label} (${formatScoreWithIcon(
-            serverState.coordinate.score,
-            0.95
-          )})`}</span>
-        </div>
+        <CoordinateModule />
       </Block>
       <Spacing height={16} />
       <Block>
-        <Line>
-          <Button onClick={handleStartFishing}>Début pêche sur map</Button>
-          <Spacing width={8} />
-          <Button onClick={handleStopFishing}>Fin pêche sur map</Button>
-        </Line>
+        <ScenarioModule />
       </Block>
       <Spacing height={16} />
       <Block>
@@ -142,32 +99,17 @@ export const ScreenshotInfo: React.FC = () => {
       </Block>
       <Spacing height={16} />
       <Block>
-        <SoleilInfo />
+        <SoleilModule />
       </Block>
     </Wrapper>
   );
 };
-ScreenshotInfo.displayName = 'ScreenshotInfo';
+Modules.displayName = 'Modules';
 
 const Wrapper = styled.div`
   position: relative;
   margin-left: 16px;
   flex-grow: 1;
-`;
-
-const ToggleWrapper = styled.div`
-  position: absolute;
-  top: 16px;
-  right: 16px;
-`;
-
-const ToggleLabel = styled.div`
-  display: flex;
-  align-items: center;
-  width: 64px;
-  line-height: 100%;
-  font-size: 14px;
-  font-weight: 500;
 `;
 
 const Title = styled.span`

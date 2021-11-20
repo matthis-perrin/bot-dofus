@@ -1,13 +1,13 @@
 import React, {MouseEventHandler, useCallback, useState} from 'react';
 import styled from 'styled-components';
 
-import {ORANGE} from './colors';
-import {formatScore} from './format';
-import {Button} from './fragments';
-import {Spacing} from './spacing';
-import {useServerState} from './stores';
+import {ORANGE} from '../colors';
+import {formatScore} from '../format';
+import {Button} from '../fragments';
+import {Spacing} from '../spacing';
+import {useServerState} from '../stores';
 
-export const SoleilInfo: React.FC = () => {
+export const SoleilModule: React.FC = () => {
   const serverState = useServerState();
   const [showAll, setShowAll] = useState(false);
 
@@ -46,7 +46,7 @@ export const SoleilInfo: React.FC = () => {
     </Wrapper>
   );
 };
-SoleilInfo.displayName = 'SoleilInfo';
+SoleilModule.displayName = 'SoleilModule';
 
 const Wrapper = styled.div`
   display: flex;

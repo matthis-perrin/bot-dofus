@@ -1,3 +1,4 @@
 {
-  "extends": "@matthis/tsconfig-web/tsconfig"
+  "extends": "@matthis/tsconfig-web/tsconfig",
+  "include": ["src", "../common/src"]
 }

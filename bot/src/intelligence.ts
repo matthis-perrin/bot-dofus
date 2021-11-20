@@ -1,4 +1,3 @@
-import {Coordinate} from '../../common/src/coordinates';
 import {
   CoordinateMessage,
   FishMessage,
@@ -27,13 +26,6 @@ export class Intelligence {
     private readonly mapModel: Predictor
   ) {
     screenhotManager.addListener(buffer => this.handleNewScreenshot(buffer));
-    fishDb.addListener(() => {
-      if (!this.lastData) {
-        return;
-      }
-      const coordinate: Coordinate = this.lastData.coordinate.coordinate;
-      sendEvent({type: 'fish', data: fishDb.get(coordinate)});
-    });
   }
 
   public start(): void {

@@ -4,11 +4,11 @@ import {networkInterfaces} from 'os';
 import {join} from 'path';
 
 import {Coordinate} from '../../common/src/coordinates';
-import {Message} from '../../common/src/model';
+import {Fish, Message} from '../../common/src/model';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
-import {FishMapScenario} from './scenario';
+import {ScenarioRunner} from './scenario_runner';
 import {takeGameScreenshot} from './screenshot';
 import {screenhotManager} from './screenshot_manager';
 
@@ -29,9 +29,13 @@ export function sendEvent(obj: Message): void {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function apiHandler(ia: Intelligence, url: string, params: any): Promise<unknown> {
-  let currentScenario: FishMapScenario | undefined;
+export async function apiHandler(
+  ia: Intelligence,
+  runner: ScenarioRunner,
+  url: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  params: any
+): Promise<unknown> {
   console.log(url, params);
   if (url === '/stop-screenshot') {
     screenhotManager.stop();
@@ -40,7 +44,7 @@ export async function apiHandler(ia: Intelligence, url: string, params: any): Pr
     screenhotManager.start();
     return {};
   } else if (url === '/set-fish') {
-    await fishDb.set(params.map as Coordinate, params.fish);
+    await fishDb.set(params.map as Coordinate, params.fish as Fish);
     return {};
   } else if (url === '/delete-fish') {
     await fishDb.delete(params.map as Coordinate, params.fish as Coordinate);
@@ -53,25 +57,14 @@ export async function apiHandler(ia: Intelligence, url: string, params: any): Pr
     await writeFile(join(path, `${Date.now()}.png`), buffer);
     return {};
   } else if (url === '/start-scenario') {
-    if (currentScenario) {
-      currentScenario.stop();
-    }
-    const data = ia.getLastData();
-    if (data === undefined) {
-      return;
-    }
-    currentScenario = new FishMapScenario(data.coordinate.coordinate);
-    currentScenario.start();
+    runner.start();
   } else if (url === '/stop-scenario') {
-    if (!currentScenario) {
-      return;
-    }
-    currentScenario.stop();
+    runner.stop();
   }
   return Promise.resolve(`unknown URL ${url}`);
 }
 
-export function startServer(ai: Intelligence): void {
+export function startServer(ai: Intelligence, runner: ScenarioRunner): void {
   const localIp = getLocalIp();
   const port = 3000;
   if (localIp === undefined) {
@@ -114,6 +107,7 @@ export function startServer(ai: Intelligence): void {
           res.flushHeaders();
           res.write('\n');
           ai.triggerManually();
+          runner.sendStatus();
           return;
         }
         if (file === '/' || file === '/index.html') {
@@ -154,7 +148,7 @@ export function startServer(ai: Intelligence): void {
             res.end();
             return;
           }
-          apiHandler(ai, url, body)
+          apiHandler(ai, runner, url, body)
             .then(returnValue => res.end(JSON.stringify(returnValue)))
             .catch(err => {
               res.statusCode = 500;

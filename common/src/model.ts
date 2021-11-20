@@ -74,4 +74,30 @@ export interface FishMessage {
   data: Fish[];
 }
 
-export type Message = ScreenshotMessage | SoleilMessage | CoordinateMessage | FishMessage;
+export type ScenarioStatus = string;
+export interface ScenarioStatusWithTime {
+  value: ScenarioStatus;
+  time: number;
+}
+export interface ScenarioMessage {
+  type: 'scenario';
+  data: {
+    isRunning: boolean;
+    statusHistory: ScenarioStatusWithTime[];
+  };
+}
+export interface ScenarioStatusMessage {
+  type: 'scenario-new-status';
+  data: {
+    isRunning: boolean;
+    newStatus: ScenarioStatusWithTime;
+  };
+}
+
+export type Message =
+  | ScreenshotMessage
+  | SoleilMessage
+  | CoordinateMessage
+  | FishMessage
+  | ScenarioMessage
+  | ScenarioStatusMessage;

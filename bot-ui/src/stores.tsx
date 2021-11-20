@@ -2,6 +2,7 @@ import {Coordinate} from '../../common/src/coordinates';
 import {
   CoordinateMessage,
   FishMessage,
+  ScenarioStatusWithTime,
   ScreenshotMessage,
   SoleilMessage,
 } from '../../common/src/model';
@@ -12,6 +13,10 @@ interface ServerState {
   soleil: SoleilMessage['data'];
   coordinate: CoordinateMessage['data'];
   fish: FishMessage['data'];
+  scenario: {
+    isRunning: boolean;
+    statusHistory: ScenarioStatusWithTime[];
+  };
 }
 
 const serverStateStore = createDataStore<ServerState>({
@@ -19,6 +24,10 @@ const serverStateStore = createDataStore<ServerState>({
   soleil: [],
   coordinate: {label: '', score: 0, coordinate: {x: 0, y: 0}},
   fish: [],
+  scenario: {
+    isRunning: false,
+    statusHistory: [],
+  },
 });
 export const useServerState = serverStateStore.useData;
 export const getServerState = serverStateStore.getData;

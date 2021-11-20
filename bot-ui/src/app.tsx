@@ -1,14 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {ScreenshotInfo} from './screenshot_info';
+import {Modules} from './modules';
 import {ScreenshotView} from './screenshot_view';
 
 export const App: React.FC = () => {
   return (
     <Wrapper>
       <ScreenshotView />
-      <ScreenshotInfo />
+      <Modules />
     </Wrapper>
   );
 };

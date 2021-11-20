@@ -15,6 +15,15 @@ export function subscribeToEvents(): void {
       setServerState({...getServerState(), coordinate: event.data});
     } else if (event.type === 'fish') {
       setServerState({...getServerState(), fish: event.data});
+    } else if (event.type === 'scenario') {
+      setServerState({...getServerState(), scenario: event.data});
+      console.log(event.data);
+    } else if (event.type === 'scenario-new-status') {
+      const currentState = getServerState();
+      const statusHistory = currentState.scenario.statusHistory;
+      statusHistory.unshift(event.data.newStatus);
+      setServerState({...currentState, scenario: {isRunning: event.data.isRunning, statusHistory}});
+      console.log(event.data);
     } else {
       console.log('Unknown event', event);
     }

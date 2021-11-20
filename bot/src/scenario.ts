@@ -1,142 +1,78 @@
-import {mouseClick, moveMouseSmooth} from 'robotjs';
-
 import {Coordinate, mapCoordinateToScreenCoordinate} from '../../common/src/coordinates';
-import {Fish, SQUARE_SIZE} from '../../common/src/model';
+import {allFishSize, allFishType, FishSize, FishType, SQUARE_SIZE} from '../../common/src/model';
+import {click, sleep} from './actions';
 import {fishDb} from './fish_db';
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
+import {Scenario} from './scenario_runner';
 
 const squareWidth = SQUARE_SIZE.width / 2;
 const squareHeight = SQUARE_SIZE.height / 2;
 
-export class FishMapScenario {
-  private readonly fishes: Fish[];
-  private isRunning = false;
-
-  public constructor(coordinate: Coordinate) {
-    this.fishes = fishDb.get(coordinate);
-  }
-
-  public async start(): Promise<void> {
-    this.isRunning = true;
-    /* eslint-disable no-await-in-loop */
-    console.log(this.fishes);
-    for (const fish of this.fishes) {
-      const fishTopLeft = mapCoordinateToScreenCoordinate(fish.coordinate);
-      const fishTargetCenter = {
-        x: fishTopLeft.x + squareWidth / 2,
-        y: fishTopLeft.y + (3 * squareHeight) / 4,
-      };
-      const fishRandomAngle = Math.random() * 2 * Math.PI;
-      const fishRandomRadius = (Math.random() * squareHeight) / 4;
-      const fishTargetClick = {
-        x: fishTargetCenter.x + fishRandomRadius * Math.cos(fishRandomAngle),
-        y: fishTargetCenter.y + fishRandomRadius * Math.sin(fishRandomAngle),
-      };
-
-      const popupOffset = {x: squareWidth / 4, y: 50};
-      const popupRandomAngle = Math.random() * 2 * Math.PI;
-      const popupRandomRadius = (Math.random() * squareHeight) / 4;
-      const popupTargetClick = {
-        x: fishTargetClick.x + popupOffset.x + popupRandomRadius * Math.cos(popupRandomAngle),
-        y: fishTargetClick.y + popupOffset.y + popupRandomRadius * Math.sin(popupRandomAngle),
-      };
-
-      moveMouseSmooth(fishTargetClick.x, fishTargetClick.y);
-      await sleep(Math.random() * 500 + 0);
-      if (!this.isRunning) {
-        return;
-      }
-      mouseClick('right');
-      await sleep(Math.random() * 500 + 0);
-      if (!this.isRunning) {
-        return;
-      }
-      moveMouseSmooth(popupTargetClick.x, popupTargetClick.y);
-      await sleep(Math.random() * 500 + 0);
-      if (!this.isRunning) {
-        return;
-      }
-      mouseClick('left');
-      await sleep(Math.random() * 500 + 5 * 1000);
-      if (!this.isRunning) {
-        return;
-      }
-    }
-    /* eslint-enable no-await-in-loop */
-  }
-
-  public stop(): void {
-    this.isRunning = false;
-  }
+function fishToString(info: {size?: FishSize; type?: FishType}): string {
+  return `${info.size ?? '?'} poisson de ${info.type ?? '?'}`;
 }
 
-// import {Coordinate} from '../../common/src/coordinates';
-// import {handleError} from './error';
-// import {fishDb} from './fish_db';
+function coordinateToString({x, y}: Coordinate): string {
+  return `${x};${y}`;
+}
 
-// export abstract class Scenario {
-//   public abstract run(): Promise<void>;
-// }
+export const fishMapScenario: Scenario = async ctx => {
+  const {ia, canContinue, updateStatus} = ctx;
 
-// export class WaitScenario extends Scenario {
-//   public constructor(private readonly durationMs: number) {
-//     super();
-//   }
+  updateStatus('Récupération des infos écran');
 
-//   public async run(): Iterator<Promise<Scenario>> | Promise<void> {
-//     return new Promise(resolve => {
-//       setTimeout(resolve, this.durationMs);
-//     });
-//   }
-// }
+  const lastData = ia.getLastData();
+  if (lastData === undefined) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        updateStatus('Infos écran non disponible. En attente...');
+        fishMapScenario(ctx).then(resolve).catch(reject);
+      }, 500);
+    });
+  }
 
-// export class StartFishing extends Scenario {
-//   public constructor(private readonly fishCoordinate: Coordinate) {
-//     super();
-//   }
+  const fishes = fishDb.get(lastData.coordinate.coordinate);
+  const fishSummary = [...allFishSize, undefined]
+    .flatMap(size =>
+      [...allFishType, undefined].map(type => ({
+        size,
+        type,
+        count: fishes.filter(f => f.size === size && f.type === type).length,
+      }))
+    )
+    .filter(v => v.count > 0);
+  updateStatus(
+    `${fishes.length} poissons sur cette map:\n${fishSummary
+      .map(({size, type, count}) => `x${count} ${fishToString({size, type})}`)
+      .join('\n')}`
+  );
 
-//   public async run(): Promise<void> {}
-// }
+  /* eslint-disable no-await-in-loop */
+  for (const fish of fishes) {
+    updateStatus(`Pêche de ${fishToString(fish)} en ${coordinateToString(fish.coordinate)}`);
+    // Click on the fish
+    const fishTopLeft = mapCoordinateToScreenCoordinate(fish.coordinate);
+    const fishTarget = {
+      x: fishTopLeft.x + squareWidth / 2,
+      y: fishTopLeft.y + (3 * squareHeight) / 4,
+    };
+    const clickPos = await click(canContinue, {
+      ...fishTarget,
+      radius: squareHeight / 4,
+      button: 'right',
+    });
 
-// export class FishAllMap {
-//   private readonly fishes: Fish[];
-//   private readonly currentIndex = 0;
+    // Click on the popup
+    const popupOffset = {x: squareWidth / 4, y: 50};
+    const popupTarget = {
+      x: clickPos.x + popupOffset.x,
+      y: clickPos.y + popupOffset.y,
+    };
 
-//   public constructor(private readonly coordinate: Coordinate) {
-//     this.fishes = fishDb.get(this.coordinate);
-//   }
+    await click(canContinue, {...popupTarget, radius: 10});
 
-//   public async run(): Promise<void> {}
-// }
-
-// export class ScenarioRunner {
-//   private callback: (() => void) | undefined;
-//   private readonly currentScenario: Scenario;
-
-//   public constructor(rootScenario: Scenario) {
-//     this.currentScenario = rootScenario;
-//   }
-
-//   public start(): void {
-//     this.currentScenario
-//       .run()
-//       .then()
-//       .catch(err => {
-//         handleError(err);
-//         this.stop();
-//       });
-//   }
-
-//   public stop(): void {}
-
-//   public pause(): void {}
-
-//   public onFinish(cb: () => void): void {
-//     this.callback = cb;
-//   }
-// }
+    canContinue();
+    updateStatus(`Attente de fin de pêche`);
+    await sleep(15 * 1000);
+  }
+  /* eslint-enable no-await-in-loop */
+};

@@ -1,18 +1,18 @@
 import React, {Fragment, useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components';
 
-import {Fish, FishSize, FishType, SQUARE_SIZE} from '../../common/src/model';
-import {apiCall} from './api';
-import {ORANGE} from './colors';
-import {FishForm} from './fish_form';
-import {formatCoordinate} from './format';
+import {Fish, FishSize, FishType, SQUARE_SIZE} from '../../../common/src/model';
+import {apiCall} from '../api';
+import {ORANGE} from '../colors';
+import {FishForm} from '../fish_form';
+import {formatCoordinate} from '../format';
 import {
   getServerState,
   getSquareFetching,
   setSquareFetching,
   useClientState,
   useServerState,
-} from './stores';
+} from '../stores';
 
 export const FishModule: React.FC = () => {
   const {coordinate, fish} = useServerState();
