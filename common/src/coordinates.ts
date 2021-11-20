@@ -1,4 +1,4 @@
-import {SQUARE_SIZE} from './model';
+import {gameCoordinates, SQUARE_SIZE} from './model';
 
 export interface Coordinate {
   x: number;
@@ -18,6 +18,14 @@ export function mapCoordinateToImageCoordinate(coordinate: Coordinate): Coordina
   return {
     x: ((y % 2 === 0 ? x : x + 0.5) * SQUARE_SIZE.width) / 2,
     y: (y * SQUARE_SIZE.height) / 4,
+  };
+}
+
+export function mapCoordinateToScreenCoordinate(coordinate: Coordinate): Coordinate {
+  const {x, y} = mapCoordinateToImageCoordinate(coordinate);
+  return {
+    x: x + gameCoordinates.x,
+    y: y + gameCoordinates.y,
   };
 }
 

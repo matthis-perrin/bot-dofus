@@ -8,6 +8,7 @@ import {Message} from '../../common/src/model';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
+import {FishMapScenario} from './scenario';
 import {takeGameScreenshot} from './screenshot';
 import {screenhotManager} from './screenshot_manager';
 
@@ -29,7 +30,8 @@ export function sendEvent(obj: Message): void {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function apiHandler(url: string, params: any): Promise<unknown> {
+export async function apiHandler(ia: Intelligence, url: string, params: any): Promise<unknown> {
+  let currentScenario: FishMapScenario | undefined;
   console.log(url, params);
   if (url === '/stop-screenshot') {
     screenhotManager.stop();
@@ -50,6 +52,21 @@ export async function apiHandler(url: string, params: any): Promise<unknown> {
     await mkdir(path, {recursive: true});
     await writeFile(join(path, `${Date.now()}.png`), buffer);
     return {};
+  } else if (url === '/start-scenario') {
+    if (currentScenario) {
+      currentScenario.stop();
+    }
+    const data = ia.getLastData();
+    if (data === undefined) {
+      return;
+    }
+    currentScenario = new FishMapScenario(data.coordinate.coordinate);
+    currentScenario.start();
+  } else if (url === '/stop-scenario') {
+    if (!currentScenario) {
+      return;
+    }
+    currentScenario.stop();
   }
   return Promise.resolve(`unknown URL ${url}`);
 }
@@ -137,7 +154,7 @@ export function startServer(ai: Intelligence): void {
             res.end();
             return;
           }
-          apiHandler(url, body)
+          apiHandler(ai, url, body)
             .then(returnValue => res.end(JSON.stringify(returnValue)))
             .catch(err => {
               res.statusCode = 500;

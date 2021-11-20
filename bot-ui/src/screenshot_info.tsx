@@ -55,11 +55,20 @@ export const ScreenshotInfo: React.FC = () => {
     setIsTakingScreenshot(true);
     apiCall('/take-screenshot', {x, y})
       .then(() => {
-        setClientState({action: undefined});
         setLastCoordinate({x: String(x), y: String(y)});
       })
       .catch(console.error)
       .finally(() => setIsTakingScreenshot(false));
+  }, []);
+
+  //
+
+  const handleStartFishing = useCallback(() => {
+    apiCall('/start-scenario', {}).catch(console.error);
+  }, []);
+
+  const handleStopFishing = useCallback(() => {
+    apiCall('/stop-scenario', {}).catch(console.error);
   }, []);
 
   return (
@@ -82,6 +91,14 @@ export const ScreenshotInfo: React.FC = () => {
             0.95
           )})`}</span>
         </div>
+      </Block>
+      <Spacing height={16} />
+      <Block>
+        <Line>
+          <Button onClick={handleStartFishing}>Début pêche sur map</Button>
+          <Spacing width={8} />
+          <Button onClick={handleStopFishing}>Fin pêche sur map</Button>
+        </Line>
       </Block>
       <Spacing height={16} />
       <Block>

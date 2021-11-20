@@ -12,15 +12,15 @@ import {screenhotManager} from './screenshot_manager';
 import {sendEvent} from './server';
 import {Predictor} from './tensorflow';
 
+interface Data {
+  screenshot: ScreenshotMessage['data'];
+  soleil: SoleilMessage['data'];
+  coordinate: CoordinateMessage['data'];
+  fish: FishMessage['data'];
+}
+
 export class Intelligence {
-  private lastData:
-    | {
-        screenshot: ScreenshotMessage['data'];
-        soleil: SoleilMessage['data'];
-        coordinate: CoordinateMessage['data'];
-        fish: FishMessage['data'];
-      }
-    | undefined;
+  private lastData: Data | undefined;
 
   public constructor(
     private readonly soleilModel: Predictor,
@@ -51,6 +51,10 @@ export class Intelligence {
         this.handleNewScreenshot(buffer);
       })
       .catch(handleError);
+  }
+
+  public getLastData(): Data | undefined {
+    return this.lastData;
   }
 
   private handleNewScreenshot(buffer: Buffer): void {
