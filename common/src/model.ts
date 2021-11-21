@@ -7,6 +7,11 @@ export const gameCoordinates = {
   height: 657,
 };
 
+export const fishDialogSize = {
+  width: 417,
+  height: 128,
+};
+
 export const HORIZONTAL_SQUARES = 14;
 export const VERTICAL_SQUARES = 16;
 

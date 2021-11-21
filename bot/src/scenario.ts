@@ -282,7 +282,29 @@ export const fishMapScenario: Scenario = async ctx => {
 
     canContinue();
     updateStatus(`Attente de fin de pêche`);
-    await sleep(15 * 1000);
+    const waitTime = 5000 + fishingTimePerFish[fish.size ?? FishSize.Giant];
+    await sleep(waitTime);
+
+    const newLastData = ia.getLastData();
+    if (
+      newLastData !== undefined &&
+      (newLastData.coordinate.coordinate.x !== lastData.coordinate.coordinate.x ||
+        newLastData.coordinate.coordinate.y !== lastData.coordinate.coordinate.y)
+    ) {
+      updateStatus(
+        `Changement de map non controllé détecté (${coordinateToString(
+          lastData.coordinate.coordinate
+        )} vers ${coordinateToString(newLastData.coordinate.coordinate)}).`
+      );
+      return;
+    }
   }
   /* eslint-enable no-await-in-loop */
+};
+
+const fishingTimePerFish: Record<FishSize, number> = {
+  [FishSize.Small]: 10300,
+  [FishSize.Medium]: 11300,
+  [FishSize.Big]: 12300,
+  [FishSize.Giant]: 20000,
 };
