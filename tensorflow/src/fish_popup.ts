@@ -147,8 +147,8 @@ function prepareModel(labels: number, targetSize: number): tf.Sequential {
 }
 
 export async function runFishPopup(): Promise<void> {
-  const modelDir = './models/fish_popup';
-  const imageDir = './images/fish_popup';
+  const modelDir = '../models/fish_popup';
+  const imageDir = '../images/fish_popup';
   const imageTargetSize = 40;
 
   console.log('Start');
