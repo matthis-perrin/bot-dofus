@@ -1,4 +1,8 @@
-import {Coordinate} from './coordinates';
+import {
+  Coordinate,
+  imageCoordinateToScreenCoordinate,
+  mapCoordinateToScreenCoordinate,
+} from './coordinates';
 
 export enum FishSize {
   Small = 'Petit',
@@ -29,6 +33,11 @@ export const gameCoordinates = {
   width: 1130,
   height: 657,
 };
+
+export const safeZoneCoordinate = imageCoordinateToScreenCoordinate({
+  x: 570,
+  y: 675,
+});
 
 export const fishPopupSizes: Record<FishType, Record<FishSize, {width: number; height: number}>> = {
   [FishType.Sea]: {

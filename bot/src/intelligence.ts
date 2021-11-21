@@ -23,7 +23,8 @@ export class Intelligence {
 
   public constructor(
     private readonly soleilModel: Predictor,
-    private readonly mapModel: Predictor
+    private readonly mapModel: Predictor,
+    private readonly fishPopupModel: Predictor
   ) {
     screenhotManager.addListener(buffer => this.handleNewScreenshot(buffer));
   }
@@ -47,6 +48,11 @@ export class Intelligence {
 
   public getLastData(): Data | undefined {
     return this.lastData;
+  }
+
+  public async hasFishPopup(buffer: Buffer): Promise<boolean> {
+    const prediction = await this.fishPopupModel(buffer);
+    return prediction.label === 'OK';
   }
 
   private handleNewScreenshot(buffer: Buffer): void {

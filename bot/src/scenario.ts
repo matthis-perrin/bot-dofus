@@ -20,6 +20,7 @@ import {
   FishType,
   gameCoordinates,
   HORIZONTAL_SQUARES,
+  safeZoneCoordinate,
   SQUARE_SIZE,
   VERTICAL_SQUARES,
 } from '../../common/src/model';
@@ -322,7 +323,7 @@ export const fishMapScenario: Scenario = async ctx => {
       y: popupTopLeft.y + popupOffset.y,
     };
 
-    // Save a screenshot of the fishing popup
+    // Take screenshot of the fishing popup
     const bitmap = screen.capture(
       popupTopLeft.x,
       popupTopLeft.y,
@@ -338,13 +339,26 @@ export const fishMapScenario: Scenario = async ctx => {
         bitmap[i + 2]!,
       ];
     }
+
+    // Check if the fish is there
     const bmpData = {
       data: bitmap,
       width: fishPopupScreenshotSize.width * 2,
       height: fishPopupScreenshotSize.height * 2,
     };
     const rawData = bmp.encode(bmpData).data;
-    await (await Jimp.read(rawData)).writeAsync(join('./images/fish_popup', `${Date.now()}.png`));
+    canContinue();
+    const hasFish = await ia.hasFishPopup(rawData);
+
+    canContinue();
+    if (!hasFish) {
+      updateStatus(`Poisson non présent. Click dans la safe-zone.`);
+      await click(canContinue, {...safeZoneCoordinate, radius: 5});
+      continue;
+    }
+
+    // Save the screenshot
+    // await (await Jimp.read(rawData)).writeAsync(join('./images/fish_popup', `${Date.now()}.png`));
 
     // Click on the popup
     await click(canContinue, {...popupTarget, radius: 10});

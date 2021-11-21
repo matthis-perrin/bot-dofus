@@ -6,17 +6,18 @@ import {Intelligence} from './intelligence';
 import {mapLoopScenario} from './scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {sendEvent, startServer} from './server';
-import {loadMapModel, loadSoleilModel} from './tensorflow';
+import {loadFishPopupModel, loadMapModel, loadSoleilModel} from './tensorflow';
 
 async function run(): Promise<void> {
-  const [soleilModel, mapModel] = await Promise.all([
+  const [soleilModel, mapModel, fishPopupModel] = await Promise.all([
     loadSoleilModel(),
     loadMapModel(),
+    loadFishPopupModel(),
     initDofusWindow(),
     fishDb.init(),
   ]);
 
-  const ai = new Intelligence(soleilModel, mapModel);
+  const ai = new Intelligence(soleilModel, mapModel, fishPopupModel);
   const runner = new ScenarioRunner(ai, mapLoopScenario);
   startServer(ai, runner);
 
