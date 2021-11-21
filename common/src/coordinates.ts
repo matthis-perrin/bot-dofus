@@ -22,7 +22,19 @@ export function mapCoordinateToImageCoordinate(coordinate: Coordinate): Coordina
 }
 
 export function mapCoordinateToScreenCoordinate(coordinate: Coordinate): Coordinate {
-  const {x, y} = mapCoordinateToImageCoordinate(coordinate);
+  return imageCoordinateToScreenCoordinate(mapCoordinateToImageCoordinate(coordinate));
+}
+
+export function screenCoordinateToImageCoordinate(coordinate: Coordinate): Coordinate {
+  const {x, y} = coordinate;
+  return {
+    x: x - gameCoordinates.x,
+    y: y - gameCoordinates.y,
+  };
+}
+
+export function imageCoordinateToScreenCoordinate(coordinate: Coordinate): Coordinate {
+  const {x, y} = coordinate;
   return {
     x: x + gameCoordinates.x,
     y: y + gameCoordinates.y,

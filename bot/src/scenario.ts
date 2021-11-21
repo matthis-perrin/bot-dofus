@@ -1,14 +1,20 @@
+import {getMousePos} from 'robotjs';
+
 import {
   Coordinate,
+  imageCoordinateToScreenCoordinate,
   mapCoordinateToScreenCoordinate,
+  screenCoordinateToImageCoordinate,
   soleilCoordinateToMapCoordinate,
   squareCenter,
 } from '../../common/src/coordinates';
 import {
   allFishSize,
   allFishType,
+  fishDialogSize,
   FishSize,
   FishType,
+  gameCoordinates,
   HORIZONTAL_SQUARES,
   SQUARE_SIZE,
   VERTICAL_SQUARES,
@@ -53,6 +59,15 @@ function fishToString(info: {size?: FishSize; type?: FishType}): string {
 
 function coordinateToString({x, y}: Coordinate): string {
   return `${x};${y}`;
+}
+
+function getFishPopupCoordinate(): Coordinate {
+  // Convert current mouse pos to in game pos
+  const {x, y} = screenCoordinateToImageCoordinate(getMousePos());
+  return {
+    x: Math.min(x, gameCoordinates.width - fishDialogSize.width),
+    y: Math.min(y, gameCoordinates.height - fishDialogSize.height),
+  };
 }
 
 enum Direction {
@@ -281,10 +296,11 @@ export const fishMapScenario: Scenario = async ctx => {
     });
 
     // Click on the popup
-    const popupOffset = {x: squareWidth / 4, y: 50};
+    const popupTopLeft = imageCoordinateToScreenCoordinate(getFishPopupCoordinate());
+    const popupOffset = {x: 20, y: 48};
     const popupTarget = {
-      x: clickPos.x + popupOffset.x,
-      y: clickPos.y + popupOffset.y,
+      x: popupTopLeft.x + popupOffset.x,
+      y: popupTopLeft.y + popupOffset.y,
     };
 
     await click(canContinue, {...popupTarget, radius: 10});
