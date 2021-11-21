@@ -1,11 +1,23 @@
 {
   "folders": [
-    { "path": "bot" },
-    { "path": "bot-ui" },
-    { "path": "tensorflow" },
-    { "path": "common" },
-    { "path": "images" },
-    { "path": "models" }
+    {
+      "path": "bot"
+    },
+    {
+      "path": "bot-ui"
+    },
+    {
+      "path": "tensorflow"
+    },
+    {
+      "path": "common"
+    },
+    {
+      "path": "images"
+    },
+    {
+      "path": "models"
+    }
   ],
   "settings": {
     "editor.acceptSuggestionOnCommitCharacter": false,

@@ -1,15 +1,17 @@
 import bmp from 'bmp-js';
-import Jimp from 'jimp/';
-import {join} from 'path';
 import {getMousePos, screen} from 'robotjs';
 
 import {
   Coordinate,
+  gameCoordinates,
+  HORIZONTAL_SQUARES,
   imageCoordinateToScreenCoordinate,
   mapCoordinateToScreenCoordinate,
   screenCoordinateToImageCoordinate,
   soleilCoordinateToMapCoordinate,
+  SQUARE_SIZE,
   squareCenter,
+  VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 import {
   allFishSize,
@@ -18,11 +20,6 @@ import {
   fishPopupSizes,
   FishSize,
   FishType,
-  gameCoordinates,
-  HORIZONTAL_SQUARES,
-  safeZoneCoordinate,
-  SQUARE_SIZE,
-  VERTICAL_SQUARES,
 } from '../../common/src/model';
 import {click, sleep} from './actions';
 import {fishDb} from './fish_db';

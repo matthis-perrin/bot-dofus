@@ -1,8 +1,4 @@
-import {
-  Coordinate,
-  imageCoordinateToScreenCoordinate,
-  mapCoordinateToScreenCoordinate,
-} from './coordinates';
+import {Coordinate} from './coordinates';
 
 export enum FishSize {
   Small = 'Petit',
@@ -25,20 +21,6 @@ export interface Fish {
   distance?: number;
 }
 
-////
-
-export const gameCoordinates = {
-  x: 310,
-  y: 54,
-  width: 1130,
-  height: 657,
-};
-
-export const safeZoneCoordinate = imageCoordinateToScreenCoordinate({
-  x: 570,
-  y: 675,
-});
-
 export const fishPopupSizes: Record<FishType, Record<FishSize, {width: number; height: number}>> = {
   [FishType.Sea]: {
     [FishSize.Small]: {width: 187, height: 64},
@@ -53,16 +35,9 @@ export const fishPopupSizes: Record<FishType, Record<FishSize, {width: number; h
     [FishSize.Giant]: {width: 218, height: 64},
   },
 };
+
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 export const fishPopupScreenshotSize = fishPopupSizes[FishType.Sea][FishSize.Medium]!;
-
-export const HORIZONTAL_SQUARES = 14;
-export const VERTICAL_SQUARES = 16;
-
-export const SQUARE_SIZE = {
-  width: (2 * gameCoordinates.width) / HORIZONTAL_SQUARES,
-  height: (2 * gameCoordinates.height) / VERTICAL_SQUARES,
-};
 
 ////
 

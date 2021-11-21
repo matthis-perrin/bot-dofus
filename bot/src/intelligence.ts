@@ -6,7 +6,6 @@ import {
 } from '../../common/src/model';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
-import {findBorderSquares} from './screenshot';
 import {screenhotManager} from './screenshot_manager';
 import {sendEvent} from './server';
 import {Predictor} from './tensorflow';
@@ -64,14 +63,16 @@ export class Intelligence {
       };
 
       // Run soleil model
-      const borderSquares = await findBorderSquares(buffer);
-      const soleil = await Promise.all(
-        borderSquares.map(async borderSquare => {
-          const prediction = await this.soleilModel(borderSquare.data);
-          return {...prediction, ...borderSquare.coordinates};
-        })
-      );
-      soleil.sort((p1, p2) => p1.score - p2.score);
+      // const borderSquares = await findBorderSquares(buffer);
+      // const soleil = await Promise.all(
+      //   borderSquares.map(async borderSquare => {
+      //     const prediction = await this.soleilModel(borderSquare.data);
+      //     return {...prediction, ...borderSquare.coordinates};
+      //   })
+      // );
+      // soleil.sort((p1, p2) => p1.score - p2.score);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const soleil: any[] = [];
 
       // Run coordinate model
       const prediction = await this.mapModel(buffer);

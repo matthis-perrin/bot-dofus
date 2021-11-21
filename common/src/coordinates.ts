@@ -1,9 +1,27 @@
-import {gameCoordinates, SQUARE_SIZE} from './model';
-
 export interface Coordinate {
   x: number;
   y: number;
 }
+
+export const gameCoordinates = {
+  x: 310,
+  y: 54,
+  width: 1130,
+  height: 657,
+};
+
+export const safeZoneCoordinate = imageCoordinateToScreenCoordinate({
+  x: 570,
+  y: 675,
+});
+
+export const HORIZONTAL_SQUARES = 14;
+export const VERTICAL_SQUARES = 16;
+
+export const SQUARE_SIZE = {
+  width: (2 * gameCoordinates.width) / HORIZONTAL_SQUARES,
+  height: (2 * gameCoordinates.height) / VERTICAL_SQUARES,
+};
 
 export function soleilCoordinateToMapCoordinate(coordinate: Coordinate): Coordinate {
   return {

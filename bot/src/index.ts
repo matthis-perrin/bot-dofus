@@ -1,4 +1,7 @@
+import {writeFileSync} from 'fs';
+
 import {Coordinate} from '../../common/src/coordinates';
+import {sleep} from './actions';
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
