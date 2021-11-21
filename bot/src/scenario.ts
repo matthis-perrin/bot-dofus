@@ -317,7 +317,7 @@ export const fishMapScenario: Scenario = async ctx => {
 
     if (!hasFish) {
       updateStatus(`Poisson non présent. Click dans la safe-zone.`);
-      await click(canContinue, {x: currentPos.x + 8, y: currentPos.y + 8, radius: 2});
+      await click(canContinue, {x: currentPos.x + 15, y: currentPos.y + 15, radius: 5});
       continue;
     }
 
