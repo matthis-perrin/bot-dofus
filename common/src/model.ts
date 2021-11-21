@@ -1,27 +1,5 @@
 import {Coordinate} from './coordinates';
 
-export const gameCoordinates = {
-  x: 310,
-  y: 54,
-  width: 1130,
-  height: 657,
-};
-
-export const fishDialogSize = {
-  width: 208,
-  height: 64,
-};
-
-export const HORIZONTAL_SQUARES = 14;
-export const VERTICAL_SQUARES = 16;
-
-export const SQUARE_SIZE = {
-  width: (2 * gameCoordinates.width) / HORIZONTAL_SQUARES,
-  height: (2 * gameCoordinates.height) / VERTICAL_SQUARES,
-};
-
-////
-
 export enum FishSize {
   Small = 'Petit',
   Medium = 'Normal',
@@ -42,6 +20,40 @@ export interface Fish {
   size?: FishSize;
   distance?: number;
 }
+
+////
+
+export const gameCoordinates = {
+  x: 310,
+  y: 54,
+  width: 1130,
+  height: 657,
+};
+
+export const fishPopupSizes: Record<FishType, Record<FishSize, {width: number; height: number}>> = {
+  [FishType.Sea]: {
+    [FishSize.Small]: {width: 187, height: 64},
+    [FishSize.Medium]: {width: 161, height: 64},
+    [FishSize.Big]: {width: 181, height: 64},
+    [FishSize.Giant]: {width: 196, height: 64},
+  },
+  [FishType.River]: {
+    [FishSize.Small]: {width: 208, height: 64},
+    [FishSize.Medium]: {width: 161, height: 64},
+    [FishSize.Big]: {width: 202, height: 64},
+    [FishSize.Giant]: {width: 218, height: 64},
+  },
+};
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+export const fishPopupScreenshotSize = fishPopupSizes[FishType.Sea][FishSize.Medium]!;
+
+export const HORIZONTAL_SQUARES = 14;
+export const VERTICAL_SQUARES = 16;
+
+export const SQUARE_SIZE = {
+  width: (2 * gameCoordinates.width) / HORIZONTAL_SQUARES,
+  height: (2 * gameCoordinates.height) / VERTICAL_SQUARES,
+};
 
 ////
 

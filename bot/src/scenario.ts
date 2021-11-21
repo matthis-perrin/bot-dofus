@@ -1,4 +1,7 @@
-import {getMousePos} from 'robotjs';
+import bmp from 'bmp-js';
+import Jimp from 'jimp/';
+import {join} from 'path';
+import {getMousePos, screen} from 'robotjs';
 
 import {
   Coordinate,
@@ -11,7 +14,8 @@ import {
 import {
   allFishSize,
   allFishType,
-  fishDialogSize,
+  fishPopupScreenshotSize,
+  fishPopupSizes,
   FishSize,
   FishType,
   gameCoordinates,
@@ -61,12 +65,15 @@ function coordinateToString({x, y}: Coordinate): string {
   return `${x};${y}`;
 }
 
-function getFishPopupCoordinate(): Coordinate {
+function getFishPopupCoordinate(fishSize: FishSize, fishType: FishType): Coordinate {
   // Convert current mouse pos to in game pos
   const {x, y} = screenCoordinateToImageCoordinate(getMousePos());
+  // Get the popup dimension based on the type of fish
+  const popupSize = fishPopupSizes[fishType][fishSize];
+  // Return the adjusted position
   return {
-    x: Math.min(x, gameCoordinates.width - fishDialogSize.width),
-    y: Math.min(y, gameCoordinates.height - fishDialogSize.height),
+    x: Math.min(x, gameCoordinates.width - popupSize.width),
+    y: Math.min(y, gameCoordinates.height - popupSize.height),
   };
 }
 
@@ -264,7 +271,10 @@ export const fishMapScenario: Scenario = async ctx => {
     });
   }
 
-  const fishes = fishDb.get(lastData.coordinate.coordinate);
+  const allFishes = fishDb.get(lastData.coordinate.coordinate);
+  const fishes = allFishes.filter(f => f.size !== undefined && f.type !== undefined);
+  const ignoredFishes = allFishes.filter(f => f.size === undefined || f.type === undefined);
+
   const fishSummary = [...allFishSize, undefined]
     .flatMap(size =>
       [...allFishType, undefined].map(type => ({
@@ -280,6 +290,14 @@ export const fishMapScenario: Scenario = async ctx => {
       .join('\n')}`
   );
 
+  if (ignoredFishes.length > 0) {
+    updateStatus(
+      `*** WARNING *** Poissons incomplets : ${ignoredFishes
+        .map(f => `${fishToString(f)} (${coordinateToString(f.coordinate)})`)
+        .join(', ')}`
+    );
+  }
+
   /* eslint-disable no-await-in-loop */
   for (const fish of fishes) {
     updateStatus(`Pêche de ${fishToString(fish)} en ${coordinateToString(fish.coordinate)}`);
@@ -289,20 +307,46 @@ export const fishMapScenario: Scenario = async ctx => {
       x: fishTopLeft.x + squareWidth / 2,
       y: fishTopLeft.y + (3 * squareHeight) / 4,
     };
-    const clickPos = await click(canContinue, {
+    await click(canContinue, {
       ...fishTarget,
       radius: squareHeight / 4,
       button: 'right',
     });
 
-    // Click on the popup
-    const popupTopLeft = imageCoordinateToScreenCoordinate(getFishPopupCoordinate());
+    // Compute fishing popup coordinate
+    const popupCoordinate = getFishPopupCoordinate(fish.size!, fish.type!);
+    const popupTopLeft = imageCoordinateToScreenCoordinate(popupCoordinate);
     const popupOffset = {x: 20, y: 48};
     const popupTarget = {
       x: popupTopLeft.x + popupOffset.x,
       y: popupTopLeft.y + popupOffset.y,
     };
 
+    // Save a screenshot of the fishing popup
+    const bitmap = screen.capture(
+      popupTopLeft.x,
+      popupTopLeft.y,
+      fishPopupScreenshotSize.width,
+      fishPopupScreenshotSize.height
+    ).image;
+    for (let i = 0; i < bitmap.length; i += 4) {
+      // Convert from BGRA to ABGR
+      [bitmap[i], bitmap[i + 1], bitmap[i + 2], bitmap[i + 3]] = [
+        bitmap[i + 3]!,
+        bitmap[i]!,
+        bitmap[i + 1]!,
+        bitmap[i + 2]!,
+      ];
+    }
+    const bmpData = {
+      data: bitmap,
+      width: fishPopupScreenshotSize.width * 2,
+      height: fishPopupScreenshotSize.height * 2,
+    };
+    const rawData = bmp.encode(bmpData).data;
+    await (await Jimp.read(rawData)).writeAsync(join('./images/fish_popup', `${Date.now()}.png`));
+
+    // Click on the popup
     await click(canContinue, {...popupTarget, radius: 10});
 
     canContinue();
