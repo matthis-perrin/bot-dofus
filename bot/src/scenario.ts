@@ -273,7 +273,12 @@ export const fishMapScenario: Scenario = async ctx => {
   }
 
   const allFishes = fishDb.get(lastData.coordinate.coordinate);
-  const fishes = allFishes.filter(f => f.size !== undefined && f.type !== undefined);
+  const fishes = allFishes.filter(
+    f =>
+      f.size !== undefined &&
+      f.type !== undefined &&
+      (f.size !== FishSize.Big || f.type === FishType.River)
+  );
   const ignoredFishes = allFishes.filter(f => f.size === undefined || f.type === undefined);
 
   const fishSummary = [...allFishSize, undefined]
