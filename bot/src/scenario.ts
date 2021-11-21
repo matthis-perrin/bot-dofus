@@ -118,6 +118,15 @@ export const mapLoopScenario: Scenario = async ctx => {
     // eslint-disable-next-line no-await-in-loop
     await fishMapScenario(ctx);
 
+    // Check if we changed map
+    const checkMapData = ia.getLastData()!;
+    if (
+      checkMapData.coordinate.coordinate.x !== lastData.coordinate.coordinate.x ||
+      checkMapData.coordinate.coordinate.y !== lastData.coordinate.coordinate.y
+    ) {
+      return mapLoopScenario(ctx);
+    }
+
     // Get the next map
     const nextMap = mapLoop[(indexInMapLoop + 1) % mapLoop.length]!;
     const direction = getDirection(coordinate, nextMap);
