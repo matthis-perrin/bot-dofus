@@ -63,3 +63,10 @@ export function imageCoordinateToMapCoordinate(coordinate: Coordinate): Coordina
   }
   return {x: px, y: py};
 }
+
+export function squareCenter(coordinate: Coordinate): Coordinate {
+  return {
+    x: coordinate.x + SQUARE_SIZE.width / 4,
+    y: coordinate.y + SQUARE_SIZE.height / 4,
+  };
+}

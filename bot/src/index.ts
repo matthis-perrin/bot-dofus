@@ -3,7 +3,7 @@ import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
-import {fishMapScenario} from './scenario';
+import {mapLoopScenario} from './scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {sendEvent, startServer} from './server';
 import {loadMapModel, loadSoleilModel} from './tensorflow';
@@ -17,7 +17,7 @@ async function run(): Promise<void> {
   ]);
 
   const ai = new Intelligence(soleilModel, mapModel);
-  const runner = new ScenarioRunner(ai, fishMapScenario);
+  const runner = new ScenarioRunner(ai, mapLoopScenario);
   startServer(ai, runner);
 
   ai.start();
