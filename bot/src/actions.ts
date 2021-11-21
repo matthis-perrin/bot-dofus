@@ -13,8 +13,10 @@ export async function click(
   const target = {x, y};
   const randomAngle = Math.random() * 2 * Math.PI;
   const randomRadius = Math.random() * radius;
-  // Default speed is 3. Generate between 2 and 4.
-  const randomSpeed = 3 + Math.random() * 2 - 1;
+  // Default speed in the library is 3.
+  const minSpeed = 1.5;
+  const maxSpeed = 2.5;
+  const randomSpeed = minSpeed + Math.random() * (maxSpeed - minSpeed);
 
   const clickCoordinate = {
     x: target.x + randomRadius * Math.cos(randomAngle),
