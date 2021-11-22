@@ -18,6 +18,7 @@ export async function getTextInImage(
   await img.crop(x * 2, y * 2, width * 2, height * 2).writeAsync(rawPath);
   await execAsync(`convert ${rawPath} -type Grayscale -negate ${convertedPath}`);
   await execAsync(`tesseract -c tessedit_char_whitelist=0123456789-, ${convertedPath} ${resPath}`); //-c tessedit_char_whitelist=0123456789
-  console.log((await readFile(`${resPath}.txt`)).toString());
+  const resultFileContent = await readFile(`${resPath}.txt`);
+  console.log(resultFileContent.toString());
   await Promise.all([unlink(rawPath), unlink(convertedPath), unlink(`${resPath}.txt`)]);
 }

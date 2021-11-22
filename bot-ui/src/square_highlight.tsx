@@ -1,7 +1,7 @@
 import React, {CSSProperties, FC} from 'react';
 import styled from 'styled-components';
 
-import {SQUARE_SIZE} from '../../common/src/model';
+import {SQUARE_SIZE} from '../../common/src/coordinates';
 
 interface SquareProps {
   color: string;

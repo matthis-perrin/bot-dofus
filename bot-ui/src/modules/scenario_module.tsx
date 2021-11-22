@@ -6,16 +6,16 @@ import {ORANGE} from '../colors';
 import {formatTime} from '../format';
 import {Button} from '../fragments';
 import {Spacing} from '../spacing';
-import {useServerState} from '../stores';
+import {useScenarioState} from '../stores';
 import {Toggle} from '../toggle';
 
 export const ScenarioModule: React.FC = () => {
-  const serverState = useServerState();
+  const scenarioState = useScenarioState();
   const [showAllHistory, setShowAllHistory] = useState(false);
-  const [isRunning, setIsRunning] = useState(serverState.scenario.isRunning);
+  const [isRunning, setIsRunning] = useState(scenarioState.isRunning);
   const [useInternal, setUseInternal] = useState<number | false>(false);
 
-  const statuses = serverState.scenario.statusHistory.slice(0, showAllHistory ? undefined : 10);
+  const statuses = scenarioState.statusHistory.slice(0, showAllHistory ? undefined : 10);
 
   const handleIsRunningToggle = useCallback((toggled: boolean) => {
     setIsRunning(toggled);
@@ -33,15 +33,13 @@ export const ScenarioModule: React.FC = () => {
       <StatusTitle>
         <Title>Scenario</Title>
         <Toggle
-          toggled={useInternal === false ? serverState.scenario.isRunning : isRunning}
+          toggled={useInternal === false ? scenarioState.isRunning : isRunning}
           syncState={handleIsRunningToggle}
-          label={
-            <ToggleLabel>{serverState.scenario.isRunning ? 'Running' : 'Stopped'}</ToggleLabel>
-          }
+          label={<ToggleLabel>{scenarioState.isRunning ? 'Running' : 'Stopped'}</ToggleLabel>}
         />
       </StatusTitle>
       <StatusHeader>
-        <span>{`Status (${statuses.length}/${serverState.scenario.statusHistory.length})`}</span>
+        <span>{`Status (${statuses.length}/${scenarioState.statusHistory.length})`}</span>
         <Spacing width={8} />
         <Button onClick={handleShowAllClick}>{showAllHistory ? 'Cacher' : 'Tout afficher'}</Button>
       </StatusHeader>

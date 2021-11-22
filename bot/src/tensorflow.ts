@@ -2,29 +2,59 @@ import * as tf from '@tensorflow/tfjs-node';
 import {promises} from 'fs';
 import {join} from 'path';
 
+import {RgbImage} from './screenshot';
+
 const {readFile} = promises;
 
-export type Predictor = (buffer: Buffer) => Promise<{
+interface Prediction {
   score: number;
   label: string;
-}>;
+}
 
-export async function loadMapModel(): Promise<Predictor> {
-  const modelDir = './models/map-coordinates';
-  const imageTargetSize = 128;
+export type Predictor = (image: RgbImage) => Promise<Prediction>;
 
+async function loadModel(
+  modelDir: string,
+  imageTargetSize: number,
+  postProcess?: (p: Prediction) => Prediction
+): Promise<Predictor> {
   const model = (await tf.loadLayersModel(
     `file://${modelDir}/model.json`
   )) as unknown as tf.Sequential;
+  const labelsFileContent = await readFile(join(modelDir, 'labels.json'));
   const labelByNumber = new Map<number, string>(
-    JSON.parse((await readFile(join(modelDir, 'labels.json'))).toString()) as [number, string][]
+    JSON.parse(labelsFileContent.toString()) as [number, string][]
   );
 
-  return async (buffer: Buffer) => {
+  const predictor: Predictor = async image => {
+    const srcWidth = image.width;
+    const srcHeight = image.height;
+
+    const rgbBuffer = Buffer.allocUnsafe(3 * imageTargetSize * imageTargetSize);
+    for (let dstX = 0; dstX < imageTargetSize; dstX++) {
+      for (let dstY = 0; dstY < imageTargetSize; dstY++) {
+        const srcX = Math.round((dstX * srcWidth) / imageTargetSize);
+        const srcY = Math.round((dstY * srcHeight) / imageTargetSize);
+
+        const srcOffset = (srcY * srcWidth + srcX) * 3;
+        const dstOffset = (dstY * imageTargetSize + dstX) * 3;
+
+        rgbBuffer[dstOffset] = image.data[srcOffset]!;
+        rgbBuffer[dstOffset + 1] = image.data[srcOffset + 1]!;
+        rgbBuffer[dstOffset + 2] = image.data[srcOffset + 2]!;
+      }
+    }
+
     const res = model.predict(
-      tf.node
-        .decodeImage(buffer, 3)
-        .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
+      tf.browser
+        .fromPixels(
+          {
+            data: rgbBuffer,
+            width: imageTargetSize,
+            height: imageTargetSize,
+          },
+          3
+        )
         .toFloat()
         .div(tf.scalar(255))
         .expandDims()
@@ -41,81 +71,13 @@ export async function loadMapModel(): Promise<Predictor> {
       .sort((v1, v2) => v2.score - v1.score);
     const prediction = predictions[0]!;
 
-    return prediction;
+    return postProcess?.(prediction) ?? prediction;
   };
+  return predictor;
 }
 
-export async function loadSoleilModel(): Promise<Predictor> {
-  const modelDir = './models/soleil';
-  const imageTargetSize = 40;
-
-  const model = (await tf.loadLayersModel(
-    `file://${modelDir}/model.json`
-  )) as unknown as tf.Sequential;
-  const labelByNumber = new Map<number, string>(
-    JSON.parse((await readFile(join(modelDir, 'labels.json'))).toString()) as [number, string][]
-  );
-
-  return async (buffer: Buffer) => {
-    const res = model.predict(
-      tf.node
-        .decodeImage(buffer)
-        .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
-        .toFloat()
-        .div(tf.scalar(255))
-        .expandDims()
-    );
-    if (Array.isArray(res)) {
-      throw new Error(`Invalid prediction result`);
-    }
-    const scores = (await res.data()) as Int32Array;
-    const predictions = [...scores.map(v => Number(v))]
-      .map((s, i) => ({
-        score: s,
-        label: labelByNumber.get(i)!,
-      }))
-      .sort((v1, v2) => v2.score - v1.score);
-    const prediction = predictions[0]!;
-
-    if (prediction.score < 0.92) {
-      prediction.label = 'OK';
-    }
-
-    return prediction;
-  };
-}
-
-export async function loadFishPopupModel(): Promise<Predictor> {
-  const modelDir = './models/fish_popup';
-  const imageTargetSize = 40;
-
-  const model = (await tf.loadLayersModel(
-    `file://${modelDir}/model.json`
-  )) as unknown as tf.Sequential;
-  const labelByNumber = new Map<number, string>(
-    JSON.parse((await readFile(join(modelDir, 'labels.json'))).toString()) as [number, string][]
-  );
-
-  return async (buffer: Buffer) => {
-    const res = model.predict(
-      tf.node
-        .decodeImage(buffer)
-        .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
-        .toFloat()
-        .div(tf.scalar(255))
-        .expandDims()
-    );
-    if (Array.isArray(res)) {
-      throw new Error(`Invalid prediction result`);
-    }
-    const scores = (await res.data()) as Int32Array;
-    const predictions = [...scores.map(v => Number(v))]
-      .map((s, i) => ({
-        score: s,
-        label: labelByNumber.get(i)!,
-      }))
-      .sort((v1, v2) => v2.score - v1.score);
-    const prediction = predictions[0]!;
-    return prediction;
-  };
-}
+export const loadMapModel = async (): Promise<Predictor> => loadModel('./models/map', 128);
+export const loadSoleilModel = async (): Promise<Predictor> =>
+  loadModel('./models/soleil', 40, p => (p.score < 0.92 ? {...p, label: 'OK'} : p));
+export const loadFishPopupModel = async (): Promise<Predictor> =>
+  loadModel('./models/fish_popup', 40);

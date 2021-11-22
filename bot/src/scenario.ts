@@ -1,5 +1,4 @@
-import bmp from 'bmp-js';
-import {getMousePos, screen} from 'robotjs';
+import {getMousePos} from 'robotjs';
 
 import {
   Coordinate,
@@ -16,7 +15,7 @@ import {
 import {
   allFishSize,
   allFishType,
-  fishPopupScreenshotSize,
+  COORDINATE_MIN_SCORE,
   fishPopupSizes,
   FishSize,
   FishType,
@@ -100,30 +99,21 @@ function getDirection(current: Coordinate, nextMap: Coordinate): Direction {
 
 export const mapLoopScenario: Scenario = async ctx => {
   const {ia, canContinue, updateStatus} = ctx;
+  /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
     canContinue();
 
-    // Get screen data
-    updateStatus('Récupération des infos écran');
-    let lastData = ia.getLastData();
-    if (lastData === undefined || lastData.coordinate.score < 0.95) {
-      updateStatus('Infos écran non disponible. En attente...');
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          mapLoopScenario(ctx).then(resolve).catch(reject);
-        }, 500);
-      });
-    }
+    // Get current data
+    const lastData = await ia.refresh();
+    const coordinate = lastData.coordinate.coordinate;
+    const coordinateStr = coordinateToString(coordinate);
 
     // Map identification
-    const coordinate = lastData.coordinate.coordinate;
     const indexInMapLoop = mapLoop.findIndex(m => m.x === coordinate.x && m.y === coordinate.y);
     if (indexInMapLoop === -1) {
       updateStatus(
-        `Map courante (${coordinateToString(
-          coordinate
-        )}) n'est pas dans le chemin. Pause de 5s avant redémarrage du scénario.`
+        `Map courante (${coordinateStr}) n'est pas dans le chemin. Pause de 5s avant redémarrage du scénario.`
       );
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -134,31 +124,29 @@ export const mapLoopScenario: Scenario = async ctx => {
 
     // Fish on the map
     canContinue();
-    updateStatus(`Démarrage de la pêche sur la map (${coordinateToString(coordinate)})`);
-    // eslint-disable-next-line no-await-in-loop
+    updateStatus(`Démarrage de la pêche sur la map (${coordinateStr})`);
+
     await fishMapScenario(ctx);
 
     // Check if we changed map
-    const checkMapData = ia.getLastData()!;
+    const newLastData = await ia.refresh();
     if (
-      checkMapData.coordinate.coordinate.x !== lastData.coordinate.coordinate.x ||
-      checkMapData.coordinate.coordinate.y !== lastData.coordinate.coordinate.y
+      newLastData.coordinate.coordinate.x !== lastData.coordinate.coordinate.x ||
+      newLastData.coordinate.coordinate.y !== lastData.coordinate.coordinate.y
     ) {
       return mapLoopScenario(ctx);
     }
 
     // Get the next map
     const nextMap = mapLoop[(indexInMapLoop + 1) % mapLoop.length]!;
+    const nextMapStr = coordinateToString(nextMap);
     const direction = getDirection(coordinate, nextMap);
     updateStatus(
-      `Fin de la pêche sur la map (${coordinateToString(
-        coordinate
-      )}). Prochaine map est ${coordinateToString(nextMap)} (${direction})`
+      `Fin de la pêche sur la map (${coordinateStr}). Prochaine map est ${nextMapStr} (${direction})`
     );
 
     // Identification of the soleil
-    lastData = ia.getLastData()!;
-    const soleils = lastData.soleil.filter(s => {
+    const soleils = newLastData.soleil.filter(s => {
       if (s.label !== 'OK') {
         return false;
       }
@@ -180,9 +168,7 @@ export const mapLoopScenario: Scenario = async ctx => {
 
     if (soleils.length === 0) {
       updateStatus(
-        `Pas de soleil dans la direction ${direction} pour la map ${coordinateToString(
-          lastData.coordinate.coordinate
-        )}. Soleils disponibles : ${lastData.soleil
+        `Pas de soleil dans la direction ${direction} pour la map ${coordinateStr}. Soleils disponibles : ${newLastData.soleil
           .map(s => coordinateToString(s))
           .join(', ')}. Pause de 5s avant redémarrage du scénario.`
       );
@@ -216,42 +202,49 @@ export const mapLoopScenario: Scenario = async ctx => {
     updateStatus(`Déplacement en ${coordinateToString(soleil)}`);
     const soleilPx = mapCoordinateToScreenCoordinate(soleilCoordinateToMapCoordinate(soleil));
     const soleilCenter = squareCenter(soleilPx);
-    // eslint-disable-next-line no-await-in-loop
+
     await click(canContinue, {...soleilCenter, radius: SQUARE_SIZE.height / 4});
     canContinue();
 
     // Wait until we changed map (for 10s max)
+    const MAX_WAIT_TIME_MS = 10000;
+    const SLEEP_DURATION_MS = 300;
+    const startTime = Date.now();
+    let mapChangeDetected = false;
     updateStatus(`Attente fin déplacement`);
-    for (let index = 0; index < 10; index++) {
-      // eslint-disable-next-line no-await-in-loop
-      await sleep(1000);
+    while (Date.now() - startTime < MAX_WAIT_TIME_MS) {
+      await sleep(SLEEP_DURATION_MS);
       canContinue();
       // Check if we are on the new map
-      const newCoordinate = ia.getLastData()?.coordinate;
+      const {coordinate: newCoordinate} = await ia.refresh();
       if (
-        newCoordinate &&
-        newCoordinate.score > 0.95 &&
+        newCoordinate.score >= COORDINATE_MIN_SCORE &&
         newCoordinate.coordinate.x === nextMap.x &&
         newCoordinate.coordinate.y === nextMap.y
       ) {
+        mapChangeDetected = true;
         break;
-      } else if (index >= 9) {
-        // Last loop
-        updateStatus(
-          `La map ${coordinateToString(
-            nextMap
-          )} n'est toujours pas identifiée. Pause de 5s avant redémarrage du scénario.`
-        );
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            mapLoopScenario(ctx).then(resolve).catch(reject);
-          }, 5000);
-        });
       }
+    }
+
+    // In case no map changed occured, we restart
+    if (!mapChangeDetected) {
+      // Last loop
+      updateStatus(
+        `La map ${coordinateToString(
+          nextMap
+        )} n'est toujours pas identifiée. Pause de 5s avant redémarrage du scénario.`
+      );
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          mapLoopScenario(ctx).then(resolve).catch(reject);
+        }, 5000);
+      });
     }
 
     updateStatus(`Déplacement terminé`);
   }
+  /* eslint-enable no-await-in-loop */
 };
 
 export const fishMapScenario: Scenario = async ctx => {
@@ -259,8 +252,8 @@ export const fishMapScenario: Scenario = async ctx => {
 
   updateStatus('Récupération des infos écran');
 
-  const lastData = ia.getLastData();
-  if (lastData === undefined || lastData.coordinate.score < 0.95) {
+  const lastData = await ia.refresh();
+  if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         updateStatus('Infos écran non disponible. En attente...');
@@ -310,72 +303,36 @@ export const fishMapScenario: Scenario = async ctx => {
       x: fishTopLeft.x + squareWidth / 2,
       y: fishTopLeft.y + (3 * squareHeight) / 4,
     };
-    await click(canContinue, {
+    const currentPos = await click(canContinue, {
       ...fishTarget,
       radius: squareHeight / 4,
       button: 'right',
     });
 
-    // Compute fishing popup coordinate
+    // Check if the fishing popup is here
     const popupCoordinate = getFishPopupCoordinate(fish.size!, fish.type!);
     const popupTopLeft = imageCoordinateToScreenCoordinate(popupCoordinate);
-    const popupOffset = {x: 20, y: 48};
-    const popupTarget = {
-      x: popupTopLeft.x + popupOffset.x,
-      y: popupTopLeft.y + popupOffset.y,
-    };
-
-    // Take screenshot of the fishing popup
-    const bitmap = screen.capture(
-      popupTopLeft.x,
-      popupTopLeft.y,
-      fishPopupScreenshotSize.width,
-      fishPopupScreenshotSize.height
-    ).image;
-    for (let i = 0; i < bitmap.length; i += 4) {
-      // Convert from BGRA to ABGR
-      [bitmap[i], bitmap[i + 1], bitmap[i + 2], bitmap[i + 3]] = [
-        bitmap[i + 3]!,
-        bitmap[i]!,
-        bitmap[i + 1]!,
-        bitmap[i + 2]!,
-      ];
-    }
-
-    // Check if the fish is there
-    const bmpData = {
-      data: bitmap,
-      width: fishPopupScreenshotSize.width * 2,
-      height: fishPopupScreenshotSize.height * 2,
-    };
-    const rawData = bmp.encode(bmpData).data;
+    const hasFish = await ia.hasFishPopup(popupTopLeft);
     canContinue();
-    const hasFish = await ia.hasFishPopup(rawData);
 
-    canContinue();
     if (!hasFish) {
       updateStatus(`Poisson non présent. Click dans la safe-zone.`);
-      const currentPos = getMousePos();
       await click(canContinue, {x: currentPos.x + 8, y: currentPos.y + 8, radius: 2});
       continue;
     }
 
-    // Save the screenshot
-    // await (await Jimp.read(rawData)).writeAsync(join('./images/fish_popup', `${Date.now()}.png`));
-
     // Click on the popup
-    await click(canContinue, {...popupTarget, radius: 10});
+    await click(canContinue, {x: popupTopLeft.x + 20, y: popupTopLeft.y + 48, radius: 10});
 
     canContinue();
     updateStatus(`Attente de fin de pêche`);
     const waitTime = 5000 + fishingTimePerFish[fish.size ?? FishSize.Giant];
     await sleep(waitTime);
 
-    const newLastData = ia.getLastData();
+    const newLastData = await ia.refresh();
     if (
-      newLastData !== undefined &&
-      (newLastData.coordinate.coordinate.x !== lastData.coordinate.coordinate.x ||
-        newLastData.coordinate.coordinate.y !== lastData.coordinate.coordinate.y)
+      newLastData.coordinate.coordinate.x !== lastData.coordinate.coordinate.x ||
+      newLastData.coordinate.coordinate.y !== lastData.coordinate.coordinate.y
     ) {
       updateStatus(
         `Changement de map non controllé détecté (${coordinateToString(

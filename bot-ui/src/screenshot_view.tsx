@@ -3,11 +3,13 @@ import styled from 'styled-components';
 
 import {
   Coordinate,
+  gameCoordinates,
+  HORIZONTAL_SQUARES,
   imageCoordinateToMapCoordinate,
   mapCoordinateToImageCoordinate,
   soleilCoordinateToMapCoordinate,
+  VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
-import {gameCoordinates, HORIZONTAL_SQUARES, VERTICAL_SQUARES} from '../../common/src/model';
 import {formatCoordinate} from './format';
 import {Block} from './fragments';
 import {SquareHighlight} from './square_highlight';
@@ -69,7 +71,7 @@ export const ScreenshotView: React.FC = () => {
       <Wrapper>
         <Img
           style={{width: gameCoordinates.width, height: gameCoordinates.height}}
-          src={`data:image/png;base64,${serverState.screenshot.image}`}
+          src={`data:image/png;base64,${serverState.screenshot}`}
           onMouseMove={handleMouseMove}
           onClick={handleClick}
         />

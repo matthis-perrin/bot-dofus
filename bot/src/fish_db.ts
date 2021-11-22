@@ -14,8 +14,8 @@ class FishDb {
 
   public async init(): Promise<void> {
     try {
-      const content = (await readFile(fishPath)).toString();
-      this.fishes = JSON.parse(content);
+      const content = await readFile(fishPath);
+      this.fishes = JSON.parse(content.toString());
     } catch (err: unknown) {
       console.error(err);
       this.fishes = {};

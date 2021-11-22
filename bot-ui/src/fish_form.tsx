@@ -1,6 +1,7 @@
 import React, {FormEventHandler, Fragment, useCallback, useState} from 'react';
 import styled from 'styled-components';
 
+import {SQUARE_SIZE} from '../../common/src/coordinates';
 import {
   allFishDistance,
   allFishSize,
@@ -8,7 +9,6 @@ import {
   Fish,
   FishSize,
   FishType,
-  SQUARE_SIZE,
 } from '../../common/src/model';
 import {ORANGE} from './colors';
 import {Block, Button} from './fragments';

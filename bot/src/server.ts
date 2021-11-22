@@ -1,16 +1,15 @@
-import {promises} from 'fs';
+import {promises, writeFileSync} from 'fs';
 import {createServer, ServerResponse} from 'http';
 import {networkInterfaces} from 'os';
 import {join} from 'path';
 
-import {Coordinate} from '../../common/src/coordinates';
+import {Coordinate, gameCoordinates} from '../../common/src/coordinates';
 import {Fish, Message} from '../../common/src/model';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
 import {ScenarioRunner} from './scenario_runner';
-import {takeGameScreenshot} from './screenshot';
-import {screenhotManager} from './screenshot_manager';
+import {convertToPng, screenshot} from './screenshot';
 
 const {readFile, writeFile, mkdir} = promises;
 
@@ -37,12 +36,16 @@ export async function apiHandler(
   params: any
 ): Promise<unknown> {
   console.log(url, params);
-  if (url === '/stop-screenshot') {
-    screenhotManager.stop();
-    return {};
-  } else if (url === '/start-screenshot') {
-    screenhotManager.start();
-    return {};
+  if (url === '/refresh') {
+    const data = await ia.refresh();
+    const png2 = await convertToPng(data.screenshot, {
+      width: (2 * gameCoordinates.width) / 3,
+      height: (2 * gameCoordinates.height) / 3,
+    });
+    return {
+      ...data,
+      screenshot: png2.toString('base64'),
+    };
   } else if (url === '/set-fish') {
     await fishDb.set(params.map as Coordinate, params.fish as Fish);
     return {};
@@ -51,7 +54,8 @@ export async function apiHandler(
     return {};
   } else if (url === '/take-screenshot') {
     const {x, y} = params as Coordinate;
-    const buffer = await takeGameScreenshot(true);
+    const {game} = screenshot();
+    const buffer = await convertToPng(game, {width: 440, height: 256});
     const path = join('images', 'map', `${x}h${y}`);
     await mkdir(path, {recursive: true});
     await writeFile(join(path, `${Date.now()}.png`), buffer);
@@ -106,7 +110,6 @@ export function startServer(ai: Intelligence, runner: ScenarioRunner): void {
           /* eslint-enable @typescript-eslint/naming-convention */
           res.flushHeaders();
           res.write('\n');
-          ai.triggerManually();
           runner.sendStatus();
           return;
         }

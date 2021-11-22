@@ -4,7 +4,7 @@ import {createGlobalStyle} from 'styled-components';
 
 import {App} from './app';
 import {BLUE_GRAY_16, WHITE_AA} from './colors';
-import {subscribeToEvents} from './events';
+import {startRefreshLoop, subscribeToEvents} from './events';
 
 const GlobalCss = createGlobalStyle`
   html, body {
@@ -29,3 +29,4 @@ ReactDOM.render(
 );
 
 subscribeToEvents();
+startRefreshLoop();

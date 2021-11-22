@@ -3,17 +3,19 @@ export interface Coordinate {
   y: number;
 }
 
+// export const gameCoordinates = {
+//   x: 310,
+//   y: 54,
+//   width: 1130,
+//   height: 657,
+// };
+
 export const gameCoordinates = {
-  x: 310,
-  y: 54,
+  x: 1196 / 2,
+  y: 133 / 2,
   width: 1130,
   height: 657,
 };
-
-export const safeZoneCoordinate = imageCoordinateToScreenCoordinate({
-  x: 570,
-  y: 675,
-});
 
 export const HORIZONTAL_SQUARES = 14;
 export const VERTICAL_SQUARES = 16;

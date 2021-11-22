@@ -1,7 +1,8 @@
 import React, {Fragment, useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components';
 
-import {Fish, FishSize, FishType, SQUARE_SIZE} from '../../../common/src/model';
+import {SQUARE_SIZE} from '../../../common/src/coordinates';
+import {Fish, FishSize, FishType} from '../../../common/src/model';
 import {apiCall} from '../api';
 import {ORANGE} from '../colors';
 import {FishForm} from '../fish_form';

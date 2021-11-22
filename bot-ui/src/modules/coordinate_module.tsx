@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
 import {ORANGE} from '../colors';
 import {formatScoreWithIcon} from '../format';
 import {useServerState} from '../stores';
@@ -13,7 +14,7 @@ export const CoordinateModule: React.FC = () => {
       <Title>Coordonnées</Title>
       <span>{` : ${serverState.coordinate.label} (${formatScoreWithIcon(
         serverState.coordinate.score,
-        0.95
+        COORDINATE_MIN_SCORE
       )})`}</span>
     </div>
   );

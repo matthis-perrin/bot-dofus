@@ -1,16 +1,17 @@
-import Jimp, {MIME_PNG} from 'jimp';
+import {writeFileSync} from 'fs';
+import Jimp, {MIME_PNG, RESIZE_BILINEAR, RESIZE_NEAREST_NEIGHBOR} from 'jimp';
 import {screen} from 'robotjs';
 
 import {
   Coordinate,
   gameCoordinates,
   HORIZONTAL_SQUARES,
-  soleilCoordinateToMapCoordinate,
   SQUARE_SIZE,
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
+import {fishPopupScreenshotSize} from '../../common/src/model';
 
-interface RgbImage {
+export interface RgbImage {
   data: Uint8Array;
   width: number;
   height: number;
@@ -33,12 +34,9 @@ export function screenshot(): {
   game: RgbImage;
   border: SquareScreenshot[];
 } {
-  let t1 = Date.now();
   // Take a screenshot of the game zone
   const {x, y, width, height} = gameCoordinates;
   const bitmap: Buffer = screen.capture(x, y, width, height).image;
-  console.log('screen.capture', Date.now() - t1);
-  t1 = Date.now();
 
   // Convert from BGRA to RGB
   const game = Buffer.allocUnsafe(2 * width * 2 * height * 3);
@@ -50,8 +48,6 @@ export function screenshot(): {
       bitmap[sourceIndex]!,
     ];
   }
-  console.log('BGRA to ABGR', Date.now() - t1);
-  t1 = Date.now();
 
   const soleils = ALL_SOLEIL_POS.map(soleil => {
     const xPx = Math.round(soleil.x * SQUARE_SIZE.width);
@@ -76,15 +72,41 @@ export function screenshot(): {
       },
     };
   });
-  console.log('soleils', Date.now() - t1);
-  t1 = Date.now();
 
   return {game: {data: game, width: 2 * width, height: 2 * height}, border: soleils};
 }
 
-export async function convertToPng(img: RgbImage): Promise<Buffer> {
+export function fishingPopupScreenshot(mousePos: Coordinate): RgbImage {
+  const bitmap = screen.capture();
+  const sourceBuffer = bitmap.image;
+  const x = mousePos.x * 2;
+  const y = mousePos.y * 2;
+  const w = fishPopupScreenshotSize.width * 2;
+  const h = fishPopupScreenshotSize.height * 2;
+  const pixels = w * h;
+
+  // Convert from BGRA to RGB
+  const popupImage = Buffer.allocUnsafe(pixels * 3);
+  for (let targetIndex = 0; targetIndex < pixels * 3; targetIndex += 3) {
+    const targetPx = targetIndex / 3;
+    const targetX = targetPx % w;
+    const targetY = Math.floor(targetPx / w);
+    const sourceIndex = ((targetY + y) * bitmap.width + targetX + x) * 4;
+    [popupImage[targetIndex], popupImage[targetIndex + 1], popupImage[targetIndex + 2]] = [
+      sourceBuffer[sourceIndex + 2]!,
+      sourceBuffer[sourceIndex + 1]!,
+      sourceBuffer[sourceIndex]!,
+    ];
+  }
+
+  return {data: popupImage, width: w, height: h};
+}
+
+export async function convertToPng(
+  img: RgbImage,
+  resize?: {width: number; height: number}
+): Promise<Buffer> {
   return new Promise<Buffer>((resolve, reject) => {
-    console.log(img);
     // eslint-disable-next-line no-new
     new Jimp(img.width, img.height, (err, jimpImage) => {
       if (err) {
@@ -101,16 +123,8 @@ export async function convertToPng(img: RgbImage): Promise<Buffer> {
           jimpBuffer[dstOffset + 3] = 255;
         }
       }
-      resolve(jimpImage.getBufferAsync(MIME_PNG));
+      const finalImage = resize ? jimpImage.resize(resize.width, resize.height) : jimpImage;
+      resolve(finalImage.getBufferAsync(MIME_PNG));
     });
   });
-}
-
-export async function takeScreenshot(): Promise<Buffer> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (await Promise.resolve({})) as any;
-}
-export async function takeGameScreenshot(resize: boolean): Promise<Buffer> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (await Promise.resolve({resize})) as any;
 }

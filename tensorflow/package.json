@@ -25,9 +25,12 @@
     "@matthis/prettier-config": "latest",
     "@matthis/tsconfig-node": "latest",
     "@matthis/webpack-node": "latest",
+    "@types/jimp": "^0.2.28",
     "@types/node": "16.11.x"
   },
   "dependencies": {
-    "@tensorflow/tfjs-node": "^3.11.0"
+    "@tensorflow/tfjs-node": "^3.11.0",
+    "jimp": "^0.16.1",
+    "node-pre-gyp": "^0.17.0"
   }
 }

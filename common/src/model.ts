@@ -41,39 +41,25 @@ export const fishPopupScreenshotSize = fishPopupSizes[FishType.Sea][FishSize.Med
 
 ////
 
-export interface ScreenshotMessage {
-  type: 'screenshot';
-  data: {
-    image: string;
-    isRunning: boolean;
-  };
-}
-
 export const allFishDistance = [1, 2, 3, 4, 5, 6, 7, 8];
 
-export interface SoleilMessage {
-  type: 'soleil';
-  data: {
+export type SoleilData = {
     x: number;
     y: number;
     score: number;
     label: string;
-  }[];
-}
+}[];
 
-export interface CoordinateMessage {
-  type: 'coordinate';
-  data: {
-    score: number;
-    label: string;
-    coordinate: Coordinate;
-  };
+export interface CoordinateData {
+  score: number;
+  label: string;
+  coordinate: Coordinate;
 }
+export const COORDINATE_MIN_SCORE = 0.75;
 
-export interface FishMessage {
-  type: 'fish';
-  data: Fish[];
-}
+export type FishData = Fish[]
+
+//
 
 export type ScenarioStatus = string;
 export interface ScenarioStatusWithTime {
@@ -96,9 +82,5 @@ export interface ScenarioStatusMessage {
 }
 
 export type Message =
-  | ScreenshotMessage
-  | SoleilMessage
-  | CoordinateMessage
-  | FishMessage
   | ScenarioMessage
   | ScenarioStatusMessage;

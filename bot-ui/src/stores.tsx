@@ -1,37 +1,38 @@
 import {Coordinate} from '../../common/src/coordinates';
-import {
-  CoordinateMessage,
-  FishMessage,
-  ScenarioStatusWithTime,
-  ScreenshotMessage,
-  SoleilMessage,
-} from '../../common/src/model';
+import {CoordinateData, FishData, ScenarioStatusWithTime, SoleilData} from '../../common/src/model';
 import {createDataStore} from './data_store';
 
-interface ServerState {
-  screenshot: ScreenshotMessage['data'];
-  soleil: SoleilMessage['data'];
-  coordinate: CoordinateMessage['data'];
-  fish: FishMessage['data'];
-  scenario: {
-    isRunning: boolean;
-    statusHistory: ScenarioStatusWithTime[];
-  };
+export interface ServerState {
+  screenshot: string;
+  soleil: SoleilData;
+  coordinate: CoordinateData;
+  fish: FishData;
 }
 
 const serverStateStore = createDataStore<ServerState>({
-  screenshot: {image: '', isRunning: false},
+  screenshot: '',
   soleil: [],
   coordinate: {label: '', score: 0, coordinate: {x: 0, y: 0}},
   fish: [],
-  scenario: {
-    isRunning: false,
-    statusHistory: [],
-  },
 });
 export const useServerState = serverStateStore.useData;
 export const getServerState = serverStateStore.getData;
 export const setServerState = serverStateStore.setData;
+
+//
+
+interface ScenarioState {
+  isRunning: boolean;
+  statusHistory: ScenarioStatusWithTime[];
+}
+
+const scenarioStateStore = createDataStore<ScenarioState>({
+  isRunning: false,
+  statusHistory: [],
+});
+export const useScenarioState = scenarioStateStore.useData;
+export const getScenarioState = scenarioStateStore.getData;
+export const setScenarioState = scenarioStateStore.setData;
 
 //
 
