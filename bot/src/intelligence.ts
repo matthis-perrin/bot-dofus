@@ -6,6 +6,7 @@ import {
 } from '../../common/src/model';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
+import {screenshot} from './screenshot';
 import {screenhotManager} from './screenshot_manager';
 import {sendEvent} from './server';
 import {Predictor} from './tensorflow';
@@ -36,22 +37,12 @@ export class Intelligence {
     screenhotManager.stop();
   }
 
-  public triggerManually(): void {
-    screenhotManager
-      .waitForFirstScreenshot()
-      .then(buffer => {
-        this.handleNewScreenshot(buffer);
-      })
-      .catch(handleError);
+  public async getData(): Promise<Data> {
+    return this.lastData ?? this.refresh();
   }
 
-  public getLastData(): Data | undefined {
-    return this.lastData;
-  }
-
-  public async hasFishPopup(buffer: Buffer): Promise<boolean> {
-    const prediction = await this.fishPopupModel(buffer);
-    return prediction.label === 'OK';
+  public async refresh(): Promise<Data> {
+    const {} = screenshot();
   }
 
   private handleNewScreenshot(buffer: Buffer): void {

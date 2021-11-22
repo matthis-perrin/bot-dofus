@@ -2,9 +2,11 @@ import * as tf from '@tensorflow/tfjs-node';
 import {promises} from 'fs';
 import {join} from 'path';
 
+import {RgbImage} from './screenshot';
+
 const {readFile} = promises;
 
-export type Predictor = (buffer: Buffer) => Promise<{
+export type Predictor = (image: RgbImage) => Promise<{
   score: number;
   label: string;
 }>;
@@ -20,10 +22,10 @@ export async function loadMapModel(): Promise<Predictor> {
     JSON.parse((await readFile(join(modelDir, 'labels.json'))).toString()) as [number, string][]
   );
 
-  return async (buffer: Buffer) => {
+  const predictor: Predictor = async image => {
     const res = model.predict(
-      tf.node
-        .decodeImage(buffer, 3)
+      tf.browser
+        .fromPixels(image, 3)
         .resizeNearestNeighbor([imageTargetSize, imageTargetSize])
         .toFloat()
         .div(tf.scalar(255))
@@ -43,6 +45,7 @@ export async function loadMapModel(): Promise<Predictor> {
 
     return prediction;
   };
+  return predictor;
 }
 
 export async function loadSoleilModel(): Promise<Predictor> {
@@ -56,7 +59,7 @@ export async function loadSoleilModel(): Promise<Predictor> {
     JSON.parse((await readFile(join(modelDir, 'labels.json'))).toString()) as [number, string][]
   );
 
-  return async (buffer: Buffer) => {
+  return (async (buffer: Buffer) => {
     const res = model.predict(
       tf.node
         .decodeImage(buffer)
@@ -82,7 +85,7 @@ export async function loadSoleilModel(): Promise<Predictor> {
     }
 
     return prediction;
-  };
+  }) as any;
 }
 
 export async function loadFishPopupModel(): Promise<Predictor> {
@@ -96,7 +99,7 @@ export async function loadFishPopupModel(): Promise<Predictor> {
     JSON.parse((await readFile(join(modelDir, 'labels.json'))).toString()) as [number, string][]
   );
 
-  return async (buffer: Buffer) => {
+  return (async (buffer: Buffer) => {
     const res = model.predict(
       tf.node
         .decodeImage(buffer)
@@ -117,5 +120,5 @@ export async function loadFishPopupModel(): Promise<Predictor> {
       .sort((v1, v2) => v2.score - v1.score);
     const prediction = predictions[0]!;
     return prediction;
-  };
+  }) as any;
 }

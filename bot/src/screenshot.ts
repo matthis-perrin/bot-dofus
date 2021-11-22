@@ -10,7 +10,7 @@ import {
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 
-interface RgbImage {
+export interface RgbImage {
   data: Uint8Array;
   width: number;
   height: number;
