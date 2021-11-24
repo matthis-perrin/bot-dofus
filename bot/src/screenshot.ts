@@ -1,15 +1,16 @@
-import {writeFileSync} from 'fs';
-import Jimp, {MIME_PNG, RESIZE_BILINEAR, RESIZE_NEAREST_NEIGHBOR} from 'jimp';
+import Jimp, {MIME_PNG} from 'jimp';
 import {screen} from 'robotjs';
 
 import {
   Coordinate,
-  gameCoordinates,
+  GAME_HEIGHT,
+  GAME_WIDTH,
   HORIZONTAL_SQUARES,
   SQUARE_SIZE,
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 import {fishPopupScreenshotSize} from '../../common/src/model';
+import {gameCoordinates} from './coordinate';
 
 export interface RgbImage {
   data: Uint8Array;
@@ -35,11 +36,11 @@ export function screenshot(): {
   border: SquareScreenshot[];
 } {
   // Take a screenshot of the game zone
-  const {x, y, width, height} = gameCoordinates;
-  const bitmap: Buffer = screen.capture(x, y, width, height).image;
+  const {x, y} = gameCoordinates;
+  const bitmap: Buffer = screen.capture(x, y, GAME_WIDTH, GAME_HEIGHT).image;
 
   // Convert from BGRA to RGB
-  const game = Buffer.allocUnsafe(2 * width * 2 * height * 3);
+  const game = Buffer.allocUnsafe(2 * GAME_WIDTH * 2 * GAME_HEIGHT * 3);
   for (let sourceIndex = 0; sourceIndex < bitmap.length; sourceIndex += 4) {
     const targetIndex = (3 * sourceIndex) / 4;
     [game[targetIndex], game[targetIndex + 1], game[targetIndex + 2]] = [
@@ -59,8 +60,8 @@ export function screenshot(): {
       game.copy(
         buffer,
         i * wPx * 3,
-        (xPx + (yPx + i) * width * 2) * 3,
-        (xPx + (yPx + i) * width * 2 + wPx) * 3
+        (xPx + (yPx + i) * GAME_WIDTH * 2) * 3,
+        (xPx + (yPx + i) * GAME_WIDTH * 2 + wPx) * 3
       );
     }
     return {
@@ -73,7 +74,7 @@ export function screenshot(): {
     };
   });
 
-  return {game: {data: game, width: 2 * width, height: 2 * height}, border: soleils};
+  return {game: {data: game, width: 2 * GAME_WIDTH, height: 2 * GAME_HEIGHT}, border: soleils};
 }
 
 export function fishingPopupScreenshot(mousePos: Coordinate): RgbImage {

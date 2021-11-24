@@ -3,26 +3,15 @@ export interface Coordinate {
   y: number;
 }
 
-// export const gameCoordinates = {
-//   x: 310,
-//   y: 54,
-//   width: 1130,
-//   height: 657,
-// };
-
-export const gameCoordinates = {
-  x: 1196 / 2,
-  y: 133 / 2,
-  width: 1130,
-  height: 657,
-};
+export const GAME_WIDTH = 1130;
+export const GAME_HEIGHT = 657;
 
 export const HORIZONTAL_SQUARES = 14;
 export const VERTICAL_SQUARES = 16;
 
 export const SQUARE_SIZE = {
-  width: (2 * gameCoordinates.width) / HORIZONTAL_SQUARES,
-  height: (2 * gameCoordinates.height) / VERTICAL_SQUARES,
+  width: (2 * GAME_WIDTH) / HORIZONTAL_SQUARES,
+  height: (2 * GAME_HEIGHT) / VERTICAL_SQUARES,
 };
 
 export function soleilCoordinateToMapCoordinate(coordinate: Coordinate): Coordinate {
@@ -38,26 +27,6 @@ export function mapCoordinateToImageCoordinate(coordinate: Coordinate): Coordina
   return {
     x: ((y % 2 === 0 ? x : x + 0.5) * SQUARE_SIZE.width) / 2,
     y: (y * SQUARE_SIZE.height) / 4,
-  };
-}
-
-export function mapCoordinateToScreenCoordinate(coordinate: Coordinate): Coordinate {
-  return imageCoordinateToScreenCoordinate(mapCoordinateToImageCoordinate(coordinate));
-}
-
-export function screenCoordinateToImageCoordinate(coordinate: Coordinate): Coordinate {
-  const {x, y} = coordinate;
-  return {
-    x: x - gameCoordinates.x,
-    y: y - gameCoordinates.y,
-  };
-}
-
-export function imageCoordinateToScreenCoordinate(coordinate: Coordinate): Coordinate {
-  const {x, y} = coordinate;
-  return {
-    x: x + gameCoordinates.x,
-    y: y + gameCoordinates.y,
   };
 }
 

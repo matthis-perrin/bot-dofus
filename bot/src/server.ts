@@ -1,9 +1,9 @@
-import {promises, writeFileSync} from 'fs';
+import {promises} from 'fs';
 import {createServer, ServerResponse} from 'http';
 import {networkInterfaces} from 'os';
 import {join} from 'path';
 
-import {Coordinate, gameCoordinates} from '../../common/src/coordinates';
+import {Coordinate, GAME_HEIGHT, GAME_WIDTH} from '../../common/src/coordinates';
 import {Fish, Message} from '../../common/src/model';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
@@ -39,8 +39,8 @@ export async function apiHandler(
   if (url === '/refresh') {
     const data = await ia.refresh();
     const png2 = await convertToPng(data.screenshot, {
-      width: (2 * gameCoordinates.width) / 3,
-      height: (2 * gameCoordinates.height) / 3,
+      width: (2 * GAME_WIDTH) / 3,
+      height: (2 * GAME_HEIGHT) / 3,
     });
     return {
       ...data,

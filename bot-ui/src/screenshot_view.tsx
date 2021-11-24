@@ -3,7 +3,8 @@ import styled from 'styled-components';
 
 import {
   Coordinate,
-  gameCoordinates,
+  GAME_HEIGHT,
+  GAME_WIDTH,
   HORIZONTAL_SQUARES,
   imageCoordinateToMapCoordinate,
   mapCoordinateToImageCoordinate,
@@ -70,7 +71,7 @@ export const ScreenshotView: React.FC = () => {
     <Block style={{flexShrink: 0}}>
       <Wrapper>
         <Img
-          style={{width: gameCoordinates.width, height: gameCoordinates.height}}
+          style={{width: GAME_WIDTH, height: GAME_HEIGHT}}
           src={`data:image/png;base64,${serverState.screenshot}`}
           onMouseMove={handleMouseMove}
           onClick={handleClick}

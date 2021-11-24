@@ -2,11 +2,9 @@ import {getMousePos} from 'robotjs';
 
 import {
   Coordinate,
-  gameCoordinates,
+  GAME_HEIGHT,
+  GAME_WIDTH,
   HORIZONTAL_SQUARES,
-  imageCoordinateToScreenCoordinate,
-  mapCoordinateToScreenCoordinate,
-  screenCoordinateToImageCoordinate,
   soleilCoordinateToMapCoordinate,
   SQUARE_SIZE,
   squareCenter,
@@ -21,6 +19,11 @@ import {
   FishType,
 } from '../../common/src/model';
 import {click, sleep} from './actions';
+import {
+  imageCoordinateToScreenCoordinate,
+  mapCoordinateToScreenCoordinate,
+  screenCoordinateToImageCoordinate,
+} from './coordinate';
 import {fishDb} from './fish_db';
 import {Scenario} from './scenario_runner';
 
@@ -69,8 +72,8 @@ function getFishPopupCoordinate(fishSize: FishSize, fishType: FishType): Coordin
   const popupSize = fishPopupSizes[fishType][fishSize];
   // Return the adjusted position
   return {
-    x: Math.min(x, gameCoordinates.width - popupSize.width),
-    y: Math.min(y, gameCoordinates.height - popupSize.height),
+    x: Math.min(x, GAME_WIDTH - popupSize.width),
+    y: Math.min(y, GAME_HEIGHT - popupSize.height),
   };
 }
 
