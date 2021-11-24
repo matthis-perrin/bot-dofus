@@ -31,8 +31,6 @@ export class Intelligence {
   }
 
   public async refresh(): Promise<Data> {
-    const start = Date.now();
-
     const {game, border} = screenshot();
     const [mapPrediction, soleil] = await Promise.all([
       this.mapModel(game),
@@ -46,9 +44,6 @@ export class Intelligence {
     const [x = '', y = ''] = mapPrediction.label.split('h')!;
     const coordinate = {...mapPrediction, coordinate: {x: parseFloat(x), y: parseFloat(y)}};
     const fish = fishDb.get(coordinate.coordinate);
-
-    const duration = Date.now() - start;
-    console.log(coordinate, duration);
 
     return {
       screenshot: game,

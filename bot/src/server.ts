@@ -35,7 +35,6 @@ export async function apiHandler(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: any
 ): Promise<unknown> {
-  console.log(url, params);
   if (url === '/refresh') {
     const data = await ia.refresh();
     const png2 = await convertToPng(data.screenshot, {
@@ -46,7 +45,9 @@ export async function apiHandler(
       ...data,
       screenshot: png2.toString('base64'),
     };
-  } else if (url === '/set-fish') {
+  }
+  console.log(url, params);
+  if (url === '/set-fish') {
     await fishDb.set(params.map as Coordinate, params.fish as Fish);
     return {};
   } else if (url === '/delete-fish') {
@@ -65,6 +66,7 @@ export async function apiHandler(
   } else if (url === '/stop-scenario') {
     runner.stop();
   }
+
   return Promise.resolve(`unknown URL ${url}`);
 }
 
