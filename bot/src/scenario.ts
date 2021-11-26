@@ -8,6 +8,7 @@ import {
   soleilCoordinateToMapCoordinate,
   SQUARE_SIZE,
   squareCenter,
+  squareIsAngle,
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 import {
@@ -193,10 +194,22 @@ export const mapLoopScenario: Scenario = async ctx => {
             .join(', ')}. Cas particulier 8;0 vers 8;-1, le soleil le plus à droite est choisi.`
         );
       } else {
+        soleil = [...soleils].sort((s1, s2) => {
+          if (squareIsAngle(s1)) {
+            if (squareIsAngle(s2)) {
+              return -1;
+            }
+            return 1;
+          }
+          if (squareIsAngle(s2)) {
+            return -1;
+          }
+          return -1;
+        })[0]!;
         updateStatus(
           `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
             .map(s => coordinateToString(s))
-            .join(', ')}. Le premier soleil est choisi.`
+            .join(', ')}. Le premier soleil qui m'est pas un angle est choisi.`
         );
       }
     }

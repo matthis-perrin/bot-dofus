@@ -27,7 +27,7 @@ export class Intelligence {
   public async hasFishPopup(popupCoordinate: Coordinate): Promise<boolean> {
     const popupImg = fishingPopupScreenshot(popupCoordinate);
     const prediction = await this.fishPopupModel(popupImg);
-    return prediction.label === 'OK';
+    return prediction.score >= 0.98 && prediction.label === 'OK';
   }
 
   public async refresh(): Promise<Data> {

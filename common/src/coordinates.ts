@@ -71,3 +71,8 @@ export function squareCenter(coordinate: Coordinate): Coordinate {
     y: coordinate.y + SQUARE_SIZE.height / 4,
   };
 }
+
+export function squareIsAngle(coordinate: Coordinate): boolean {
+  const {x, y} = coordinate;
+  return x === 0 || y === 0 || x === HORIZONTAL_SQUARES - 1 || y === VERTICAL_SQUARES - 1
+}
