@@ -1,21 +1,22 @@
 import {mouseClick, moveMouseSmooth} from 'robotjs';
 
 import {Coordinate} from '../../common/src/coordinates';
+import {imageCoordinateToScreenCoordinate} from './coordinate';
 import {CanContinue} from './scenario_runner';
 
 export async function click(
   canContinue: CanContinue,
-  opts: {x: number; y: number; button?: 'right' | 'left'; radius: number}
+  opts: {x: number; y: number; button?: 'right' | 'left'; radius: number; fast?: boolean}
 ): Promise<Coordinate> {
   await canContinue();
 
-  const {x, y, radius, button = 'left'} = opts;
-  const target = {x, y};
+  const {x, y, radius, button = 'left', fast} = opts;
+  const target = imageCoordinateToScreenCoordinate({x, y});
   const randomAngle = Math.random() * 2 * Math.PI;
   const randomRadius = Math.random() * radius;
   // Default speed in the library is 3.
-  const minSpeed = 1.5;
-  const maxSpeed = 2.5;
+  const minSpeed = fast ? 0 : 1.5;
+  const maxSpeed = fast ? 0.75 : 2.5;
   const randomSpeed = minSpeed + Math.random() * (maxSpeed - minSpeed);
 
   const clickCoordinate = {

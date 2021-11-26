@@ -1,10 +1,11 @@
-import {getMousePos} from 'robotjs';
+import {getMousePos, moveMouse} from 'robotjs';
 
 import {
   Coordinate,
   GAME_HEIGHT,
   GAME_WIDTH,
   HORIZONTAL_SQUARES,
+  mapCoordinateToImageCoordinate,
   soleilCoordinateToMapCoordinate,
   SQUARE_SIZE,
   squareCenter,
@@ -20,13 +21,10 @@ import {
   FishType,
 } from '../../common/src/model';
 import {click, sleep} from './actions';
-import {
-  imageCoordinateToScreenCoordinate,
-  mapCoordinateToScreenCoordinate,
-  screenCoordinateToImageCoordinate,
-} from './coordinate';
+import {checkForColor} from './colors';
+import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
 import {fishDb} from './fish_db';
-import {Scenario} from './scenario_runner';
+import {Scenario, ScenarioContext} from './scenario_runner';
 
 const mapLoop = [
   {x: 7, y: -4},
@@ -215,7 +213,7 @@ export const mapLoopScenario: Scenario = async ctx => {
 
     // Click on the soleil
     updateStatus(`Déplacement en ${coordinateToString(soleil)}`);
-    const soleilPx = mapCoordinateToScreenCoordinate(soleilCoordinateToMapCoordinate(soleil));
+    const soleilPx = mapCoordinateToImageCoordinate(soleilCoordinateToMapCoordinate(soleil));
     const soleilCenter = squareCenter(soleilPx);
 
     await click(canContinue, {...soleilCenter, radius: 10});
@@ -313,7 +311,7 @@ export const fishMapScenario: Scenario = async ctx => {
   for (const fish of fishes) {
     updateStatus(`Pêche de ${fishToString(fish)} en ${coordinateToString(fish.coordinate)}`);
     // Click on the fish
-    const fishTopLeft = mapCoordinateToScreenCoordinate(fish.coordinate);
+    const fishTopLeft = mapCoordinateToImageCoordinate(fish.coordinate);
     const fishTarget = {
       x: fishTopLeft.x + squareWidth / 2,
       y: fishTopLeft.y + (3 * squareHeight) / 4,
@@ -337,7 +335,7 @@ export const fishMapScenario: Scenario = async ctx => {
     }
 
     // Click on the popup
-    await click(canContinue, {x: popupTopLeft.x + 20, y: popupTopLeft.y + 48, radius: 10});
+    await click(canContinue, {x: popupCoordinate.x + 20, y: popupCoordinate.y + 48, radius: 10});
 
     await canContinue();
     updateStatus(`Attente de fin de pêche`);
@@ -358,6 +356,107 @@ export const fishMapScenario: Scenario = async ctx => {
     }
   }
   /* eslint-enable no-await-in-loop */
+};
+
+async function waitForPlayerTurn(ctx: ScenarioContext): Promise<void> {
+  const {canContinue, updateStatus} = ctx;
+
+  updateStatus('Attente du tour du joueur');
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const playerTurnCoordinates = [
+      {x: 667, y: 692},
+      {x: 671, y: 690},
+    ];
+    if (checkForColor(playerTurnCoordinates, 'ED702D')) {
+      return;
+    }
+    // eslint-disable-next-line no-await-in-loop
+    await sleep(canContinue, 500);
+  }
+}
+
+async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> {
+  const {canContinue, updateStatus} = ctx;
+
+  // Check for the tactical mode
+  const tacticalCoordinates = [
+    {x: 1009, y: 572},
+    {x: 1012, y: 575},
+    {x: 1019, y: 570},
+  ];
+  if (!checkForColor(tacticalCoordinates, '44972B')) {
+    updateStatus('Activation du mode tactique');
+    await click(canContinue, {...tacticalCoordinates[1]!, radius: 2});
+  }
+
+  // Check for the circle mode
+  const circleCoordinates = [
+    {x: 1043, y: 579},
+    {x: 1046, y: 582},
+    {x: 1051, y: 578},
+  ];
+  if (!checkForColor(circleCoordinates, '44972B')) {
+    updateStatus('Activation du mode cercle');
+    await click(canContinue, {...circleCoordinates[1]!, radius: 2});
+  }
+
+  // Check for challenge visibility
+  const challengeCoordinates1 = [
+    {x: 16, y: 123},
+    {x: 71, y: 123},
+  ];
+  const challengeCoordinates2 = [
+    {x: 42, y: 98},
+    {x: 42, y: 152},
+  ];
+  if (
+    checkForColor(challengeCoordinates1, 'CDC4BE') &&
+    checkForColor(challengeCoordinates2, 'FFFFFF')
+  ) {
+    updateStatus('Cache challenge');
+    await click(canContinue, {x: 23, y: 82, radius: 2});
+  }
+
+  // Check for the timeline visibility
+  const timelineCoordinates = [
+    {x: 1111, y: 609},
+    {x: 1111, y: 640},
+    {x: 1126, y: 609},
+    {x: 1126, y: 640},
+  ];
+  if (checkForColor(timelineCoordinates, 'ED702D')) {
+    updateStatus('Cache timeline');
+    await click(canContinue, {x: 1119, y: 628, radius: 3, fast: true});
+  }
+}
+
+export const fightScenario: Scenario = async ctx => {
+  const {canContinue, updateStatus} = ctx;
+
+  // Check if the 'Ready" button is there. If that's the case, click it.
+  updateStatus('Detection du bouton "Ready"');
+  const readyButtonCoordinates = [
+    {x: 1015, y: 620},
+    {x: 1085, y: 620},
+  ];
+  if (checkForColor(readyButtonCoordinates, 'ED702D')) {
+    updateStatus('Click sur bouton "Ready"');
+    const readyCenterX = 1050;
+    const readyCenterY = 620;
+    await click(canContinue, {x: readyCenterX, y: readyCenterY, radius: 10, fast: true});
+  }
+
+  while (true) {
+    // Wait for the player turn
+    await waitForPlayerTurn(ctx);
+
+    // Make sure the fight zone has everything hidden
+    await ensureCleanFightZone(ctx);
+
+    // Pass turn
+    await click(canContinue, {x: 745, y: 812, radius: 5});
+  }
 };
 
 const fishingTimePerFish: Record<FishSize, number> = {

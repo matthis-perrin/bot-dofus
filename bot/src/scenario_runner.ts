@@ -20,13 +20,30 @@ class StopScenarioError extends Error {
     this.name = 'StopScenarioError';
   }
 }
+class FightStartedError extends Error {
+  public constructor() {
+    super();
+    this.name = 'FightStartedError';
+  }
+}
+class FightEndedError extends Error {
+  public constructor() {
+    super();
+    this.name = 'FightEndedError';
+  }
+}
 
 export class ScenarioRunner {
   private isRunning = false;
+  private isInFight = false;
   private readonly statusHistory: ScenarioStatusWithTime[] = [];
   private readonly listeners = new Set<() => void>();
 
-  public constructor(private readonly ia: Intelligence, private readonly scenario: Scenario) {}
+  public constructor(
+    private readonly ia: Intelligence,
+    private readonly scenario: Scenario,
+    private readonly fightScenario: Scenario
+  ) {}
 
   public stop(): void {
     this.isRunning = false;
@@ -34,7 +51,15 @@ export class ScenarioRunner {
 
   public start(): void {
     this.isRunning = true;
-    this.updateStatus('START');
+    if (this.isInFight) {
+      this.startFightScenario();
+    } else {
+      this.startScenario();
+    }
+  }
+
+  private startScenario(): void {
+    this.updateStatus('START SCENARIO PÊCHE');
     this.scenario({
       ia: this.ia,
       canContinue: async () => {
@@ -42,8 +67,7 @@ export class ScenarioRunner {
           throw new StopScenarioError();
         }
         if (isInFight()) {
-          this.updateStatus('Combat détecté');
-          throw new StopScenarioError();
+          throw new FightStartedError();
         }
         return Promise.resolve();
       },
@@ -52,9 +76,40 @@ export class ScenarioRunner {
       .then()
       .catch(err => {
         if (err instanceof StopScenarioError) {
-          this.updateStatus('STOP');
+          this.updateStatus('STOP SCENARIO PÊCHE');
+        } else if (err instanceof FightStartedError) {
+          this.isInFight = true;
+          this.start();
         } else {
-          this.updateStatus(`ERREUR durant l'execution du scenario:\n${String(err)}`);
+          this.updateStatus(`ERREUR durant l'execution du scenario pêche:\n${String(err)}`);
+        }
+      });
+  }
+
+  private startFightScenario(): void {
+    this.updateStatus('START SCENARIO COMBAT');
+    this.fightScenario({
+      ia: this.ia,
+      canContinue: async () => {
+        if (!this.isRunning) {
+          throw new StopScenarioError();
+        }
+        if (!isInFight()) {
+          throw new FightEndedError();
+        }
+        return Promise.resolve();
+      },
+      updateStatus: newStatus => this.updateStatus(newStatus),
+    })
+      .then()
+      .catch(err => {
+        if (err instanceof StopScenarioError) {
+          this.updateStatus('STOP SCENARIO COMBAT');
+        } else if (err instanceof FightEndedError) {
+          this.isInFight = false;
+          this.start();
+        } else {
+          this.updateStatus(`ERREUR durant l'execution du scenario combat:\n${String(err)}`);
         }
       });
   }
