@@ -129,7 +129,6 @@ export const mapLoopScenario: Scenario = async ctx => {
     // Fish on the map
     canContinue();
     updateStatus(`Démarrage de la pêche sur la map (${coordinateStr})`);
-
     await fishMapScenario(ctx);
 
     // Check if we changed map
@@ -219,7 +218,7 @@ export const mapLoopScenario: Scenario = async ctx => {
     const soleilPx = mapCoordinateToScreenCoordinate(soleilCoordinateToMapCoordinate(soleil));
     const soleilCenter = squareCenter(soleilPx);
 
-    await click(canContinue, {...soleilCenter, radius: SQUARE_SIZE.height / 4});
+    await click(canContinue, {...soleilCenter, radius: 10});
     canContinue();
 
     // Wait until we changed map (for 10s max)
