@@ -216,7 +216,7 @@ export const mapLoopScenario: Scenario = async ctx => {
     let mapChangeDetected = false;
     updateStatus(`Attente fin déplacement`);
     while (Date.now() - startTime < MAX_WAIT_TIME_MS) {
-      await sleep(SLEEP_DURATION_MS);
+      await sleep(canContinue, SLEEP_DURATION_MS);
       canContinue();
       // Check if we are on the new map
       const {coordinate: newCoordinate} = await ia.refresh();
@@ -330,7 +330,7 @@ export const fishMapScenario: Scenario = async ctx => {
     canContinue();
     updateStatus(`Attente de fin de pêche`);
     const waitTime = 5000 + fishingTimePerFish[fish.size ?? FishSize.Giant];
-    await sleep(waitTime);
+    await sleep(canContinue, waitTime);
 
     const newLastData = await ia.refresh();
     if (

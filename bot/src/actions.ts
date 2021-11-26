@@ -4,10 +4,10 @@ import {Coordinate} from '../../common/src/coordinates';
 import {CanContinue} from './scenario_runner';
 
 export async function click(
-  checkCanContinue: CanContinue,
+  canContinue: CanContinue,
   opts: {x: number; y: number; button?: 'right' | 'left'; radius: number}
 ): Promise<Coordinate> {
-  checkCanContinue();
+  canContinue();
 
   const {x, y, radius, button = 'left'} = opts;
   const target = {x, y};
@@ -24,21 +24,30 @@ export async function click(
   };
 
   moveMouseSmooth(clickCoordinate.x, clickCoordinate.y, randomSpeed);
-  checkCanContinue();
+  canContinue();
 
-  await sleep(Math.random() * 500 + 0);
-  checkCanContinue();
+  await sleep(canContinue, Math.random() * 500 + 0);
+  canContinue();
 
   mouseClick(button);
-  checkCanContinue();
+  canContinue();
 
-  await sleep(Math.random() * 500 + 0);
-  checkCanContinue();
+  await sleep(canContinue, Math.random() * 500 + 0);
+  canContinue();
 
   return clickCoordinate;
 }
 
-export async function sleep(ms: number): Promise<void> {
+export async function sleep(canContinue: CanContinue, ms: number): Promise<void> {
+  const end = Date.now() + ms;
+  while (Date.now() < end) {
+    canContinue();
+    // eslint-disable-next-line no-await-in-loop
+    await sleepInternal(Math.min(100, Date.now() - end));
+  }
+}
+
+export async function sleepInternal(ms: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
