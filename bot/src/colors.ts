@@ -50,5 +50,5 @@ export function checkForColor(coordinates: Coordinate[], targetColor: string): b
   const colorAverage = getColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
   console.log(colorAverage, color, distance);
-  return distance <= 15;
+  return distance <= 25;
 }
