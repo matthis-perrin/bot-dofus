@@ -1,4 +1,4 @@
-import {getPixelColor} from 'robotjs';
+import {getPixelColor, moveMouse} from 'robotjs';
 
 import {Coordinate} from '../../common/src/coordinates';
 import {imageCoordinateToScreenCoordinate} from './coordinate';
@@ -17,6 +17,8 @@ export function getColorAverage(coordinates: Coordinate[]): Rgb {
     const coordinate = imageCoordinateToScreenCoordinate(c);
     const {x, y} = coordinate;
     const color = getPixelColor(x, y);
+    moveMouse(x, y);
+    console.log(color);
     const rgb = hexToRgb(color);
     r += rgb.r;
     g += rgb.g;
@@ -49,5 +51,6 @@ export function checkForColor(coordinates: Coordinate[], targetColor: string): b
   const color = hexToRgb(targetColor);
   const colorAverage = getColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
+  console.log(distance);
   return distance <= 10;
 }
