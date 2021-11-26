@@ -106,7 +106,7 @@ export const mapLoopScenario: Scenario = async ctx => {
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    canContinue();
+    await canContinue();
 
     // Get current data
     const lastData = await ia.refresh();
@@ -127,7 +127,7 @@ export const mapLoopScenario: Scenario = async ctx => {
     }
 
     // Fish on the map
-    canContinue();
+    await canContinue();
     updateStatus(`Démarrage de la pêche sur la map (${coordinateStr})`);
     await fishMapScenario(ctx);
 
@@ -219,7 +219,7 @@ export const mapLoopScenario: Scenario = async ctx => {
     const soleilCenter = squareCenter(soleilPx);
 
     await click(canContinue, {...soleilCenter, radius: 10});
-    canContinue();
+    await canContinue();
 
     // Wait until we changed map (for 10s max)
     const MAX_WAIT_TIME_MS = 10000;
@@ -229,7 +229,7 @@ export const mapLoopScenario: Scenario = async ctx => {
     updateStatus(`Attente fin déplacement`);
     while (Date.now() - startTime < MAX_WAIT_TIME_MS) {
       await sleep(canContinue, SLEEP_DURATION_MS);
-      canContinue();
+      await canContinue();
       // Check if we are on the new map
       const {coordinate: newCoordinate} = await ia.refresh();
       if (
@@ -328,7 +328,7 @@ export const fishMapScenario: Scenario = async ctx => {
     const popupCoordinate = getFishPopupCoordinate(fish.size!, fish.type!);
     const popupTopLeft = imageCoordinateToScreenCoordinate(popupCoordinate);
     const hasFish = await ia.hasFishPopup(popupTopLeft);
-    canContinue();
+    await canContinue();
 
     if (!hasFish) {
       updateStatus(`Poisson non présent. Click dans la safe-zone.`);
@@ -339,7 +339,7 @@ export const fishMapScenario: Scenario = async ctx => {
     // Click on the popup
     await click(canContinue, {x: popupTopLeft.x + 20, y: popupTopLeft.y + 48, radius: 10});
 
-    canContinue();
+    await canContinue();
     updateStatus(`Attente de fin de pêche`);
     const waitTime = 5000 + fishingTimePerFish[fish.size ?? FishSize.Giant];
     await sleep(canContinue, waitTime);

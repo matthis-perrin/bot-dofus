@@ -1,8 +1,9 @@
 import {ScenarioStatus, ScenarioStatusWithTime} from '../../common/src/model';
+import {isInFight} from './fight_detector';
 import {Intelligence} from './intelligence';
 import {sendEvent} from './server';
 
-export type CanContinue = () => void;
+export type CanContinue = () => Promise<void>;
 export type UpdateStatus = (status: ScenarioStatus) => void;
 
 export interface ScenarioContext {
@@ -36,11 +37,15 @@ export class ScenarioRunner {
     this.updateStatus('START');
     this.scenario({
       ia: this.ia,
-      canContinue: () => {
-        if (this.isRunning) {
-          return;
+      canContinue: async () => {
+        if (!this.isRunning) {
+          throw new StopScenarioError();
         }
-        throw new StopScenarioError();
+        if (isInFight()) {
+          this.updateStatus('Combat détecté');
+          throw new StopScenarioError();
+        }
+        return Promise.resolve();
       },
       updateStatus: newStatus => this.updateStatus(newStatus),
     })

@@ -7,7 +7,7 @@ export async function click(
   canContinue: CanContinue,
   opts: {x: number; y: number; button?: 'right' | 'left'; radius: number}
 ): Promise<Coordinate> {
-  canContinue();
+  await canContinue();
 
   const {x, y, radius, button = 'left'} = opts;
   const target = {x, y};
@@ -24,16 +24,16 @@ export async function click(
   };
 
   moveMouseSmooth(clickCoordinate.x, clickCoordinate.y, randomSpeed);
-  canContinue();
+  await canContinue();
 
   await sleep(canContinue, Math.random() * 500 + 0);
-  canContinue();
+  await canContinue();
 
   mouseClick(button);
-  canContinue();
+  await canContinue();
 
   await sleep(canContinue, Math.random() * 500 + 0);
-  canContinue();
+  await canContinue();
 
   return clickCoordinate;
 }
@@ -41,7 +41,8 @@ export async function click(
 export async function sleep(canContinue: CanContinue, ms: number): Promise<void> {
   const end = Date.now() + ms;
   while (Date.now() < end) {
-    canContinue();
+    // eslint-disable-next-line no-await-in-loop
+    await canContinue();
     // eslint-disable-next-line no-await-in-loop
     await sleepInternal(Math.min(100, Date.now() - end));
   }
