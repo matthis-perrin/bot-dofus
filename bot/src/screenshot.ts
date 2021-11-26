@@ -6,10 +6,12 @@ import {
   GAME_HEIGHT,
   GAME_WIDTH,
   HORIZONTAL_SQUARES,
+  mapCoordinateToImageCoordinate,
   SQUARE_SIZE,
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 import {fishPopupScreenshotSize} from '../../common/src/model';
+import {colorDistance, getColorAverage, hexToRgb, Rgb} from './colors';
 import {gameCoordinates} from './coordinate';
 
 export interface RgbImage {
@@ -29,6 +31,87 @@ for (let x = 0; x < HORIZONTAL_SQUARES; x++) {
 }
 for (let y = 1; y < VERTICAL_SQUARES - 1; y++) {
   ALL_SOLEIL_POS.push({x: 0, y}, {x: HORIZONTAL_SQUARES - 1, y});
+}
+
+export enum SquareType {
+  Red = 'red',
+  Blue = 'blue',
+  Light = 'light',
+  Dark = 'dark',
+  Wall = 'wall',
+  Unknown = 'unknown',
+}
+
+function identifyColor(circleColor: Rgb, squareColor: Rgb): SquareType {
+  const typesAndDistance: [SquareType, number][] = [
+    [SquareType.Red, colorDistance(circleColor, hexToRgb('ea3323'))],
+    [SquareType.Blue, colorDistance(circleColor, hexToRgb('0000f5'))],
+    [SquareType.Light, colorDistance(squareColor, hexToRgb('84878c'))],
+    [SquareType.Dark, colorDistance(squareColor, hexToRgb('777a7f'))],
+    [SquareType.Wall, colorDistance(squareColor, hexToRgb('c8c8c8'))],
+  ];
+  return (
+    typesAndDistance.filter(v => v[1] < 25).sort((v1, v2) => v1[1] - v2[1])[0]?.[0] ??
+    SquareType.Unknown
+  );
+}
+
+export type MapScan = Record<number, Record<number, SquareType>>;
+
+export function scanMap(): MapScan {
+  // Take a screenshot of the game zone
+  const {x, y} = gameCoordinates;
+  const bitmap: Buffer = screen.capture(x, y, GAME_WIDTH, GAME_HEIGHT).image;
+
+  // Utility to extract colors at a square coordinates on multiple offset
+  // and compute the average
+  function findPixelColor(x: number, y: number, offsets: Coordinate[]): Rgb {
+    const imageCoordinate = mapCoordinateToImageCoordinate({x, y});
+    const colors: Rgb[] = [];
+
+    for (const imageOffset of offsets) {
+      const imageX = Math.floor(imageCoordinate.x + imageOffset.x);
+      const imageY = Math.floor(imageCoordinate.y + imageOffset.y);
+      const offset = (imageY * 2 * GAME_WIDTH * 2 + imageX * 2) * 4;
+
+      const color = {
+        r: bitmap[offset + 2]!,
+        g: bitmap[offset + 1]!,
+        b: bitmap[offset]!,
+      };
+      colors.push(color);
+    }
+
+    return getColorAverage(colors);
+  }
+
+  const scan: MapScan = {};
+
+  const topRightOffset = {x: 41, y: 33};
+  for (let y = 0; y < VERTICAL_SQUARES * 2 - 1; y++) {
+    for (let x = 0; x < HORIZONTAL_SQUARES - (y % 2); x++) {
+      // Identify square type
+      const isTopRight = x === HORIZONTAL_SQUARES - 1 && y === 0;
+      const circleColor = isTopRight
+        ? findPixelColor(x, y, [topRightOffset])
+        : findPixelColor(x, y, [
+            {x: 15, y: 20},
+            {x: 67, y: 20},
+          ]);
+      const squareColor = isTopRight ? circleColor : findPixelColor(x, y, [{x: 40, y: 15}]);
+      const squareType = identifyColor(circleColor, squareColor);
+
+      // Add to map scan
+      const scanX = scan[x];
+      if (!scanX) {
+        scan[x] = {[y]: squareType};
+      } else {
+        scanX[y] = squareType;
+      }
+    }
+  }
+
+  return scan;
 }
 
 export function screenshot(): {

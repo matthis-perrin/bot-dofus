@@ -6,6 +6,7 @@ import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
 import {fightScenario, mapLoopScenario} from './scenario';
 import {ScenarioRunner} from './scenario_runner';
+import {scanMap} from './screenshot';
 import {startServer} from './server';
 import {loadFishPopupModel, loadMapModel, loadSoleilModel} from './tensorflow';
 
@@ -22,6 +23,7 @@ async function run(): Promise<void> {
   const runner = new ScenarioRunner(ai, mapLoopScenario, fightScenario);
   startServer(ai, runner);
   await ai.hasFishPopup(getMousePos());
+  console.log(scanMap());
 }
 
 run().catch(handleError);

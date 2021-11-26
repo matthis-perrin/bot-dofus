@@ -1,4 +1,4 @@
-import {getMousePos, moveMouse} from 'robotjs';
+import {getMousePos} from 'robotjs';
 
 import {
   Coordinate,
@@ -380,14 +380,10 @@ async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> {
   const {canContinue, updateStatus} = ctx;
 
   // Check for the tactical mode
-  const tacticalCoordinates = [
-    {x: 1009, y: 572},
-    {x: 1012, y: 575},
-    {x: 1019, y: 570},
-  ];
+  const tacticalCoordinates = [{x: 1020, y: 568}];
   if (!checkForColor(tacticalCoordinates, '44972B')) {
     updateStatus('Activation du mode tactique');
-    await click(canContinue, {...tacticalCoordinates[1]!, radius: 2});
+    await click(canContinue, {...tacticalCoordinates[0]!, radius: 2});
   }
 
   // Check for the circle mode

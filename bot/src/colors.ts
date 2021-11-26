@@ -1,32 +1,39 @@
-import {getPixelColor, moveMouse} from 'robotjs';
+import {getPixelColor} from 'robotjs';
 
 import {Coordinate} from '../../common/src/coordinates';
 import {imageCoordinateToScreenCoordinate} from './coordinate';
 
-interface Rgb {
+export interface Rgb {
   r: number;
   g: number;
   b: number;
 }
 
-export function getColorAverage(coordinates: Coordinate[]): Rgb {
+export function getColorAverage(colors: Rgb[]): Rgb {
   let r = 0;
   let g = 0;
   let b = 0;
-  for (const c of coordinates) {
-    const coordinate = imageCoordinateToScreenCoordinate(c);
-    const {x, y} = coordinate;
-    const color = getPixelColor(x, y);
-    const rgb = hexToRgb(color);
+  for (const rgb of colors) {
     r += rgb.r;
     g += rgb.g;
     b += rgb.b;
   }
   return {
-    r: Math.round(r / coordinates.length),
-    g: Math.round(g / coordinates.length),
-    b: Math.round(b / coordinates.length),
+    r: Math.round(r / colors.length),
+    g: Math.round(g / colors.length),
+    b: Math.round(b / colors.length),
   };
+}
+
+export function fetchColorAverage(coordinates: Coordinate[]): Rgb {
+  return getColorAverage(
+    coordinates.map(c => {
+      const coordinate = imageCoordinateToScreenCoordinate(c);
+      const {x, y} = coordinate;
+      const color = getPixelColor(x, y);
+      return hexToRgb(color);
+    })
+  );
 }
 
 export function hexToRgb(color: string): Rgb {
@@ -47,7 +54,7 @@ export function colorDistance(color1: Rgb, color2: Rgb): number {
 
 export function checkForColor(coordinates: Coordinate[], targetColor: string): boolean {
   const color = hexToRgb(targetColor);
-  const colorAverage = getColorAverage(coordinates);
+  const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
   return distance <= 25;
 }

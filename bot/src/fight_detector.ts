@@ -1,5 +1,5 @@
 import {Coordinate} from '../../common/src/coordinates';
-import {getColorAverage} from './colors';
+import {fetchColorAverage} from './colors';
 
 const topCoordinates: Coordinate[] = [
   {x: 1095, y: 740},
@@ -13,8 +13,8 @@ const bottomCoordinates: Coordinate[] = [
 ];
 
 export function isInFight(): boolean {
-  const topColor = getColorAverage(topCoordinates);
-  const bottomColor = getColorAverage(bottomCoordinates);
+  const topColor = fetchColorAverage(topCoordinates);
+  const bottomColor = fetchColorAverage(bottomCoordinates);
   const topIsLighter =
     topColor.r + topColor.g + topColor.b > bottomColor.r + bottomColor.g + bottomColor.b;
   return topIsLighter;
