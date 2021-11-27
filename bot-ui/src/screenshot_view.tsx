@@ -14,7 +14,7 @@ import {
 import {formatCoordinate} from './format';
 import {Block} from './fragments';
 import {SquareHighlight} from './square_highlight';
-import {useServerState, useSquareFetching} from './stores';
+import {useServerState, useSquareFetching, useSquareOverlay} from './stores';
 
 function mapCoordinateToCssStyles(coordinate: Coordinate): React.CSSProperties {
   const {x, y} = mapCoordinateToImageCoordinate(coordinate);
@@ -28,6 +28,7 @@ function mapCoordinateToCssStyles(coordinate: Coordinate): React.CSSProperties {
 export const ScreenshotView: React.FC = () => {
   const serverState = useServerState();
   const {fetcher} = useSquareFetching();
+  const {overlay} = useSquareOverlay();
 
   const soleils = serverState.soleil.filter(s => s.label === 'OK');
 
@@ -66,6 +67,7 @@ export const ScreenshotView: React.FC = () => {
   );
 
   const selectedSquares = fetcher?.selectedSquares ?? [];
+  const overlaySquares = overlay ?? [];
 
   return (
     <Block style={{flexShrink: 0}}>
@@ -105,6 +107,14 @@ export const ScreenshotView: React.FC = () => {
           >
             {s.content}
           </SquareHighlight>
+        ))}
+        {overlaySquares.map(s => (
+          <SquareHighlight
+            key={formatCoordinate(s.coordinate)}
+            style={mapCoordinateToCssStyles(s.coordinate)}
+            color={s.color}
+            filled
+          ></SquareHighlight>
         ))}
       </Wrapper>
     </Block>

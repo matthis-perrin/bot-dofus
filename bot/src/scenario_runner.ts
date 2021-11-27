@@ -1,6 +1,7 @@
-import {ScenarioStatus, ScenarioStatusWithTime} from '../../common/src/model';
+import {MapScan, ScenarioStatus, ScenarioStatusWithTime} from '../../common/src/model';
 import {isInFight} from './fight_detector';
 import {Intelligence} from './intelligence';
+import {scanMap} from './screenshot';
 import {sendEvent} from './server';
 
 export type CanContinue = () => Promise<void>;
@@ -36,6 +37,8 @@ class FightEndedError extends Error {
 export class ScenarioRunner {
   private isRunning = false;
   private isInFight = false;
+  private mapScan: MapScan | undefined;
+  private mapScanInterval: NodeJS.Timeout | undefined;
   private readonly statusHistory: ScenarioStatusWithTime[] = [];
   private readonly listeners = new Set<() => void>();
 
@@ -88,6 +91,14 @@ export class ScenarioRunner {
 
   private startFightScenario(): void {
     this.updateStatus('START SCENARIO COMBAT');
+    this.mapScan = scanMap();
+    this.emit();
+    if (this.mapScanInterval === undefined) {
+      this.mapScanInterval = setInterval(() => {
+        this.mapScan = scanMap();
+        this.emit();
+      }, 1000);
+    }
     this.fightScenario({
       ia: this.ia,
       canContinue: async () => {
@@ -111,6 +122,12 @@ export class ScenarioRunner {
         } else {
           this.updateStatus(`ERREUR durant l'execution du scenario combat:\n${String(err)}`);
         }
+        if (this.mapScanInterval) {
+          clearInterval(this.mapScanInterval);
+          this.mapScanInterval = undefined;
+          this.mapScan = undefined;
+          this.emit();
+        }
       });
   }
 
@@ -126,6 +143,10 @@ export class ScenarioRunner {
       type: 'scenario',
       data: {
         isRunning: this.isRunning,
+        fightScenario: {
+          isInFight: this.isInFight,
+          mapScan: this.mapScan,
+        },
         statusHistory: this.statusHistory.slice(0, 100),
       },
     });
@@ -139,7 +160,14 @@ export class ScenarioRunner {
   private emit(): void {
     sendEvent({
       type: 'scenario-new-status',
-      data: {isRunning: this.isRunning, newStatus: this.statusHistory[0]!},
+      data: {
+        isRunning: this.isRunning,
+        fightScenario: {
+          isInFight: this.isInFight,
+          mapScan: this.mapScan,
+        },
+        newStatus: this.statusHistory[0]!,
+      },
     });
   }
 }

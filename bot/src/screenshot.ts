@@ -10,7 +10,7 @@ import {
   SQUARE_SIZE,
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
-import {fishPopupScreenshotSize} from '../../common/src/model';
+import {fishPopupScreenshotSize, MapScan, SquareType} from '../../common/src/model';
 import {colorDistance, getColorAverage, hexToRgb, Rgb} from './colors';
 import {gameCoordinates} from './coordinate';
 
@@ -33,15 +33,6 @@ for (let y = 1; y < VERTICAL_SQUARES - 1; y++) {
   ALL_SOLEIL_POS.push({x: 0, y}, {x: HORIZONTAL_SQUARES - 1, y});
 }
 
-export enum SquareType {
-  Red = 'red',
-  Blue = 'blue',
-  Light = 'light',
-  Dark = 'dark',
-  Wall = 'wall',
-  Unknown = 'unknown',
-}
-
 function identifyColor(circleColor: Rgb, squareColor: Rgb): SquareType {
   const typesAndDistance: [SquareType, number][] = [
     [SquareType.Red, colorDistance(circleColor, hexToRgb('ea3323'))],
@@ -55,8 +46,6 @@ function identifyColor(circleColor: Rgb, squareColor: Rgb): SquareType {
     SquareType.Unknown
   );
 }
-
-export type MapScan = Record<number, Record<number, SquareType>>;
 
 export function scanMap(): MapScan {
   // Take a screenshot of the game zone
@@ -103,7 +92,7 @@ export function scanMap(): MapScan {
 
       // Add to map scan
       const scanX = scan[x];
-      if (!scanX) {
+      if (scanX === undefined) {
         scan[x] = {[y]: squareType};
       } else {
         scanX[y] = squareType;

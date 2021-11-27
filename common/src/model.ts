@@ -66,17 +66,36 @@ export interface ScenarioStatusWithTime {
   value: ScenarioStatus;
   time: number;
 }
+
+export enum SquareType {
+  Red = 'red',
+  Blue = 'blue',
+  Light = 'light',
+  Dark = 'dark',
+  Wall = 'wall',
+  Unknown = 'unknown',
+}
+
+export type MapScan = Record<number, Record<number, SquareType>>;
+export interface FightScenarioData {
+  isInFight: boolean;
+  mapScan?: MapScan; 
+}
+
 export interface ScenarioMessage {
   type: 'scenario';
   data: {
     isRunning: boolean;
+    fightScenario: FightScenarioData;
     statusHistory: ScenarioStatusWithTime[];
   };
 }
+
 export interface ScenarioStatusMessage {
   type: 'scenario-new-status';
   data: {
     isRunning: boolean;
+    fightScenario: FightScenarioData;
     newStatus: ScenarioStatusWithTime;
   };
 }

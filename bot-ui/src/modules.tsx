@@ -5,6 +5,7 @@ import {apiCall} from './api';
 import {BLUE_GRAY_16, ORANGE, WHITE_AA} from './colors';
 import {Block, Button} from './fragments';
 import {CoordinateModule} from './modules/coordinate_module';
+import {FightModule} from './modules/fight_module';
 import {FishModule} from './modules/fish_module';
 import {ScenarioModule} from './modules/scenario_module';
 import {SoleilModule} from './modules/soleil_module';
@@ -24,6 +25,7 @@ export const Modules: React.FC = () => {
   const clientState = useClientState();
 
   const handleFishModeClick = useCallback(() => setClientState({action: 'editing-fish'}), []);
+  const handleFightModeClick = useCallback(() => setClientState({action: 'view-fight'}), []);
   const handleStop = useCallback(() => setClientState({action: undefined}), []);
   const handleMapScreenshotClick = useCallback(
     () => setClientState({action: 'take-screenshot'}),
@@ -68,6 +70,10 @@ export const Modules: React.FC = () => {
             Map screenshot
           </Button>
           <Spacing width={16} />
+          <Button onClick={handleFightModeClick} disabled={clientState.action !== undefined}>
+            Mode fight
+          </Button>
+          <Spacing width={16} />
           {clientState.action !== undefined ? (
             <Button onClick={handleStop}>Stop</Button>
           ) : (
@@ -96,6 +102,10 @@ export const Modules: React.FC = () => {
       <Spacing height={16} />
       <Block>
         <FishModule />
+      </Block>
+      <Spacing height={16} />
+      <Block>
+        <FightModule />
       </Block>
       <Spacing height={16} />
       <Block>

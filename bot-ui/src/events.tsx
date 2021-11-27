@@ -15,7 +15,11 @@ export function subscribeToEvents(): void {
       const currentState = getScenarioState();
       const statusHistory = currentState.statusHistory;
       statusHistory.unshift(event.data.newStatus);
-      setScenarioState({isRunning: event.data.isRunning, statusHistory});
+      setScenarioState({
+        isRunning: event.data.isRunning,
+        fightScenario: event.data.fightScenario,
+        statusHistory,
+      });
     } else {
       console.log('Unknown event', event);
     }

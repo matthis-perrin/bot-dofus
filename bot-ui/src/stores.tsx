@@ -1,5 +1,11 @@
 import {Coordinate} from '../../common/src/coordinates';
-import {CoordinateData, FishData, ScenarioStatusWithTime, SoleilData} from '../../common/src/model';
+import {
+  CoordinateData,
+  FightScenarioData,
+  FishData,
+  ScenarioStatusWithTime,
+  SoleilData,
+} from '../../common/src/model';
 import {createDataStore} from './data_store';
 
 export interface ServerState {
@@ -23,11 +29,15 @@ export const setServerState = serverStateStore.setData;
 
 interface ScenarioState {
   isRunning: boolean;
+  fightScenario: FightScenarioData;
   statusHistory: ScenarioStatusWithTime[];
 }
 
 const scenarioStateStore = createDataStore<ScenarioState>({
   isRunning: false,
+  fightScenario: {
+    isInFight: false,
+  },
   statusHistory: [],
 });
 export const useScenarioState = scenarioStateStore.useData;
@@ -37,7 +47,7 @@ export const setScenarioState = scenarioStateStore.setData;
 //
 
 interface ClientState {
-  action?: 'editing-fish' | 'take-screenshot';
+  action?: 'editing-fish' | 'take-screenshot' | 'view-fight';
 }
 
 const clientStateStore = createDataStore<ClientState>({});
@@ -65,3 +75,17 @@ const squareFetchingStore = createDataStore<SquareFetching>({});
 export const useSquareFetching = squareFetchingStore.useData;
 export const getSquareFetching = squareFetchingStore.getData;
 export const setSquareFetching = squareFetchingStore.setData;
+
+//
+
+interface SquareOverlay {
+  overlay?: {
+    coordinate: Coordinate;
+    color: string;
+  }[];
+}
+
+const squareOverlayStore = createDataStore<SquareOverlay>({});
+export const useSquareOverlay = squareOverlayStore.useData;
+export const getSquareOverlay = squareOverlayStore.getData;
+export const setSquareOverlay = squareOverlayStore.setData;

@@ -440,7 +440,8 @@ export const fightScenario: Scenario = async ctx => {
     const readyCenterY = 620;
     await click(canContinue, {x: readyCenterX, y: readyCenterY, radius: 10, fast: true});
   }
-
+  /* eslint-disable no-await-in-loop */
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     // Wait for the player turn
     await waitForPlayerTurn(ctx);
@@ -451,6 +452,7 @@ export const fightScenario: Scenario = async ctx => {
     // Pass turn
     await click(canContinue, {x: 745, y: 812, radius: 5});
   }
+  /* eslint-enable no-await-in-loop */
 };
 
 const fishingTimePerFish: Record<FishSize, number> = {
