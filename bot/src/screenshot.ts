@@ -33,7 +33,7 @@ for (let y = 1; y < VERTICAL_SQUARES - 1; y++) {
   ALL_SOLEIL_POS.push({x: 0, y}, {x: HORIZONTAL_SQUARES - 1, y});
 }
 
-function identifyColor(circleColor: Rgb, squareColor: Rgb, debug: boolean): SquareType {
+function identifyColor(circleColor: Rgb, squareColor: Rgb): SquareType {
   const circleTypesAndDistance: [SquareType, number][] = [
     [SquareType.Red, colorDistance(circleColor, hexToRgb('ea3323'))],
     [SquareType.Blue, colorDistance(circleColor, hexToRgb('0000f5'))],
@@ -43,9 +43,6 @@ function identifyColor(circleColor: Rgb, squareColor: Rgb, debug: boolean): Squa
     [SquareType.Dark, colorDistance(squareColor, hexToRgb('777a7f'))],
     [SquareType.Wall, colorDistance(squareColor, hexToRgb('c8c8c8'))],
   ];
-  if (debug) {
-    console.log(circleTypesAndDistance, squareTypesAndDistance);
-  }
   const circleType = circleTypesAndDistance
     .filter(v => v[1] < 25)
     .sort((v1, v2) => v1[1] - v2[1])[0];
@@ -103,7 +100,7 @@ export function scanMap(): MapScan {
             {x: 67, y: 20},
           ]);
       const squareColor = isTopRight ? circleColor : findPixelColor(x, y, [{x: 40, y: 15}]);
-      const squareType = identifyColor(circleColor, squareColor, x === 6 && y === 29);
+      const squareType = identifyColor(circleColor, squareColor);
 
       // Add to map scan
       const scanX = scan[x];

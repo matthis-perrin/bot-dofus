@@ -407,7 +407,10 @@ async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> {
     {x: 1088, y: 607},
     {x: 1088, y: 630},
   ];
-  if (checkForColor(timelineCoordinates, '0000EB')) {
+  if (
+    checkForColor(timelineCoordinates, '0000EB') ||
+    checkForColor(timelineCoordinates, 'ea3323')
+  ) {
     updateStatus('Cache timeline');
     await click(canContinue, {x: 1119, y: 628, radius: 3, fast: true});
   }
