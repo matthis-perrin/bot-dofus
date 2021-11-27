@@ -68,6 +68,13 @@ export function scanMap(): MapScan {
         g: bitmap[offset + 1]!,
         b: bitmap[offset]!,
       };
+
+      if (x === 6 && y === 29) {
+        console.log(x, y);
+        console.log(bitmap.slice(offset - 16, offset + 16));
+        console.log(color);
+      }
+
       colors.push(color);
     }
 
