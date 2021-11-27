@@ -34,20 +34,25 @@ for (let y = 1; y < VERTICAL_SQUARES - 1; y++) {
 }
 
 function identifyColor(circleColor: Rgb, squareColor: Rgb, debug: boolean): SquareType {
-  const typesAndDistance: [SquareType, number][] = [
+  const circleTypesAndDistance: [SquareType, number][] = [
     [SquareType.Red, colorDistance(circleColor, hexToRgb('ea3323'))],
     [SquareType.Blue, colorDistance(circleColor, hexToRgb('0000f5'))],
+  ];
+  const squareTypesAndDistance: [SquareType, number][] = [
     [SquareType.Light, colorDistance(squareColor, hexToRgb('84878c'))],
     [SquareType.Dark, colorDistance(squareColor, hexToRgb('777a7f'))],
     [SquareType.Wall, colorDistance(squareColor, hexToRgb('c8c8c8'))],
   ];
   if (debug) {
-    console.log(typesAndDistance);
+    console.log(circleTypesAndDistance, squareTypesAndDistance);
   }
-  return (
-    typesAndDistance.filter(v => v[1] < 25).sort((v1, v2) => v1[1] - v2[1])[0]?.[0] ??
-    SquareType.Unknown
-  );
+  const circleType = circleTypesAndDistance
+    .filter(v => v[1] < 25)
+    .sort((v1, v2) => v1[1] - v2[1])[0];
+  const squareType = squareTypesAndDistance
+    .filter(v => v[1] < 25)
+    .sort((v1, v2) => v1[1] - v2[1])[0];
+  return circleType?.[0] ?? squareType?.[0] ?? SquareType.Unknown;
 }
 
 export function scanMap(): MapScan {
