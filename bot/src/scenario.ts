@@ -117,11 +117,8 @@ export const mapLoopScenario: Scenario = async ctx => {
       updateStatus(
         `Map courante (${coordinateStr}) n'est pas dans le chemin. Pause de 5s avant redémarrage du scénario.`
       );
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          mapLoopScenario(ctx).then(resolve).catch(reject);
-        }, 5000);
-      });
+      await sleep(canContinue, 5000);
+      return mapLoopScenario(ctx);
     }
 
     // Fish on the map
@@ -173,11 +170,8 @@ export const mapLoopScenario: Scenario = async ctx => {
           .map(s => coordinateToString(s))
           .join(', ')}. Pause de 5s avant redémarrage du scénario.`
       );
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          mapLoopScenario(ctx).then(resolve).catch(reject);
-        }, 5000);
-      });
+      await sleep(canContinue, 5000);
+      return mapLoopScenario(ctx);
     }
 
     let soleil = soleils[0]!;
@@ -248,11 +242,8 @@ export const mapLoopScenario: Scenario = async ctx => {
           nextMap
         )} n'est toujours pas identifiée. Pause de 5s avant redémarrage du scénario.`
       );
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          mapLoopScenario(ctx).then(resolve).catch(reject);
-        }, 5000);
-      });
+      await sleep(canContinue, 5000);
+      return mapLoopScenario(ctx);
     }
 
     updateStatus(`Déplacement terminé`);
@@ -267,12 +258,9 @@ export const fishMapScenario: Scenario = async ctx => {
 
   const lastData = await ia.refresh();
   if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        updateStatus('Infos écran non disponible. En attente...');
-        fishMapScenario(ctx).then(resolve).catch(reject);
-      }, 500);
-    });
+    updateStatus('Infos écran non disponible. En attente...');
+    await sleep(canContinue, 500);
+    return fishMapScenario(ctx);
   }
 
   const allFishes = fishDb.get(lastData.coordinate.coordinate);
