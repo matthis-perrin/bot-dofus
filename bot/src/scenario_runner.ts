@@ -153,7 +153,11 @@ export class ScenarioRunner {
   }
 
   private updateStatus(newStatus: ScenarioStatus): void {
-    this.statusHistory.unshift({value: newStatus, time: Date.now()});
+    this.statusHistory.unshift({
+      value: newStatus,
+      time: Date.now(),
+      id: Math.random().toString(36).slice(2),
+    });
     this.emit();
   }
 

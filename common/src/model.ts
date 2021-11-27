@@ -63,6 +63,7 @@ export type FishData = Fish[]
 
 export type ScenarioStatus = string;
 export interface ScenarioStatusWithTime {
+  id: string;
   value: ScenarioStatus;
   time: number;
 }

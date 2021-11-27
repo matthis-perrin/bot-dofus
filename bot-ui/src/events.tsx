@@ -14,7 +14,9 @@ export function subscribeToEvents(): void {
     } else if (event.type === 'scenario-new-status') {
       const currentState = getScenarioState();
       const statusHistory = currentState.statusHistory;
-      statusHistory.unshift(event.data.newStatus);
+      if (statusHistory[0]?.id !== event.data.newStatus.id) {
+        statusHistory.unshift(event.data.newStatus);
+      }
       setScenarioState({
         isRunning: event.data.isRunning,
         fightScenario: event.data.fightScenario,
