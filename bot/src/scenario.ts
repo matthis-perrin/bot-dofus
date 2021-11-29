@@ -19,12 +19,16 @@ import {
   fishPopupSizes,
   FishSize,
   FishType,
+  MapScan,
+  SquareType,
 } from '../../common/src/model';
 import {click, sleep} from './actions';
 import {checkForColor} from './colors';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
+import {getPlayersCoordinates} from './fight';
 import {fishDb} from './fish_db';
 import {Scenario, ScenarioContext} from './scenario_runner';
+import {scanMap} from './screenshot';
 
 const mapLoop = [
   {x: 7, y: -4},
@@ -416,6 +420,37 @@ async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> {
   }
 }
 
+// function computeDistance(from: Coordinate, toCoordinates)
+// function getPathCoordinatesAtRange(mapScan: MapScan, from: Coordinate, range: number): Coordinate[] {
+//   const paths = getPathCoordinates(mapScan);
+
+// }
+
+const COFFRE_RANGE = 6;
+
+export async function playerTurn(
+  ctx: ScenarioContext,
+  fightContext: FightContext,
+  mapScan: MapScan
+): Promise<void> {
+  if (fightContext.coffre === undefined) {
+    const players = getPlayersCoordinates(mapScan);
+    if (players.length > 1) {
+      ctx.updateStatus(
+        'Coffre non posé par le bot, mais plusieurs ronds rouges détectés. La position du joueur sera choisi au hasard pour la suite du combat.'
+      );
+      fightContext.coffre = {x: -1, y: -1};
+      return playerTurn(ctx, fightContext, mapScan);
+    }
+    const player = players[0]!;
+  }
+}
+
+interface FightContext {
+  coffre?: Coordinate;
+  chanceDone: boolean;
+}
+
 export const fightScenario: Scenario = async ctx => {
   const {canContinue, updateStatus} = ctx;
 
@@ -431,6 +466,12 @@ export const fightScenario: Scenario = async ctx => {
     const readyCenterY = 620;
     await click(canContinue, {x: readyCenterX, y: readyCenterY, radius: 10, fast: true});
   }
+
+  const mapScan = scanMap();
+  const fightContext: FightContext = {
+    chanceDone: false,
+  };
+
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -439,6 +480,9 @@ export const fightScenario: Scenario = async ctx => {
 
     // Make sure the fight zone has everything hidden
     await ensureCleanFightZone(ctx);
+
+    // Perform actions
+    await playerTurn(ctx, fightContext, mapScan);
 
     // Pass turn
     await click(canContinue, {x: 745, y: 812, radius: 5});
