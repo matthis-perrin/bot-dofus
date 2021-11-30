@@ -84,6 +84,7 @@ export class ScenarioRunner {
           this.isInFight = true;
           this.start();
         } else {
+          console.error(err);
           this.updateStatus(`ERREUR durant l'execution du scenario pêche:\n${String(err)}`);
         }
       });
@@ -120,6 +121,7 @@ export class ScenarioRunner {
           this.isInFight = false;
           this.start();
         } else {
+          console.error(err);
           this.updateStatus(`ERREUR durant l'execution du scenario combat:\n${String(err)}`);
         }
         if (this.mapScanInterval) {

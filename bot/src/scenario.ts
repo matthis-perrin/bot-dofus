@@ -20,12 +20,18 @@ import {
   FishSize,
   FishType,
   MapScan,
-  SquareType,
 } from '../../common/src/model';
 import {click, sleep} from './actions';
 import {checkForColor} from './colors';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
-import {getPlayersCoordinates} from './fight';
+import {
+  getAvailableTargets,
+  getEnnemiesCoordinates,
+  getPlayersCoordinates,
+  mapToGrid,
+  shortestPaths,
+  shortestPathsToLineOfSight,
+} from './fight';
 import {fishDb} from './fish_db';
 import {Scenario, ScenarioContext} from './scenario_runner';
 import {scanMap} from './screenshot';
@@ -442,7 +448,61 @@ export async function playerTurn(
       fightContext.coffre = {x: -1, y: -1};
       return playerTurn(ctx, fightContext, mapScan);
     }
-    const player = players[0]!;
+    const player = mapToGrid(players[0]!);
+
+    const ennemies = getEnnemiesCoordinates(mapScan).map(mapToGrid);
+    if (ennemies.length === 0) {
+      ctx.updateStatus(`Aucun ennemi détecté, pas d'action possible`);
+      return;
+    }
+
+    // Get the positions where putting the coffre is possible
+    const availablePositionForCoffre = getAvailableTargets(mapScan, player, COFFRE_RANGE);
+
+    // Compute for each available position
+    // - how many PM for the ennemies to get to a line of sight
+    // - how many PM for the ennemies to get next to the coffre
+    const coffrePositionToClosestEnnemy = availablePositionForCoffre.map(p => {
+      const ennemyDistances = ennemies.map(e => {
+        const lineOfSightsPaths = shortestPathsToLineOfSight(mapScan, e, p);
+        const cacPaths = shortestPaths(mapScan, e, p);
+        const [firstLineOfSightPath] = lineOfSightsPaths;
+        const [firstCacPath] = cacPaths;
+        const lineOfSightDistance =
+          firstLineOfSightPath === undefined ? 1000 : firstLineOfSightPath.length;
+        const cacDistance = firstCacPath === undefined ? 1000 : firstCacPath.length;
+        return {lineOfSightDistance, cacDistance};
+      });
+
+      return {
+        coffrePosition: p,
+        closestLineOfSight: Math.min(...ennemyDistances.map(d => d.lineOfSightDistance)),
+        closestCac: Math.min(...ennemyDistances.map(d => d.cacDistance)),
+      };
+    });
+
+    // Keep the positions that are the furthest from any ennemy line of sight, then the furthest from any cac
+    const bestCoffrePositions = coffrePositionToClosestEnnemy
+      .map(p => ({
+        coffrePosition: p.coffrePosition,
+        score: p.closestLineOfSight * 1e6 + p.closestCac,
+      }))
+      .sort((p1, p2) => p2.score - p1.score)
+      .filter((p, i, arr) => p.score === arr[0]!.score);
+
+    // Pick the first position
+    const [targetCoffrePosition] = bestCoffrePositions;
+    if (targetCoffrePosition === undefined) {
+      ctx.updateStatus(`Aucune position pour le coffre disponible, pas d'action possible`);
+    } else {
+      ctx.updateStatus(
+        `Joueur: ${coordinateToString(player)}, Ennemies: ${ennemies
+          .map(coordinateToString)
+          .join(', ')}, Coffre: ${bestCoffrePositions
+          .map(p => coordinateToString(p.coffrePosition))
+          .join(', ')}`
+      );
+    }
   }
 }
 
@@ -467,7 +527,6 @@ export const fightScenario: Scenario = async ctx => {
     await click(canContinue, {x: readyCenterX, y: readyCenterY, radius: 10, fast: true});
   }
 
-  const mapScan = scanMap();
   const fightContext: FightContext = {
     chanceDone: false,
   };
@@ -482,7 +541,7 @@ export const fightScenario: Scenario = async ctx => {
     await ensureCleanFightZone(ctx);
 
     // Perform actions
-    await playerTurn(ctx, fightContext, mapScan);
+    await playerTurn(ctx, fightContext, scanMap());
 
     // Pass turn
     await click(canContinue, {x: 745, y: 812, radius: 5});

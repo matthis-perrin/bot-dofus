@@ -15,7 +15,7 @@ function getColorFromSquareType(mapType: SquareType): string {
   } else if (mapType === SquareType.Dark) {
     return '#ffffffaa';
   } else if (mapType === SquareType.Wall) {
-    return '#683100cc';
+    return '#ffff00aa';
   }
   return '#683100cc';
 }
