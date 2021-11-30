@@ -1,8 +1,9 @@
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
+import {fightScenario} from './fight/fight_scenario';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
-import {fightScenario, mapLoopScenario} from './scenario';
+import {mapLoopScenario} from './scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {startServer} from './server';
 import {loadFishPopupModel, loadMapModel, loadSoleilModel} from './tensorflow';

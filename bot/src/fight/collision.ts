@@ -16,10 +16,15 @@ export function blockLineOfSight(square: Coordinate, from: Coordinate, to: Coord
   ];
 
   // `square` blocks the line of sight if one of the segments intercept with the line between `from` and `to`
-  return !segments.every(s => !segmentsIntercect(s, [from, to]));
+  // or all segment are "edge" (cross diagonal)
+  const results = new Set(segments.map(s => segmentsIntercect(s, [from, to])));
+  return results.has('Intercect') || !results.has('DontIntercect');
 }
 
-function segmentsIntercect(s1: [Coordinate, Coordinate], s2: [Coordinate, Coordinate]): boolean {
+function segmentsIntercect(
+  s1: [Coordinate, Coordinate],
+  s2: [Coordinate, Coordinate]
+): 'Intercect' | 'DontIntercect' | 'Edge' {
   // Check if any of the four points is on the other segment
   if (
     onSegment(s1[0], s2[0], s2[1]) ||
@@ -27,7 +32,7 @@ function segmentsIntercect(s1: [Coordinate, Coordinate], s2: [Coordinate, Coordi
     onSegment(s2[0], s1[0], s1[1]) ||
     onSegment(s2[1], s1[0], s1[1])
   ) {
-    return false;
+    return 'Edge';
   }
 
   // Find the four orientations needed for general and
@@ -39,15 +44,28 @@ function segmentsIntercect(s1: [Coordinate, Coordinate], s2: [Coordinate, Coordi
 
   // General case
   if (o1 !== o2 && o3 !== o4) {
-    return true;
+    return 'Intercect';
   }
 
-  // Special Cases
-  if ([o1, o2, o3, o4].includes('Collinear')) {
-    throw new Error('Collinear');
-  }
+  // // Special Cases
+  // // s1[0], s1[1] and s2[0] are collinear and s2[0] lies on segment s1
+  // if (o1 === 'Collinear' && onSegment(s1[0], s2[0], s1[1])) {
+  //   return true;
+  // }
+  // // s1[0], s1[1] and s2[1] are collinear and s2[1] lies on segment s1
+  // if (o2 === 'Collinear' && onSegment(s1[0], s2[1], s1[1])) {
+  //   return true;
+  // }
+  // // s2[0], s2[1] and s1[0] are collinear and s1[0] lies on segment s2
+  // if (o3 === 'Collinear' && onSegment(s2[0], s1[0], s2[1])) {
+  //   return true;
+  // }
+  // // s2[0], s2[1] and s1[1] are collinear and s1[1] lies on segment s2
+  // if (o4 === 'Collinear' && onSegment(s2[0], s1[1], s2[1])) {
+  //   return true;
+  // }
 
-  return false; // Doesn't fall in any of the above cases
+  return 'DontIntercect'; // Doesn't fall in any of the above cases
 }
 
 type Orientation = 'Collinear' | 'Clockwise' | 'Counterclowise';

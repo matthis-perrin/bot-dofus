@@ -29,10 +29,10 @@ function getPathCoordinates(mapScan: MapScan): MapCoordinate[] {
   return getCoordinatesOfType(mapScan, [SquareType.Light, SquareType.Dark]);
 }
 function getSightBlockingCoordinates(mapScan: MapScan): MapCoordinate[] {
-  return getCoordinatesOfType(mapScan, [SquareType.Wall, SquareType.Red, SquareType.Blue]);
+  return getCoordinatesOfType(mapScan, [SquareType.Wall]);
 }
 
-function hashCoordinate(coordinate: MapCoordinate | GridCoordinate | Coordinate): string {
+export function hashCoordinate(coordinate: MapCoordinate | GridCoordinate | Coordinate): string {
   return `${coordinate.x};${coordinate.y}`;
 }
 
@@ -114,7 +114,13 @@ export function getAvailableTargets(
   // Filter coordinates to ensure there are no obstacle between them and the from position
   const targetables = atRange.filter(to =>
     hasLineOfSight(
-      new Set(getSightBlockingCoordinates(mapScan).map(s => hashCoordinate(mapToGrid(s)))),
+      new Set(
+        [
+          ...getSightBlockingCoordinates(mapScan),
+          ...getPlayersCoordinates(mapScan),
+          ...getEnnemiesCoordinates(mapScan),
+        ].map(s => hashCoordinate(mapToGrid(s)))
+      ),
       from,
       to
     )
@@ -147,6 +153,7 @@ export function shortestPathsToLineOfSight(
   opts?: {
     minRange?: number;
     maxRange?: number;
+    excludePlayersForLineOfSight?: boolean;
   }
 ): GridCoordinate[][] {
   const distances = computeDistances(mapScan, from, to, opts);
@@ -233,6 +240,7 @@ function computeDistances(
   opts?: {
     minRange?: number;
     maxRange?: number;
+    excludePlayersForLineOfSight?: boolean;
   }
 ): Record<string, Distance> {
   // Find squares that are valid targets
@@ -243,7 +251,12 @@ function computeDistances(
   );
   // Find squares that can block line of sight
   const sightBlockingCoordinates = new Set(
-    getSightBlockingCoordinates(mapScan)
+    [
+      ...getSightBlockingCoordinates(mapScan),
+      ...(opts?.excludePlayersForLineOfSight
+        ? []
+        : [...getPlayersCoordinates(mapScan), ...getEnnemiesCoordinates(mapScan)]),
+    ]
       .map(s => mapToGrid(s))
       .map(hashCoordinate)
   );
