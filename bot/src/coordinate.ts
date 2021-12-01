@@ -8,6 +8,7 @@ export const gameCoordinates = {
   x: width - GAME_WIDTH,
   y: height > 900 ? 133 / 2 : 54,
 };
+export const safeZone = {x: 563, y: 675};
 
 export function mapCoordinateToScreenCoordinate(coordinate: Coordinate): Coordinate {
   return imageCoordinateToScreenCoordinate(mapCoordinateToImageCoordinate(coordinate));

@@ -25,14 +25,18 @@ export function getPlayersCoordinates(mapScan: MapScan): MapCoordinate[] {
 export function getEnnemiesCoordinates(mapScan: MapScan): MapCoordinate[] {
   return getCoordinatesOfType(mapScan, [SquareType.Blue]);
 }
-function getPathCoordinates(mapScan: MapScan): MapCoordinate[] {
+export function getPathCoordinates(mapScan: MapScan): MapCoordinate[] {
   return getCoordinatesOfType(mapScan, [SquareType.Light, SquareType.Dark]);
 }
-function getSightBlockingCoordinates(mapScan: MapScan): MapCoordinate[] {
+export function getWallCoordinates(mapScan: MapScan): MapCoordinate[] {
   return getCoordinatesOfType(mapScan, [SquareType.Wall]);
 }
 
 export function hashCoordinate(coordinate: MapCoordinate | GridCoordinate | Coordinate): string {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (coordinate === undefined) {
+    return `?`;
+  }
   return `${coordinate.x};${coordinate.y}`;
 }
 
@@ -116,7 +120,7 @@ export function getAvailableTargets(
     hasLineOfSight(
       new Set(
         [
-          ...getSightBlockingCoordinates(mapScan),
+          ...getWallCoordinates(mapScan),
           ...getPlayersCoordinates(mapScan),
           ...getEnnemiesCoordinates(mapScan),
         ].map(s => hashCoordinate(mapToGrid(s)))
@@ -136,12 +140,13 @@ export function shortestPaths(
   if (from.x === to.x && from.y === to.y) {
     return [];
   }
-  const distances = computeDistances(mapScan, from, to);
+
+  const distances = exploreMap(mapScan, from, () => {});
   const targetDistance = distances[hashCoordinate(to)];
   if (targetDistance === undefined) {
     return [];
   }
-  return buildPaths(distances, distances[hashCoordinate(to)]!, d => d.distance === 0).map(
+  return buildPaths(distances, targetDistance).map(
     path => path.reverse().slice(1) // slice to remove the start position
   );
 }
@@ -156,32 +161,80 @@ export function shortestPathsToLineOfSight(
     excludePlayersForLineOfSight?: boolean;
   }
 ): GridCoordinate[][] {
-  const distances = computeDistances(mapScan, from, to, opts);
-  const distancesWithSight = Object.values(distances)
-    .filter(d => d.hasSight)
-    .sort((d1, d2) => d1.distance - d2.distance);
-  const bestDistances = distancesWithSight.filter(
-    d => d.distance === distancesWithSight[0]!.distance
+  // Find squares that can block line of sight
+  const sightBlockingCoordinates = new Set(
+    [
+      ...getWallCoordinates(mapScan),
+      ...(opts?.excludePlayersForLineOfSight
+        ? []
+        : [...getPlayersCoordinates(mapScan), ...getEnnemiesCoordinates(mapScan)]),
+    ].map(s => hashCoordinate(mapToGrid(s)))
   );
-  const paths = bestDistances
-    .flatMap(d => buildPaths(distances, d, d => d.distance === 0))
+
+  const squares = exploreMap(mapScan, from, c => ({
+    hasSight: hasLineOfSight(sightBlockingCoordinates, c, to, opts),
+  }));
+  const squaresWithSight = Object.values(squares)
+    .filter(d => d.data.hasSight)
+    .sort((d1, d2) => d1.steps - d2.steps);
+  const bestSteps = squaresWithSight[0]?.steps;
+  if (bestSteps === undefined) {
+    return [];
+  }
+  const bestSquares = squaresWithSight.filter(d => d.steps === bestSteps);
+  const paths = bestSquares
+    .flatMap(d => buildPaths(squares, d))
+    .map(path => path.reverse().slice(1));
+  return paths;
+}
+
+export function shortestPathsWithoutLineOfSight(
+  mapScan: MapScan,
+  from: GridCoordinate,
+  to: GridCoordinate,
+  minRange: number,
+  maxRange: number
+): GridCoordinate[][] {
+  const squares = exploreMap(mapScan, from, c => {
+    const distance = distanceBetween(c, to);
+    return {isAtRange: distance >= minRange && distance <= maxRange};
+  });
+  const squaresAtRange = Object.values(squares)
+    .filter(d => d.data.isAtRange)
+    .sort((d1, d2) => d1.steps - d2.steps);
+  const bestSteps = squaresAtRange[0]?.steps;
+  if (bestSteps === undefined) {
+    return [];
+  }
+  const bestSquares = squaresAtRange.filter(d => d.steps === bestSteps);
+  const paths = bestSquares
+    .flatMap(d => buildPaths(squares, d))
     .map(path => path.reverse().slice(1));
   return paths;
 }
 
 function buildPaths(
-  distances: Record<string, Distance>,
-  start: Distance,
-  end: (d: Distance) => boolean
+  results: Record<string, ExplorationResult<unknown>>,
+  start: ExplorationResult<unknown>
 ): GridCoordinate[][] {
-  if (end(start)) {
+  if (start.steps === 0) {
     return [[start.coordinate]];
   }
   const res: GridCoordinate[][] = [];
   for (const parent of start.parents) {
-    const paths = buildPaths(distances, distances[hashCoordinate(parent)]!, end);
-    const newPaths = paths.map(p => [start.coordinate, ...p]);
-    res.push(...newPaths);
+    try {
+      const paths = buildPaths(results, results[hashCoordinate(parent)]!);
+      const newPaths = paths.map(p => [start.coordinate, ...p]);
+      res.push(...newPaths);
+    } catch (err: unknown) {
+      if (String(err) === 'RangeError: Maximum call stack size exceeded') {
+        for (const res of Object.values(results)) {
+          console.log(res);
+        }
+        console.log(start);
+      }
+      throw err;
+    }
   }
   return res;
 }
@@ -226,58 +279,42 @@ export function hasLineOfSight(
   return true;
 }
 
-interface Distance {
+interface ExplorationResult<T = undefined> {
   coordinate: GridCoordinate;
-  distance: number;
-  hasSight: boolean;
+  steps: number;
   parents: GridCoordinate[];
+  data: T;
 }
 
-function computeDistances(
+function exploreMap<T>(
   mapScan: MapScan,
   from: GridCoordinate,
-  to: GridCoordinate,
-  opts?: {
-    minRange?: number;
-    maxRange?: number;
-    excludePlayersForLineOfSight?: boolean;
-  }
-): Record<string, Distance> {
-  // Find squares that are valid targets
+  analysePosition: (c: GridCoordinate) => T
+): Record<string, ExplorationResult<T>> {
+  // Find squares where we can move to
   const freeCoordinatesSet = new Set(
     getPathCoordinates(mapScan)
       .map(s => mapToGrid(s))
       .map(hashCoordinate)
   );
-  // Find squares that can block line of sight
-  const sightBlockingCoordinates = new Set(
-    [
-      ...getSightBlockingCoordinates(mapScan),
-      ...(opts?.excludePlayersForLineOfSight
-        ? []
-        : [...getPlayersCoordinates(mapScan), ...getEnnemiesCoordinates(mapScan)]),
-    ]
-      .map(s => mapToGrid(s))
-      .map(hashCoordinate)
-  );
 
-  const distances: Record<string, Distance> = {
+  const squaresInfo: Record<string, ExplorationResult<T>> = {
     [hashCoordinate(from)]: {
       coordinate: from,
-      distance: 0,
-      hasSight: hasLineOfSight(sightBlockingCoordinates, from, to, opts),
+      steps: 0,
       parents: [],
+      data: analysePosition(from),
     },
   };
   const toProcess: GridCoordinate[] = [from];
   while (toProcess.length > 0) {
     const current = toProcess.shift();
     if (current === undefined) {
-      throw new Error('shortestPaths error, shift failed');
+      throw new Error('exploreMap error, shift failed');
     }
-    const distance = distances[hashCoordinate(current)];
-    if (distance === undefined) {
-      throw new Error('shortestPaths error, distance lookup failed');
+    const currentInfo = squaresInfo[hashCoordinate(current)];
+    if (currentInfo === undefined) {
+      throw new Error('exploreMap error, lookup failed');
     }
     const neighbors = getGridCoordinateNeighbors(current);
     for (const neighbor of neighbors) {
@@ -285,21 +322,21 @@ function computeDistances(
       if (!freeCoordinatesSet.has(neighborHash)) {
         continue;
       }
-      const neighborDistance = distances[neighborHash];
-      if (neighborDistance === undefined || neighborDistance.distance > distance.distance + 1) {
-        distances[neighborHash] = {
+      const neighborInfo = squaresInfo[neighborHash];
+      if (neighborInfo === undefined || neighborInfo.steps > currentInfo.steps + 1) {
+        squaresInfo[neighborHash] = {
           coordinate: neighbor,
-          distance: distance.distance + 1,
-          hasSight: hasLineOfSight(sightBlockingCoordinates, neighbor, to, opts),
+          steps: currentInfo.steps + 1,
           parents: [current],
+          data: analysePosition(neighbor),
         };
         toProcess.push(neighbor);
-      } else if (neighborDistance.distance === distance.distance + 1) {
-        neighborDistance.parents.push(current);
+      } else if (neighborInfo.steps === currentInfo.steps + 1) {
+        neighborInfo.parents.push(current);
       }
     }
   }
-  return distances;
+  return squaresInfo;
 }
 
 const mapToGridRegistry: Record<string, GridCoordinate> = {};

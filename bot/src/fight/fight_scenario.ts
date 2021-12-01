@@ -1,9 +1,11 @@
-import {keyTap} from 'robotjs';
+/* eslint-disable no-await-in-loop */
+import {keyTap, moveMouseSmooth} from 'robotjs';
 
 import {mapCoordinateToImageCoordinate, squareCenter} from '../../../common/src/coordinates';
 import {MapScan} from '../../../common/src/model';
-import {click} from '../actions';
+import {click, sleep} from '../actions';
 import {checkForColor} from '../colors';
+import {imageCoordinateToScreenCoordinate, safeZone} from '../coordinate';
 import {
   getEnnemiesCoordinates,
   getPlayersCoordinates,
@@ -16,52 +18,162 @@ import {Scenario, ScenarioContext} from '../scenario_runner';
 import {scanMap} from '../screenshot';
 import {bestCoffrePosition} from './coffre';
 import {ensureCleanFightZone, waitForPlayerTurn} from './interface';
-
-export async function playerTurn(
-  ctx: ScenarioContext,
-  fightContext: FightContext,
-  mapScan: MapScan
-): Promise<void> {
-  const players = getPlayersCoordinates(mapScan);
-
-  const ennemies = getEnnemiesCoordinates(mapScan).map(mapToGrid);
-  if (ennemies.length === 0) {
-    ctx.updateStatus(`Aucun ennemi détecté, pas d'action possible`);
-  }
-
-  if (fightContext.coffre === undefined) {
-    if (players.length > 1) {
-      ctx.updateStatus(
-        'Coffre non posé par le bot, mais plusieurs ronds rouges détectés. La position du joueur sera choisi au hasard pour la suite du combat.'
-      );
-      fightContext.coffre = {x: -1, y: -1} as GridCoordinate;
-      return playerTurn(ctx, fightContext, mapScan);
-    }
-    const player = mapToGrid(players[0]!);
-
-    const coffrePosition = bestCoffrePosition(mapScan, player, ennemies);
-    if (coffrePosition === undefined) {
-      ctx.updateStatus(`Aucune position pour le coffre disponible, pas d'action possible`);
-    } else {
-      ctx.updateStatus(
-        `Joueur: ${hashCoordinate(player)}, Ennemies: ${ennemies
-          .map(hashCoordinate)
-          .join(', ')}, Coffre: ${hashCoordinate(coffrePosition)}`
-      );
-      keyTap('1');
-      await click(ctx.canContinue, {
-        ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(coffrePosition))),
-        radius: 10,
-      });
-      // eslint-disable-next-line require-atomic-updates
-      fightContext.coffre = coffrePosition;
-    }
-  }
-}
+import {easiestEnnemyForSpell, Spell, Spells} from './spell';
 
 interface FightContext {
   coffre?: GridCoordinate;
   chanceDone: boolean;
+}
+
+function identifyParticipants(
+  mapScan: MapScan,
+  fightContext: FightContext
+): {ennemies: GridCoordinate[]; player: GridCoordinate} | {error: string} {
+  const ennemies = getEnnemiesCoordinates(mapScan).map(mapToGrid);
+  if (ennemies.length === 0) {
+    return {error: `Aucun ennemies détectés`};
+  }
+
+  const players = getPlayersCoordinates(mapScan).map(mapToGrid);
+  if (players.length === 0) {
+    return {error: `Aucun joueurs détectés`};
+  }
+
+  if (fightContext.coffre === undefined) {
+    if (players.length > 1) {
+      fightContext.coffre = {x: -1, y: -1} as GridCoordinate;
+    } else {
+      const player = players[0]!;
+      return {ennemies, player};
+    }
+  }
+
+  const playersWithoutCoffre = players.filter(
+    p => !(p.x === fightContext.coffre?.x && p.y === fightContext.coffre.y)
+  );
+  let player = playersWithoutCoffre[0];
+  if (player === undefined) {
+    return {error: `Pas de joueur détecté à part le coffre`};
+  }
+
+  if (playersWithoutCoffre.length > 1) {
+    player = playersWithoutCoffre[Math.floor(Math.random() * playersWithoutCoffre.length)]!;
+  }
+  return {ennemies, player};
+}
+
+export async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Promise<void> {
+  const mapScan = scanMap();
+  const result = identifyParticipants(mapScan, fightContext);
+  if ('error' in result) {
+    ctx.updateStatus(`${result.error}, aucune action possible`);
+    return;
+  }
+  const {player, ennemies} = result;
+
+  ctx.updateStatus(
+    `Début du tour. Player: ${hashCoordinate(player)}. Coffre: ${
+      fightContext.coffre ? hashCoordinate(fightContext.coffre) : 'non posé'
+    }. Ennemies: ${ennemies.map(hashCoordinate).join('/')}`
+  );
+
+  // POSITIONNING OF THE COFFRE
+  if (fightContext.coffre === undefined) {
+    const coffrePosition = bestCoffrePosition(mapScan, player, ennemies);
+    if (coffrePosition === undefined) {
+      ctx.updateStatus(`Aucune position pour le coffre disponible, pas d'action possible`);
+      return;
+    }
+    ctx.updateStatus(`Placement du coffre en ${hashCoordinate(coffrePosition)}`);
+    keyTap('1');
+    await click(ctx.canContinue, {
+      ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(coffrePosition))),
+      radius: 10,
+    });
+    // eslint-disable-next-line require-atomic-updates
+    fightContext.coffre = coffrePosition;
+    return;
+  }
+
+  let pmLeft = 4;
+  let paLeft = 8;
+
+  // CHANCE
+  if (!fightContext.chanceDone) {
+    paLeft -= 2;
+    fightContext.chanceDone = true;
+    ctx.updateStatus(`Chance pas encore faite, lancement du sort.`);
+    keyTap('2');
+    await click(ctx.canContinue, {
+      ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(player))),
+      radius: 10,
+    });
+    const safeZoneScreen = imageCoordinateToScreenCoordinate(safeZone);
+    moveMouseSmooth(safeZoneScreen.x, safeZoneScreen.y);
+    await ctx.canContinue();
+  }
+
+  // SPELLS
+  async function maybeSpell(spell: Spell): Promise<boolean> {
+    const freshScan = scanMap();
+    const freshResult = identifyParticipants(freshScan, fightContext);
+    if ('error' in freshResult) {
+      ctx.updateStatus(`${freshResult.error}, aucune action possible`);
+      return false;
+    }
+    const {player, ennemies} = freshResult;
+
+    const easiestEnnemy = easiestEnnemyForSpell(freshScan, player, ennemies, spell);
+    if (easiestEnnemy && paLeft >= Spells[spell].pa) {
+      const firstPath = easiestEnnemy.paths[0]; // TODO - Optimise choice
+      if (firstPath && firstPath.length <= pmLeft) {
+        // Go to the requested position
+        const lastSquare = firstPath.at(-1);
+        if (lastSquare) {
+          pmLeft -= firstPath.length;
+          await click(ctx.canContinue, {
+            ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(lastSquare))),
+            radius: 10,
+          });
+        }
+        paLeft -= Spells[spell].pa;
+        ctx.updateStatus(
+          `${spell} possible sur ennemie ${hashCoordinate(easiestEnnemy.ennemy)} Chemin: ${firstPath
+            .map(hashCoordinate)
+            .join(' / ')}`
+        );
+        // Select the LancerDePieces spell
+        await click(ctx.canContinue, {
+          ...Spells[spell].coordinate,
+          radius: 10,
+        });
+        // Click the ennemy
+        await click(ctx.canContinue, {
+          ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(easiestEnnemy.ennemy))),
+          radius: 10,
+        });
+        // Move to safe zone
+        const safeZoneScreen = imageCoordinateToScreenCoordinate(safeZone);
+        moveMouseSmooth(safeZoneScreen.x, safeZoneScreen.y);
+        await ctx.canContinue();
+        // Wait for animations
+        await sleep(ctx.canContinue, 3000);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    if (await maybeSpell(Spell.LancerDePieces)) {
+      continue;
+    }
+    if (await maybeSpell(Spell.RoulageDePelle)) {
+      continue;
+    }
+    break;
+  }
 }
 
 export const fightScenario: Scenario = async ctx => {
@@ -84,7 +196,6 @@ export const fightScenario: Scenario = async ctx => {
     chanceDone: false,
   };
 
-  /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
     // Wait for the player turn
@@ -94,10 +205,13 @@ export const fightScenario: Scenario = async ctx => {
     await ensureCleanFightZone(ctx);
 
     // Perform actions
-    await playerTurn(ctx, fightContext, scanMap());
+    await playerTurn(ctx, fightContext);
 
     // Pass turn
     await click(canContinue, {x: 745, y: 812, radius: 5});
+
+    // Wait a bit
+    await sleep(canContinue, 2000);
   }
-  /* eslint-enable no-await-in-loop */
 };
+/* eslint-enable no-await-in-loop */
