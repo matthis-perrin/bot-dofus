@@ -1,12 +1,12 @@
 /* eslint-disable no-await-in-loop */
-import {keyTap, moveMouseSmooth} from 'robotjs';
+import {keyTap} from 'robotjs';
 
 import {mapCoordinateToImageCoordinate, squareCenter} from '../../../common/src/coordinates';
 import {MapScan} from '../../../common/src/model';
-import {click, sleep} from '../actions';
+import {click, moveToSafeZone, sleep} from '../actions';
 import {checkForColor} from '../colors';
-import {imageCoordinateToScreenCoordinate, safeZone} from '../coordinate';
 import {
+  firstShortestPaths,
   getEnnemiesCoordinates,
   getPlayersCoordinates,
   GridCoordinate,
@@ -108,21 +108,16 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
       ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(player))),
       radius: 10,
     });
-    const safeZoneScreen = imageCoordinateToScreenCoordinate(safeZone);
-    moveMouseSmooth(safeZoneScreen.x, safeZoneScreen.y);
-    await ctx.canContinue();
+    await moveToSafeZone(ctx.canContinue);
   }
 
   // SPELLS
-  async function maybeSpell(spell: Spell): Promise<boolean> {
-    const freshScan = scanMap();
-    const freshResult = identifyParticipants(freshScan, fightContext);
-    if ('error' in freshResult) {
-      ctx.updateStatus(`${freshResult.error}, aucune action possible`);
-      return false;
-    }
-    const {player, ennemies} = freshResult;
-
+  async function maybeSpell(
+    freshScan: MapScan,
+    player: GridCoordinate,
+    ennemies: GridCoordinate[],
+    spell: Spell
+  ): Promise<boolean> {
     const easiestEnnemy = easiestEnnemyForSpell(freshScan, player, ennemies, spell);
     if (easiestEnnemy && paLeft >= Spells[spell].pa) {
       const firstPath = easiestEnnemy.paths[0]; // TODO - Optimise choice
@@ -153,9 +148,7 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
           radius: 10,
         });
         // Move to safe zone
-        const safeZoneScreen = imageCoordinateToScreenCoordinate(safeZone);
-        moveMouseSmooth(safeZoneScreen.x, safeZoneScreen.y);
-        await ctx.canContinue();
+        await moveToSafeZone(ctx.canContinue);
         // Wait for animations
         await sleep(ctx.canContinue, 3000);
         return true;
@@ -166,11 +159,42 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    if (await maybeSpell(Spell.LancerDePieces)) {
+    const freshScan = scanMap();
+    const freshResult = identifyParticipants(freshScan, fightContext);
+    if ('error' in freshResult) {
+      ctx.updateStatus(`${freshResult.error}, aucune action possible`);
+      return;
+    }
+    if (
+      await maybeSpell(freshScan, freshResult.player, freshResult.ennemies, Spell.LancerDePieces)
+    ) {
       continue;
     }
-    if (await maybeSpell(Spell.RoulageDePelle)) {
+    if (
+      await maybeSpell(freshScan, freshResult.player, freshResult.ennemies, Spell.RoulageDePelle)
+    ) {
       continue;
+    }
+    const ennemiesDistance = freshResult.ennemies.map(ennemy => ({
+      ennemy,
+      path: firstShortestPaths(freshScan, freshResult.player, ennemy),
+    }));
+    const closestEnnemy = ennemiesDistance.sort(
+      (e1, e2) => (e1.path.length ?? Number.MAX_VALUE) - (e2.path.length ?? Number.MAX_VALUE)
+    )[0];
+    if (closestEnnemy) {
+      const targetSquare = closestEnnemy.path.slice(0, -1).slice(0, pmLeft).at(-1);
+      if (targetSquare) {
+        // Move toward ennemy
+        await click(ctx.canContinue, {
+          ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(targetSquare))),
+          radius: 10,
+        });
+        // Move to safe zone
+        await moveToSafeZone(ctx.canContinue);
+        // Wait for animations
+        await sleep(ctx.canContinue, 2000);
+      }
     }
     break;
   }

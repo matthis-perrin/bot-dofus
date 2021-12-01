@@ -132,23 +132,50 @@ export function getAvailableTargets(
   return targetables;
 }
 
-export function shortestPaths(
+function isDefined<T>(val: T | undefined): val is T {
+  return val !== undefined;
+}
+
+export function shortestPathLength(
   mapScan: MapScan,
   from: GridCoordinate,
   to: GridCoordinate
-): GridCoordinate[][] {
+): number | undefined {
+  if (from.x === to.x && from.y === to.y) {
+    return 0;
+  }
+  const distances = exploreMap(mapScan, from, () => {});
+  const firstNeighbor = getGridCoordinateNeighbors(to)
+    .map(n => distances[hashCoordinate(n)])
+    .find(isDefined);
+  if (!firstNeighbor) {
+    return undefined;
+  }
+  return firstNeighbor.steps + 1;
+}
+
+export function firstShortestPaths(
+  mapScan: MapScan,
+  from: GridCoordinate,
+  to: GridCoordinate
+): GridCoordinate[] {
   if (from.x === to.x && from.y === to.y) {
     return [];
   }
-
   const distances = exploreMap(mapScan, from, () => {});
-  const targetDistance = distances[hashCoordinate(to)];
-  if (targetDistance === undefined) {
+  const targetNeighbors = getGridCoordinateNeighbors(to)
+    .map(n => distances[hashCoordinate(n)])
+    .filter(isDefined);
+  if (targetNeighbors.length === 0) {
     return [];
   }
-  return buildPaths(distances, targetDistance).map(
-    path => path.reverse().slice(1) // slice to remove the start position
-  );
+  const targetDistance: ExplorationResult = {
+    coordinate: to,
+    parents: targetNeighbors.map(n => n.coordinate),
+    steps: targetNeighbors[0]!.steps + 1,
+    data: undefined,
+  };
+  return buildFirstPath(distances, targetDistance).slice(1);
 }
 
 export function shortestPathsToLineOfSight(
@@ -222,21 +249,26 @@ function buildPaths(
   }
   const res: GridCoordinate[][] = [];
   for (const parent of start.parents) {
-    try {
-      const paths = buildPaths(results, results[hashCoordinate(parent)]!);
-      const newPaths = paths.map(p => [start.coordinate, ...p]);
-      res.push(...newPaths);
-    } catch (err: unknown) {
-      if (String(err) === 'RangeError: Maximum call stack size exceeded') {
-        for (const res of Object.values(results)) {
-          console.log(res);
-        }
-        console.log(start);
-      }
-      throw err;
+    const paths = buildPaths(results, results[hashCoordinate(parent)]!);
+    const newPaths = paths.map(p => [start.coordinate, ...p]);
+    for (const path of newPaths) {
+      res.push(path);
     }
   }
   return res;
+}
+
+function buildFirstPath(
+  results: Record<string, ExplorationResult<unknown>>,
+  start: ExplorationResult<unknown>
+): GridCoordinate[] {
+  if (start.steps === 0) {
+    return [start.coordinate];
+  }
+  return [
+    start.coordinate,
+    ...buildFirstPath(results, results[hashCoordinate(start.parents[0]!)]!),
+  ];
 }
 
 export function hasLineOfSight(

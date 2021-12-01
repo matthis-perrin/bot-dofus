@@ -1,4 +1,4 @@
-import {getMousePos, keyTap} from 'robotjs';
+import {getMousePos} from 'robotjs';
 
 import {
   Coordinate,
@@ -19,24 +19,11 @@ import {
   fishPopupSizes,
   FishSize,
   FishType,
-  MapScan,
 } from '../../common/src/model';
 import {click, sleep} from './actions';
-import {checkForColor} from './colors';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
-import {
-  getAvailableTargets,
-  getEnnemiesCoordinates,
-  getPlayersCoordinates,
-  GridCoordinate,
-  gridToMap,
-  mapToGrid,
-  shortestPaths,
-  shortestPathsToLineOfSight,
-} from './fight';
 import {fishDb} from './fish_db';
-import {Scenario, ScenarioContext} from './scenario_runner';
-import {scanMap} from './screenshot';
+import {Scenario} from './scenario_runner';
 
 const mapLoop = [
   {x: 7, y: -4},
@@ -60,7 +47,7 @@ const mapLoop = [
   {x: 9, y: 0},
   {x: 8, y: 0},
   {x: 8, y: -1},
-  {x: 7, y: -1},
+  {x: 8, y: -2},
   {x: 7, y: -2},
   {x: 7, y: -3},
 ];
@@ -113,10 +100,26 @@ function getDirection(current: Coordinate, nextMap: Coordinate): Direction {
 
 export const mapLoopScenario: Scenario = async ctx => {
   const {ia, canContinue, updateStatus} = ctx;
+
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
     await canContinue();
+
+    // // Check if there is a end of fight window to close
+    // const endOfFight =
+    //   checkForColor(
+    //     [
+    //       {x: 522, y: 185},
+    //       {x: 700, y: 185},
+    //     ],
+    //     '514A3D'
+    //   ) && checkForColor([{x: 452, y: 224}], 'D5CFAA');
+    // if (endOfFight) {
+    //   await sleep(canContinue, 1000);
+    //   keyTap('escape');
+    //   await sleep(canContinue, 2000);
+    // }
 
     // Get current data
     const lastData = await ia.refresh();
@@ -188,33 +191,33 @@ export const mapLoopScenario: Scenario = async ctx => {
 
     let soleil = soleils[0]!;
     if (soleils.length > 1) {
-      // Special case when going from 8;0 to 8;-1. We take the soleil the furthest right
-      if (coordinate.x === 8 && coordinate.y === 0 && nextMap.x === 8 && nextMap.y === -1) {
-        soleil = [...soleils].sort((s1, s2) => s2.x - s1.x)[0]!;
-        updateStatus(
-          `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
-            .map(s => coordinateToString(s))
-            .join(', ')}. Cas particulier 8;0 vers 8;-1, le soleil le plus à droite est choisi.`
-        );
-      } else {
-        soleil = [...soleils].sort((s1, s2) => {
-          if (squareIsAngle(s1)) {
-            if (squareIsAngle(s2)) {
-              return -1;
-            }
-            return 1;
-          }
+      // // Special case when going from 8;0 to 8;-1. We take the soleil the furthest right
+      // if (coordinate.x === 8 && coordinate.y === 0 && nextMap.x === 8 && nextMap.y === -1) {
+      //   soleil = [...soleils].sort((s1, s2) => s2.x - s1.x)[0]!;
+      //   updateStatus(
+      //     `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
+      //       .map(s => coordinateToString(s))
+      //       .join(', ')}. Cas particulier 8;0 vers 8;-1, le soleil le plus à droite est choisi.`
+      //   );
+      // } else {
+      soleil = [...soleils].sort((s1, s2) => {
+        if (squareIsAngle(s1)) {
           if (squareIsAngle(s2)) {
             return -1;
           }
+          return 1;
+        }
+        if (squareIsAngle(s2)) {
           return -1;
-        })[0]!;
-        updateStatus(
-          `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
-            .map(s => coordinateToString(s))
-            .join(', ')}. Le premier soleil qui m'est pas un angle est choisi.`
-        );
-      }
+        }
+        return -1;
+      })[0]!;
+      updateStatus(
+        `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
+          .map(s => coordinateToString(s))
+          .join(', ')}. Le premier soleil qui m'est pas un angle est choisi.`
+      );
+      // }
     }
 
     // Click on the soleil

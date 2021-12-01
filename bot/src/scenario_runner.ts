@@ -1,4 +1,7 @@
+import {keyTap} from 'robotjs';
+
 import {MapScan, ScenarioStatus, ScenarioStatusWithTime} from '../../common/src/model';
+import {sleep} from './actions';
 import {isInFight} from './fight_detector';
 import {Intelligence} from './intelligence';
 import {scanMap} from './screenshot';
@@ -120,7 +123,12 @@ export class ScenarioRunner {
           this.updateStatus('STOP SCENARIO COMBAT');
         } else if (err instanceof FightEndedError) {
           this.isInFight = false;
-          this.start();
+          setTimeout(() => {
+            keyTap('escape');
+            setTimeout(() => {
+              this.start();
+            }, 1000);
+          }, 1000);
         } else {
           console.error(err);
           this.updateStatus(`ERREUR durant l'execution du scenario combat:\n${String(err)}`);

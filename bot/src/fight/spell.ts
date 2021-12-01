@@ -19,17 +19,19 @@ export enum Spell {
   RoulageDePelle = 'RoulageDePelle',
 }
 
+const PO = 3;
+
 export const Spells: Record<Spell, SpellInfo> = {
   [Spell.LancerDePieces]: {
     minRange: 0,
-    maxRange: 12,
+    maxRange: 12 + PO,
     lineOfSight: true,
     pa: 2,
     coordinate: {x: 850, y: 760},
   },
   [Spell.RoulageDePelle]: {
     minRange: 1,
-    maxRange: 8,
+    maxRange: 8 + PO,
     lineOfSight: false,
     pa: 3,
     coordinate: {x: 1020, y: 760},

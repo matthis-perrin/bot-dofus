@@ -1,7 +1,11 @@
 import {mouseClick, moveMouseSmooth} from 'robotjs';
 
 import {Coordinate} from '../../common/src/coordinates';
-import {imageCoordinateToScreenCoordinate} from './coordinate';
+import {
+  imageCoordinateToScreenCoordinate,
+  safeZone,
+  screenCoordinateToImageCoordinate,
+} from './coordinate';
 import {CanContinue} from './scenario_runner';
 
 export async function click(
@@ -27,16 +31,23 @@ export async function click(
   moveMouseSmooth(clickCoordinate.x, clickCoordinate.y, randomSpeed);
   await canContinue();
 
-  await sleep(canContinue, Math.random() * 500 + 0);
+  await sleep(canContinue, Math.random() * 500);
   await canContinue();
 
   mouseClick(button);
   await canContinue();
 
-  await sleep(canContinue, Math.random() * 500 + 0);
+  await sleep(canContinue, Math.random() * 500);
   await canContinue();
 
-  return clickCoordinate;
+  return screenCoordinateToImageCoordinate(clickCoordinate);
+}
+
+export async function moveToSafeZone(canContinue: CanContinue): Promise<void> {
+  const safeZoneScreen = imageCoordinateToScreenCoordinate(safeZone);
+  moveMouseSmooth(safeZoneScreen.x, safeZoneScreen.y);
+  await canContinue();
+  await sleep(canContinue, Math.random() * 500 + 0);
 }
 
 export async function sleep(canContinue: CanContinue, ms: number): Promise<void> {

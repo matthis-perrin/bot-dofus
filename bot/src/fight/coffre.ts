@@ -2,7 +2,7 @@ import {MapScan} from '../../../common/src/model';
 import {
   getAvailableTargets,
   GridCoordinate,
-  shortestPaths,
+  shortestPathLength,
   shortestPathsToLineOfSight,
 } from '../fight';
 
@@ -24,12 +24,11 @@ export function bestCoffrePosition(
       const lineOfSightsPaths = shortestPathsToLineOfSight(mapScan, e, p, {
         excludePlayersForLineOfSight: true,
       });
-      const cacPaths = shortestPaths(mapScan, e, p);
+      const cacPathsLength = shortestPathLength(mapScan, e, p);
       const [firstLineOfSightPath] = lineOfSightsPaths;
-      const [firstCacPath] = cacPaths;
       const lineOfSightDistance =
         firstLineOfSightPath === undefined ? 1000 : firstLineOfSightPath.length;
-      const cacDistance = firstCacPath === undefined ? 1000 : firstCacPath.length;
+      const cacDistance = cacPathsLength ?? 1000;
       return {lineOfSightDistance, firstLineOfSightPath, cacDistance};
     });
     const closestLineOfSight = Math.min(...ennemyDistances.map(d => d.lineOfSightDistance));
