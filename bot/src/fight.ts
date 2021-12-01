@@ -175,7 +175,7 @@ export function firstShortestPaths(
     steps: targetNeighbors[0]!.steps + 1,
     data: undefined,
   };
-  return buildFirstPath(distances, targetDistance).slice(1);
+  return buildFirstPath(distances, targetDistance).reverse().slice(1);
 }
 
 export function shortestPathsToLineOfSight(

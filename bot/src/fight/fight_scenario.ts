@@ -53,7 +53,7 @@ function identifyParticipants(
   );
   let player = playersWithoutCoffre[0];
   if (player === undefined) {
-    return {error: `Pas de joueur détecté à part le coffre`};
+    return {ennemies, player: players[0]!};
   }
 
   if (playersWithoutCoffre.length > 1) {
@@ -190,10 +190,6 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
           ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(targetSquare))),
           radius: 10,
         });
-        // Move to safe zone
-        await moveToSafeZone(ctx.canContinue);
-        // Wait for animations
-        await sleep(ctx.canContinue, 2000);
       }
     }
     break;
