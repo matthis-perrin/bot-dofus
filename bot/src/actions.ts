@@ -60,6 +60,14 @@ export async function sleep(canContinue: CanContinue, ms: number): Promise<void>
   }
 }
 
+export async function randSleep(
+  canContinue: CanContinue,
+  minMs: number,
+  maxMs: number
+): Promise<void> {
+  return sleep(canContinue, minMs + Math.random() * (maxMs - minMs));
+}
+
 export async function sleepInternal(ms: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(resolve, ms);

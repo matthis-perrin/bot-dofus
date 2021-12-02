@@ -1,5 +1,6 @@
 import 'source-map-support/register';
 
+import {deleteBags} from './delete_scenario';
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fightScenario} from './fight/fight_scenario';
@@ -22,7 +23,8 @@ async function run(): Promise<void> {
   const ai = new Intelligence(soleilModel, mapModel, fishPopupModel);
   const runner = new ScenarioRunner(ai, mapLoopScenario, fightScenario);
   startServer(ai, runner);
-  runner.start();
+  // runner.start();
+  await deleteBags({canContinue: async () => {}, ia: ai, updateStatus: () => {}});
 }
 
 run().catch(handleError);
