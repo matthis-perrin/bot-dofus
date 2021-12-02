@@ -150,7 +150,7 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
         // Move to safe zone
         await moveToSafeZone(ctx.canContinue);
         // Wait for animations
-        await sleep(ctx.canContinue, 3000);
+        await sleep(ctx.canContinue, 1500);
         return true;
       }
     }

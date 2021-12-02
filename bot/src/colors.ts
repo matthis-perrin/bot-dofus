@@ -52,10 +52,13 @@ export function colorDistance(color1: Rgb, color2: Rgb): number {
   );
 }
 
-export function checkForColor(coordinates: Coordinate[], targetColor: string): boolean {
+export function checkForColor(
+  coordinates: Coordinate[],
+  targetColor: string,
+  tolerance = 25
+): boolean {
   const color = hexToRgb(targetColor);
   const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
-  console.log(color, colorAverage, distance);
-  return distance <= 25;
+  return distance <= tolerance;
 }

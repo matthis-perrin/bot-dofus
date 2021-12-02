@@ -1,7 +1,7 @@
 import {keyTap} from 'robotjs';
 
 import {MapScan, ScenarioStatus, ScenarioStatusWithTime} from '../../common/src/model';
-import {sleep} from './actions';
+import {deleteBagsScenario} from './delete_scenario';
 import {isInFight} from './fight_detector';
 import {Intelligence} from './intelligence';
 import {scanMap} from './screenshot';
@@ -125,9 +125,31 @@ export class ScenarioRunner {
           this.isInFight = false;
           setTimeout(() => {
             keyTap('escape');
-            setTimeout(() => {
-              this.start();
-            }, 1000);
+            deleteBagsScenario({
+              ia: this.ia,
+              canContinue: async () => {
+                if (isInFight()) {
+                  throw new FightStartedError();
+                }
+                return Promise.resolve();
+              },
+              updateStatus: newStatus => this.updateStatus(newStatus),
+            })
+              .then(() => {
+                this.start();
+              })
+              .catch(err => {
+                if (err instanceof FightStartedError) {
+                  this.isInFight = true;
+                  this.start();
+                } else {
+                  console.error(err);
+                  this.updateStatus(
+                    `ERREUR durant l'execution du scenario vidage:\n${String(err)}`
+                  );
+                  this.stop();
+                }
+              });
           }, 1000);
         } else {
           console.error(err);

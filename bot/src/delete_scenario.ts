@@ -1,11 +1,13 @@
 import {keyTap} from 'robotjs';
 
-import {click, randSleep, sleep} from './actions';
+import {click, randSleep} from './actions';
 import {checkForColor} from './colors';
 import {Scenario} from './scenario_runner';
 
-export const deleteBags: Scenario = async ctx => {
+export const deleteBagsScenario: Scenario = async ctx => {
   const {canContinue} = ctx;
+  // Wait a bit
+  await randSleep(canContinue, 1000, 1500);
   // Click on the inventory icon
   await click(canContinue, {x: 840, y: 690, radius: 0});
   // Click the "divers" category
@@ -15,8 +17,7 @@ export const deleteBags: Scenario = async ctx => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const noItemColor = 'beb999';
-    const firstItemCenter = {x: 910, y: 300};
-    // const firstItemCenter = {x: 910, y: 250};
+    const firstItemCenter = {x: 910, y: 245};
     const hasNoItem = checkForColor(
       [
         firstItemCenter,
@@ -30,15 +31,18 @@ export const deleteBags: Scenario = async ctx => {
         {x: firstItemCenter.x - 10, y: firstItemCenter.y + 0},
         {x: firstItemCenter.x - 10, y: firstItemCenter.y - 10},
       ],
-      noItemColor
+      noItemColor,
+      3
     );
     if (hasNoItem) {
       break;
     }
-    // Right click on the item
-    const clickPos = await click(canContinue, {...firstItemCenter, radius: 15, button: 'right'});
+    // Click on the item
+    await click(canContinue, {...firstItemCenter, radius: 15, button: 'left'});
+    // Click on the menu button
+    const clickPos = await click(canContinue, {x: 500, y: 550, radius: 5, button: 'left'});
     // Click on the menu "Détruire l'objet"
-    await click(canContinue, {x: clickPos.x + 82, y: clickPos.y + 136, radius: 5});
+    await click(canContinue, {x: clickPos.x + 78, y: clickPos.y + 88, radius: 5});
     // Press enter
     keyTap('enter');
     // Wait a bit
