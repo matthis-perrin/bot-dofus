@@ -50,6 +50,13 @@ export async function apiHandler(
   if (url === '/set-fish') {
     await fishDb.set(params.map as Coordinate, params.fish as Fish);
     return {};
+  } else if (url === '/update-fish-pos') {
+    await fishDb.updateFishPos(
+      params.map as Coordinate,
+      params.fish as Coordinate,
+      params.up as boolean
+    );
+    return {};
   } else if (url === '/delete-fish') {
     await fishDb.delete(params.map as Coordinate, params.fish as Coordinate);
     return {};

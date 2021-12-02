@@ -62,13 +62,16 @@ export const FishModule: React.FC = () => {
     );
 
     const selectedSquares = [
-      ...fishes.map(f => ({
+      ...fishes.map((f, i) => ({
         color: '#223679',
         coordinate: f.coordinate,
         content: (
-          <FishPreview>{`${f.size?.slice(0, 1) ?? '?'}${f.type?.slice(0, 1) ?? '?'}${
-            f.distance ?? '?'
-          }`}</FishPreview>
+          <FishPreview>
+            <span>{`${f.size?.slice(0, 1) ?? '?'}${f.type?.slice(0, 1) ?? '?'}${
+              f.distance ?? '?'
+            }`}</span>
+            <FishPreviewIndex>{`#${i + 1}`}</FishPreviewIndex>
+          </FishPreview>
         ),
       })),
     ];
@@ -79,9 +82,11 @@ export const FishModule: React.FC = () => {
         coordinate: currentFish.coordinate,
         content: (
           <Fragment>
-            <FishPreview>{`${currentFish.size?.slice(0, 1) ?? '?'}${
-              currentFish.type?.slice(0, 1) ?? '?'
-            }${currentFish.distance ?? '?'}`}</FishPreview>
+            <FishPreview>
+              <span>{`${currentFish.size?.slice(0, 1) ?? '?'}${
+                currentFish.type?.slice(0, 1) ?? '?'
+              }${currentFish.distance ?? '?'}`}</span>
+            </FishPreview>
             <FishForm
               fish={currentFish}
               canDelete={fishes.length !== fish.length}
@@ -125,16 +130,44 @@ export const FishModule: React.FC = () => {
     }
   }, [isRunning]);
 
+  const moveFish = useCallback(
+    (fish: Fish, up: boolean) => {
+      apiCall('/update-fish-pos', {
+        map: coordinate.coordinate,
+        fish: fish.coordinate,
+        up,
+      }).catch(console.error);
+    },
+    [coordinate.coordinate]
+  );
+
   return (
     <Wrapper>
       <Title>Poissons :</Title>
       {fish.length === 0 ? (
         <NoFish>Aucun poissons répertoriés sur cette map</NoFish>
       ) : (
-        fish.map(f => {
+        fish.map((f, i) => {
           const pos = formatCoordinate(f.coordinate);
           return (
             <FishLine key={pos}>
+              <FishActions>
+                <MoveButton
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onClick={() => moveFish(f, true)}
+                  disabled={i === 0}
+                >
+                  ▲
+                </MoveButton>
+                <MoveButton
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onClick={() => moveFish(f, false)}
+                  disabled={i === fish.length - 1}
+                >
+                  ▼
+                </MoveButton>
+              </FishActions>
+              <FishIndex>{`#${i + 1}`}</FishIndex>
               <FishPos>{pos}</FishPos>
               <FishInfo>{`${f.size ?? '?'} de ${f.type ?? '?'} à ${
                 f.distance ?? '?'
@@ -162,6 +195,7 @@ const FishPreview = styled.div`
   width: ${SQUARE_SIZE.width / 2}px;
   height: ${SQUARE_SIZE.height / 2}px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #ffffff44;
@@ -176,5 +210,32 @@ const FishLine = styled.div`
 const FishPos = styled.div`
   width: 56px;
 `;
+const FishIndex = styled.div`
+  width: 34px;
+  text-align: right;
+  margin-right: 8px;
+`;
 const FishInfo = styled.div``;
 const NoFish = styled.div``;
+
+const FishActions = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const MoveButton = styled.div<{disabled: boolean}>`
+  cursor: ${p => (p.disabled ? 'default' : 'pointer')};
+  opacity: ${p => (p.disabled ? 0.3 : 1)};
+  pointer-events: ${p => (p.disabled ? 'none' : 'all')};
+  color: ${ORANGE};
+  height: 12px;
+  font-size: 14px;
+  &:hover {
+    color: #ffffff;
+  }
+`;
+const FishPreviewIndex = styled.div`
+  font-size: 12px;
+  margin-top: -4px;
+  margin-bottom: -5px;
+`;

@@ -3,6 +3,7 @@ import {join} from 'path';
 
 import {Coordinate} from '../../common/src/coordinates';
 import {Fish} from '../../common/src/model';
+import {hashCoordinate} from './fight';
 
 const {readFile, writeFile} = promises;
 
@@ -35,6 +36,34 @@ class FishDb {
       f => f.coordinate.x !== fish.coordinate.x || f.coordinate.y !== fish.coordinate.y
     );
     newFishes.push(fish);
+    this.fishes[key] = newFishes;
+    await this.save();
+  }
+
+  public async updateFishPos(
+    mapCoordinate: Coordinate,
+    fishCoordinate: Coordinate,
+    moveUp: boolean
+  ): Promise<void> {
+    const key = this.coordinateKey(mapCoordinate);
+    const newFishes = this.fishes[key] ?? [];
+    const fishIndex = newFishes.findIndex(
+      f => f.coordinate.x === fishCoordinate.x && f.coordinate.y === fishCoordinate.y
+    );
+    if (fishIndex === -1) {
+      throw new Error(`Unknown fish at position ${hashCoordinate(fishCoordinate)}`);
+    }
+    if (fishIndex > 0 && moveUp) {
+      [newFishes[fishIndex - 1]!, newFishes[fishIndex]!] = [
+        newFishes[fishIndex]!,
+        newFishes[fishIndex - 1]!,
+      ];
+    } else {
+      [newFishes[fishIndex]!, newFishes[fishIndex + 1]!] = [
+        newFishes[fishIndex + 1]!,
+        newFishes[fishIndex]!,
+      ];
+    }
     this.fishes[key] = newFishes;
     await this.save();
   }
