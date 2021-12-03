@@ -23,6 +23,7 @@ import {
 import {click, randSleep, sleep} from './actions';
 import {checkForColor} from './colors';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
+import {hasLevelUpModal} from './detectors';
 import {fishDb} from './fish_db';
 import {CanContinue, Scenario} from './scenario_runner';
 
@@ -367,19 +368,7 @@ const fishingTimePerFish: Record<FishSize, number> = {
 
 export async function checkLvlUp(canContinue: CanContinue): Promise<void> {
   // Check for the lvl up modal color
-  if (
-    checkForColor(
-      [
-        {x: 342, y: 307},
-        {x: 360, y: 370},
-        {x: 450, y: 370},
-        {x: 685, y: 370},
-        {x: 775, y: 330},
-      ],
-      'd5cfaa',
-      10
-    )
-  ) {
+  if (hasLevelUpModal()) {
     // Click on the "Ok" button
     await click(canContinue, {x: 560, y: 370, radius: 10});
     // Wait a bit

@@ -1,5 +1,6 @@
 import 'source-map-support/register';
 
+import {isInventoryFull} from './detectors';
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fightScenario} from './fight/fight_scenario';
@@ -19,12 +20,13 @@ async function run(): Promise<void> {
     fishDb.init(),
   ]);
 
-  const ai = new Intelligence(soleilModel, mapModel, fishPopupModel);
-  const runner = new ScenarioRunner(ai, mapLoopScenario, fightScenario);
-  startServer(ai, runner);
-  runner.start();
-  console.log(new Date());
-  setInterval(() => console.log(new Date()), 15 * 60 * 1000);
+  // const ai = new Intelligence(soleilModel, mapModel, fishPopupModel);
+  // const runner = new ScenarioRunner(ai, mapLoopScenario, fightScenario);
+  // startServer(ai, runner);
+  // // runner.start();
+  // console.log(new Date());
+  // setInterval(() => console.log(new Date()), 15 * 60 * 1000);
+  isInventoryFull();
 }
 
 run().catch(handleError);
