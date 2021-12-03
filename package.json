@@ -3,19 +3,21 @@
   "version": "1.0.0",
   "scripts": {
     "start": "yarn build-bot-ui && yarn build-bot && yarn start-bot",
-    "start-bot": "node bot/dist/main.js",
+    "start-bot": "forever bot/dist/main.js",
     "build-bot": "pushd bot && yarn install && yarn build && popd",
     "build-bot-ui": "pushd bot-ui && yarn install && yarn build && popd"
   },
   "dependencies": {
+    "@tensorflow/tfjs-node": "^3.11.0",
     "global-keypress": "^0.0.8",
     "jimp": "^0.16.1",
+    "node-pre-gyp": "^0.17.0",
     "node-window-manager": "^2.2.4",
-    "robotjs": "^0.6.0",
-    "@tensorflow/tfjs-node": "^3.11.0"
+    "robotjs": "^0.6.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.7",
+    "forever": "^4.0.1",
     "typescript": "^4.4.4"
   }
 }
