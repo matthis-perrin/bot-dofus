@@ -22,8 +22,9 @@ import {
 } from '../../common/src/model';
 import {click, randSleep, sleep, waitForMapChange} from './actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
-import {hasLevelUpModal} from './detectors';
+import {hasLevelUpModal, isFull} from './detectors';
 import {fishDb} from './fish_db';
+import {emptyInventory} from './scenario/empty_inventory';
 import {CanContinue, Scenario} from './scenario_runner';
 
 const mapLoop = [
@@ -105,6 +106,10 @@ export const mapLoopScenario: Scenario = async ctx => {
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
+    if (isFull()) {
+      await emptyInventory(ctx);
+    }
+
     await canContinue();
 
     // // Check if there is a end of fight window to close
@@ -320,6 +325,10 @@ export const fishMapScenario: Scenario = async ctx => {
     const waitTime = 5000 + fishingTimePerFish[fish.size ?? FishSize.Giant];
     await sleep(canContinue, waitTime);
     await checkLvlUp(canContinue);
+    if (isFull()) {
+      await emptyInventory(ctx);
+      return;
+    }
 
     const newLastData = await ia.refresh();
     if (

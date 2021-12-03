@@ -73,3 +73,47 @@ export function isInventoryOpen(): boolean {
     5
   );
 }
+
+export function isCoffreOpen(): boolean {
+  return (
+    checkForColor(
+      [
+        {x: 110, y: 147},
+        {x: 187, y: 147},
+        {x: 275, y: 147},
+        {x: 1067, y: 147},
+      ],
+      '504a3e',
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 47, y: 613},
+        {x: 221, y: 613},
+        {x: 964, y: 600},
+      ],
+      'd4cfae',
+      5
+    )
+  );
+}
+
+export function isEmptyItem(center: Coordinate): boolean {
+  const noItemColor = 'beb999';
+  return checkForColor(
+    [
+      center,
+      {x: center.x + 10, y: center.y + 10},
+      {x: center.x + 10, y: center.y + 0},
+      {x: center.x + 10, y: center.y - 10},
+      {x: center.x + 0, y: center.y + 10},
+      {x: center.x + 0, y: center.y + 0},
+      {x: center.x + 0, y: center.y - 10},
+      {x: center.x - 10, y: center.y + 10},
+      {x: center.x - 10, y: center.y + 0},
+      {x: center.x - 10, y: center.y - 10},
+    ],
+    noItemColor,
+    3
+  );
+}

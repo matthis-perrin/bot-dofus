@@ -1,40 +1,25 @@
 import {keyTap} from 'robotjs';
 
 import {click, randSleep} from '../actions';
-import {checkForColor} from '../colors';
+import {isEmptyItem, isInventoryOpen} from '../detectors';
 import {Scenario} from '../scenario_runner';
 
 export const deleteBagsScenario: Scenario = async ctx => {
   const {canContinue} = ctx;
   // Wait a bit
   await randSleep(canContinue, 1000, 1500);
-  // Click on the inventory icon
-  await click(canContinue, {x: 840, y: 690, radius: 0});
+  // Click on the inventory icon if needed
+  if (!isInventoryOpen()) {
+    await click(canContinue, {x: 840, y: 690, radius: 0});
+  }
   // Click the "divers" category
   await click(canContinue, {x: 974, y: 147, radius: 0});
   // Loop until there are no more items to delete
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const noItemColor = 'beb999';
     const firstItemCenter = {x: 910, y: 245};
-    const hasNoItem = checkForColor(
-      [
-        firstItemCenter,
-        {x: firstItemCenter.x + 10, y: firstItemCenter.y + 10},
-        {x: firstItemCenter.x + 10, y: firstItemCenter.y + 0},
-        {x: firstItemCenter.x + 10, y: firstItemCenter.y - 10},
-        {x: firstItemCenter.x + 0, y: firstItemCenter.y + 10},
-        {x: firstItemCenter.x + 0, y: firstItemCenter.y + 0},
-        {x: firstItemCenter.x + 0, y: firstItemCenter.y - 10},
-        {x: firstItemCenter.x - 10, y: firstItemCenter.y + 10},
-        {x: firstItemCenter.x - 10, y: firstItemCenter.y + 0},
-        {x: firstItemCenter.x - 10, y: firstItemCenter.y - 10},
-      ],
-      noItemColor,
-      3
-    );
-    if (hasNoItem) {
+    if (isEmptyItem(firstItemCenter)) {
       break;
     }
     // Click on the item

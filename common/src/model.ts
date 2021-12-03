@@ -55,7 +55,7 @@ export interface CoordinateData {
   label: string;
   coordinate: Coordinate;
 }
-export const COORDINATE_MIN_SCORE = 0.75;
+export const COORDINATE_MIN_SCORE = 0.70;
 
 export type FishData = Fish[]
 

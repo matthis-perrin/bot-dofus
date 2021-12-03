@@ -1,9 +1,10 @@
 import {keyTap} from 'robotjs';
 
 import {MapScan, ScenarioStatus, ScenarioStatusWithTime} from '../../common/src/model';
-import {isInFight} from './detectors';
+import {isFull, isInFight} from './detectors';
 import {Intelligence} from './intelligence';
 import {deleteBagsScenario} from './scenario/delete_bags_scenario';
+import {emptyInventory} from './scenario/empty_inventory';
 import {scanMap} from './screenshot';
 import {sendEvent} from './server';
 
@@ -145,7 +146,26 @@ export class ScenarioRunner {
               updateStatus: newStatus => this.updateStatus(newStatus),
             })
               .then(() => {
-                this.start();
+                if (isFull()) {
+                  emptyInventory({
+                    ia: this.ia,
+                    canContinue: async () => {
+                      if (isInFight()) {
+                        throw new FightStartedError();
+                      }
+                      return Promise.resolve();
+                    },
+                    updateStatus: newStatus => this.updateStatus(newStatus),
+                  })
+                    .then(() => {
+                      this.start();
+                    })
+                    .catch(err => {
+                      console.log(err);
+                      // eslint-disable-next-line node/no-process-exit
+                      process.exit();
+                    });
+                }
               })
               .catch(err => {
                 if (err instanceof FightStartedError) {

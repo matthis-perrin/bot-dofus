@@ -11,11 +11,18 @@ import {CanContinue, ScenarioContext} from './scenario_runner';
 
 export async function click(
   canContinue: CanContinue,
-  opts: {x: number; y: number; button?: 'right' | 'left'; radius: number; fast?: boolean}
+  opts: {
+    x: number;
+    y: number;
+    button?: 'right' | 'left';
+    radius: number;
+    fast?: boolean;
+    double?: boolean;
+  }
 ): Promise<Coordinate> {
   await canContinue();
 
-  const {x, y, radius, button = 'left', fast} = opts;
+  const {x, y, radius, button = 'left', fast, double} = opts;
   const target = imageCoordinateToScreenCoordinate({x, y});
   const randomAngle = Math.random() * 2 * Math.PI;
   const randomRadius = Math.random() * radius;
@@ -36,6 +43,10 @@ export async function click(
   await canContinue();
 
   mouseClick(button);
+  if (double) {
+    await sleepInternal(100);
+    mouseClick(button);
+  }
   await canContinue();
 
   await sleep(canContinue, Math.random() * 500);
@@ -79,30 +90,40 @@ export async function waitForMapChange(
   ctx: ScenarioContext,
   nextMap: Coordinate
 ): Promise<boolean> {
-  const {canContinue, ia, updateStatus} = ctx;
+  return waitFor(ctx, async () => {
+    const {coordinate: newCoordinate} = await ctx.ia.refresh();
+    return (
+      newCoordinate.score >= COORDINATE_MIN_SCORE &&
+      newCoordinate.coordinate.x === nextMap.x &&
+      newCoordinate.coordinate.y === nextMap.y
+    );
+  });
+}
+
+export async function waitFor(
+  ctx: ScenarioContext,
+  detector: () => Promise<boolean> | boolean
+): Promise<boolean> {
+  const {canContinue, updateStatus} = ctx;
   // Wait until we changed map (for 10s max)
   const MAX_WAIT_TIME_MS = 10000;
   const SLEEP_DURATION_MS = 300;
   const startTime = Date.now();
-  let mapChangeDetected = false;
+  let detected = false;
   updateStatus(`Attente de changement de map`);
   while (Date.now() - startTime < MAX_WAIT_TIME_MS) {
     // eslint-disable-next-line no-await-in-loop
     await sleep(canContinue, SLEEP_DURATION_MS);
     // eslint-disable-next-line no-await-in-loop
     await canContinue();
-    // Check if we are on the new map
+    // Check if change was detected
+
     // eslint-disable-next-line no-await-in-loop
-    const {coordinate: newCoordinate} = await ia.refresh();
-    if (
-      newCoordinate.score >= COORDINATE_MIN_SCORE &&
-      newCoordinate.coordinate.x === nextMap.x &&
-      newCoordinate.coordinate.y === nextMap.y
-    ) {
-      mapChangeDetected = true;
+    if (await Promise.resolve(detector())) {
+      detected = true;
       break;
     }
   }
 
-  return mapChangeDetected;
+  return detected;
 }

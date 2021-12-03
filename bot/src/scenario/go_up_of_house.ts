@@ -32,7 +32,8 @@ export const goUpOfHouseScenario: Scenario = async ctx => {
   } else if (coordinate.x === -1002 && coordinate.y === -1002) {
     // Nothing to do
   } else {
-    console.log('Take popo');
+    await click(canContinue, {x: 980, y: 809, radius: 5, double: true});
+    await sleep(canContinue, 2000);
     return goUpOfHouseScenario(ctx);
   }
 };
