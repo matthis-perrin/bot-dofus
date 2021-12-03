@@ -165,6 +165,8 @@ export class ScenarioRunner {
                       // eslint-disable-next-line node/no-process-exit
                       process.exit();
                     });
+                } else {
+                  this.start();
                 }
               })
               .catch(err => {
