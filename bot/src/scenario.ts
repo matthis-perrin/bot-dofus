@@ -1,4 +1,4 @@
-import {getMousePos, keyTap} from 'robotjs';
+import {getMousePos} from 'robotjs';
 
 import {
   Coordinate,
@@ -20,8 +20,7 @@ import {
   FishSize,
   FishType,
 } from '../../common/src/model';
-import {click, randSleep, sleep} from './actions';
-import {checkForColor} from './colors';
+import {click, randSleep, sleep, waitForMapChange} from './actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
 import {hasLevelUpModal} from './detectors';
 import {fishDb} from './fish_db';
@@ -230,29 +229,8 @@ export const mapLoopScenario: Scenario = async ctx => {
     await click(canContinue, {...soleilCenter, radius: 10});
     await canContinue();
 
-    // Wait until we changed map (for 10s max)
-    const MAX_WAIT_TIME_MS = 10000;
-    const SLEEP_DURATION_MS = 300;
-    const startTime = Date.now();
-    let mapChangeDetected = false;
-    updateStatus(`Attente fin déplacement`);
-    while (Date.now() - startTime < MAX_WAIT_TIME_MS) {
-      await sleep(canContinue, SLEEP_DURATION_MS);
-      await canContinue();
-      // Check if we are on the new map
-      const {coordinate: newCoordinate} = await ia.refresh();
-      if (
-        newCoordinate.score >= COORDINATE_MIN_SCORE &&
-        newCoordinate.coordinate.x === nextMap.x &&
-        newCoordinate.coordinate.y === nextMap.y
-      ) {
-        mapChangeDetected = true;
-        break;
-      }
-    }
-
     // In case no map changed occured, we restart
-    if (!mapChangeDetected) {
+    if (!(await waitForMapChange(ctx, nextMap))) {
       // Last loop
       updateStatus(
         `La map ${coordinateToString(

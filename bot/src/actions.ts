@@ -1,12 +1,13 @@
 import {mouseClick, moveMouseSmooth} from 'robotjs';
 
 import {Coordinate} from '../../common/src/coordinates';
+import {COORDINATE_MIN_SCORE} from '../../common/src/model';
 import {
   imageCoordinateToScreenCoordinate,
   safeZone,
   screenCoordinateToImageCoordinate,
 } from './coordinate';
-import {CanContinue} from './scenario_runner';
+import {CanContinue, ScenarioContext} from './scenario_runner';
 
 export async function click(
   canContinue: CanContinue,
@@ -72,4 +73,36 @@ export async function sleepInternal(ms: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
+}
+
+export async function waitForMapChange(
+  ctx: ScenarioContext,
+  nextMap: Coordinate
+): Promise<boolean> {
+  const {canContinue, ia, updateStatus} = ctx;
+  // Wait until we changed map (for 10s max)
+  const MAX_WAIT_TIME_MS = 10000;
+  const SLEEP_DURATION_MS = 300;
+  const startTime = Date.now();
+  let mapChangeDetected = false;
+  updateStatus(`Attente de changement de map`);
+  while (Date.now() - startTime < MAX_WAIT_TIME_MS) {
+    // eslint-disable-next-line no-await-in-loop
+    await sleep(canContinue, SLEEP_DURATION_MS);
+    // eslint-disable-next-line no-await-in-loop
+    await canContinue();
+    // Check if we are on the new map
+    // eslint-disable-next-line no-await-in-loop
+    const {coordinate: newCoordinate} = await ia.refresh();
+    if (
+      newCoordinate.score >= COORDINATE_MIN_SCORE &&
+      newCoordinate.coordinate.x === nextMap.x &&
+      newCoordinate.coordinate.y === nextMap.y
+    ) {
+      mapChangeDetected = true;
+      break;
+    }
+  }
+
+  return mapChangeDetected;
 }

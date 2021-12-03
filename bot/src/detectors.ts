@@ -26,8 +26,8 @@ export function isPlayerTurn(): boolean {
       {x: 667, y: 692},
       {x: 671, y: 690},
     ],
-    'ED702D',
-    25
+    'ed702d',
+    5
   );
 }
 
@@ -40,18 +40,36 @@ export function hasLevelUpModal(): boolean {
       {x: 685, y: 370},
       {x: 775, y: 330},
     ],
-    'd5cfaa',
-    10
+    'd4cfae',
+    5
   );
 }
 
-export function isInventoryFull(): boolean {
+export function isFull(): boolean {
   return checkForColor(
     [
       {x: 600, y: 688},
       {x: 610, y: 698},
     ],
-    '60be34',
-    10
+    '78bc4b',
+    5
+  );
+}
+
+export function isInventoryOpen(): boolean {
+  return checkForColor(
+    [
+      {x: 575, y: 50},
+      {x: 650, y: 50},
+      {x: 725, y: 50},
+      {x: 800, y: 50},
+      {x: 875, y: 50},
+      {x: 950, y: 50},
+      {x: 1025, y: 50},
+      {x: 470, y: 150},
+      {x: 716, y: 256},
+    ],
+    '504a3e',
+    5
   );
 }

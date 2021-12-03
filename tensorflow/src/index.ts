@@ -1,6 +1,6 @@
 import {runClassifier} from './classifier';
 
-const mode = 'fish_popup' as string;
+const mode = 'map' as string;
 
 if (mode === 'map') {
   runClassifier('map', {imageTargetSize: 128, epochs: 20, batchSize: 4}).catch(console.error);

@@ -1,5 +1,6 @@
 import {click, sleep} from '../actions';
 import {checkForColor} from '../colors';
+import {isPlayerTurn} from '../detectors';
 import {ScenarioContext} from '../scenario_runner';
 
 export async function waitForPlayerTurn(ctx: ScenarioContext): Promise<void> {
@@ -8,11 +9,7 @@ export async function waitForPlayerTurn(ctx: ScenarioContext): Promise<void> {
   updateStatus('Attente du tour du joueur');
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const playerTurnCoordinates = [
-      {x: 667, y: 692},
-      {x: 671, y: 690},
-    ];
-    if (checkForColor(playerTurnCoordinates, 'ED702D')) {
+    if (isPlayerTurn()) {
       return;
     }
     // eslint-disable-next-line no-await-in-loop

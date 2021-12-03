@@ -179,9 +179,7 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
       ennemy,
       path: firstShortestPaths(freshScan, freshResult.player, ennemy),
     }));
-    const closestEnnemy = ennemiesDistance.sort(
-      (e1, e2) => (e1.path.length ?? Number.MAX_VALUE) - (e2.path.length ?? Number.MAX_VALUE)
-    )[0];
+    const closestEnnemy = ennemiesDistance.sort((e1, e2) => e1.path.length - e2.path.length)[0];
     if (closestEnnemy) {
       const targetSquare = closestEnnemy.path.slice(0, -1).slice(0, pmLeft).at(-1);
       if (targetSquare) {

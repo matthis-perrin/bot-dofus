@@ -45,6 +45,10 @@ export function hexToRgb(color: string): Rgb {
   return {r, g, b};
 }
 
+export function rgbToHex(rgb: Rgb): string {
+  return `${rgb.r.toString(16)}${rgb.g.toString(16)}${rgb.b.toString(16)}`;
+}
+
 export function colorDistance(color1: Rgb, color2: Rgb): number {
   return (
     (Math.abs(color1.r - color2.r) +
@@ -62,6 +66,6 @@ export function checkForColor(
   const color = hexToRgb(targetColor);
   const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
-  console.log({color, colorAverage, distance});
+  console.log({color, colorAverage, averageHex: rgbToHex(colorAverage), distance});
   return distance <= tolerance;
 }

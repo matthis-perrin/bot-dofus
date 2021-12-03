@@ -1,9 +1,9 @@
 import {keyTap} from 'robotjs';
 
 import {MapScan, ScenarioStatus, ScenarioStatusWithTime} from '../../common/src/model';
-import {deleteBagsScenario} from './delete_scenario';
-import {isInFight} from './fight_detector';
+import {isInFight} from './detectors';
 import {Intelligence} from './intelligence';
+import {deleteBagsScenario} from './scenario/delete_bags_scenario';
 import {scanMap} from './screenshot';
 import {sendEvent} from './server';
 
