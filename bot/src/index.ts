@@ -23,7 +23,7 @@ async function run(): Promise<void> {
   const ai = new Intelligence(soleilModel, mapModel, fishPopupModel);
   const runner = new ScenarioRunner(ai, mapLoopScenario, fightScenario);
   startServer(ai, runner);
-  // runner.start();
+  runner.start();
   console.log(new Date());
   setInterval(() => console.log(new Date()), 15 * 60 * 1000);
 }

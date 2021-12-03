@@ -7,6 +7,8 @@ import {deleteBagsScenario} from './scenario/delete_bags_scenario';
 import {scanMap} from './screenshot';
 import {sendEvent} from './server';
 
+const MAX_TIME_IN_FIGHT_MS = 10 * 60 * 1000; // 5 minutes
+
 export type CanContinue = () => Promise<void>;
 export type UpdateStatus = (status: ScenarioStatus) => void;
 
@@ -95,6 +97,13 @@ export class ScenarioRunner {
   }
 
   private startFightScenario(): void {
+    const fightSecurityTimer = setTimeout(() => {
+      this.updateStatus('Combat trop long ! Déclenchement de la sécurité');
+      keyTap('r', 'command');
+      // eslint-disable-next-line node/no-process-exit
+      process.exit(0);
+    }, MAX_TIME_IN_FIGHT_MS);
+
     this.updateStatus('START SCENARIO COMBAT');
     this.mapScan = scanMap();
     this.emit();
@@ -162,6 +171,9 @@ export class ScenarioRunner {
           this.mapScan = undefined;
           this.emit();
         }
+      })
+      .finally(() => {
+        clearTimeout(fightSecurityTimer);
       });
   }
 
