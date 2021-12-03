@@ -340,6 +340,7 @@ export const fishMapScenario: Scenario = async ctx => {
     updateStatus(`Attente de fin de pêche`);
     const waitTime = 5000 + fishingTimePerFish[fish.size ?? FishSize.Giant];
     await sleep(canContinue, waitTime);
+    await checkLvlUp(canContinue);
 
     const newLastData = await ia.refresh();
     if (
