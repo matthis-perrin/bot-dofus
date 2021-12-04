@@ -356,6 +356,7 @@ const fishingTimePerFish: Record<FishSize, number> = {
 export async function checkLvlUp(canContinue: CanContinue): Promise<void> {
   // Check for the lvl up modal color
   if (hasLevelUpModal()) {
+    console.log('Up!', new Date().toLocaleString());
     // Click on the "Ok" button
     await click(canContinue, {x: 560, y: 370, radius: 10});
     // Wait a bit

@@ -147,6 +147,7 @@ export class ScenarioRunner {
             })
               .then(() => {
                 if (isFull()) {
+                  console.log('Full!', new Date().toLocaleString());
                   emptyInventory({
                     ia: this.ia,
                     canContinue: async () => {

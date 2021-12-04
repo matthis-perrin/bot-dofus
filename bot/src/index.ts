@@ -24,8 +24,8 @@ async function run(): Promise<void> {
   const runner = new ScenarioRunner(ai, mapLoopScenario, fightScenario);
   startServer(ai, runner);
   runner.start();
-  console.log(new Date());
-  setInterval(() => console.log(new Date()), 15 * 60 * 1000);
+  console.log(new Date().toLocaleString());
+  setInterval(() => console.log(new Date().toLocaleString()), 15 * 60 * 1000);
 }
 
 run().catch(handleError);
