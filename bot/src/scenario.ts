@@ -145,7 +145,8 @@ export const mapLoopScenario: Scenario = async ctx => {
     // Fish on the map
     await canContinue();
     updateStatus(`Démarrage de la pêche sur la map (${coordinateStr})`);
-    await fishMapScenario(ctx);
+    // DESACTIVATION PECHE AUDRIC
+    // await fishMapScenario(ctx);
 
     // Check if we changed map
     const newLastData = await ia.refresh();
