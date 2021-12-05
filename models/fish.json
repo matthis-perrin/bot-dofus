@@ -811,6 +811,14 @@
     },
     {
       "coordinate": {
+        "x": 0,
+        "y": 18
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
         "x": 12,
         "y": 11
       },
@@ -857,7 +865,8 @@
         "y": 24
       },
       "type": "Rivère",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 1
     },
     {
       "coordinate": {
@@ -865,7 +874,8 @@
         "y": 25
       },
       "type": "Rivère",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 1
     },
     {
       "coordinate": {
@@ -873,7 +883,8 @@
         "y": 30
       },
       "type": "Rivère",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 5
     }
   ],
   "13/1": [
