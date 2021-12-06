@@ -1,5 +1,5 @@
 import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
-import {click, sleep, waitForMapChange} from '../actions';
+import {click, moveToSafeZone, sleep, waitForMapChange} from '../actions';
 import {Scenario} from '../scenario_runner';
 
 export const goUpOfHouseScenario: Scenario = async ctx => {
@@ -15,6 +15,7 @@ export const goUpOfHouseScenario: Scenario = async ctx => {
   const {coordinate} = lastData.coordinate;
   if (coordinate.x === -1000 && coordinate.y === -1000) {
     await click(canContinue, {x: 648, y: 288, radius: 10});
+    await moveToSafeZone(canContinue);
     if (await waitForMapChange(ctx, {x: -1001, y: -1001})) {
       return goUpOfHouseScenario(ctx);
     }
@@ -23,6 +24,7 @@ export const goUpOfHouseScenario: Scenario = async ctx => {
     return goUpOfHouseScenario(ctx);
   } else if (coordinate.x === -1001 && coordinate.y === -1001) {
     await click(canContinue, {x: 366, y: 474, radius: 10});
+    await moveToSafeZone(canContinue);
     if (await waitForMapChange(ctx, {x: -1002, y: -1002})) {
       return goUpOfHouseScenario(ctx);
     }
