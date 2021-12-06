@@ -41,7 +41,9 @@ export const postFightScenario: Scenario = async ctx => {
   }
   /* eslint-enable no-await-in-loop */
   // Once we are done deleting, press escape to close inventory
-  keyTap('escape');
+  if (isInventoryOpen()) {
+    keyTap('escape');
+  }
   // Wait a bit
   await randSleep(canContinue, 500, 700);
 };

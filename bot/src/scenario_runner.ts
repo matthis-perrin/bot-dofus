@@ -108,8 +108,6 @@ export class ScenarioRunner {
         const fightStatus = isInFight();
         if (fightStatus === 'in-fight') {
           throw new StartScenarioError(ScenarioType.Fight);
-        } else if (fightStatus === 'unknown') {
-          throw new StartScenarioError(ScenarioType.Connection);
         }
         await Promise.resolve();
       });
