@@ -67,6 +67,8 @@ export function checkForColor(
   const color = hexToRgb(targetColor);
   const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
-  // console.log({color, colorAverage, averageHex: rgbToHex(colorAverage), distance});
+  if (distance <= tolerance && distance > 0) {
+    console.log({color, colorAverage, averageHex: rgbToHex(colorAverage), distance});
+  }
   return distance <= tolerance;
 }

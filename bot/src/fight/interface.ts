@@ -26,7 +26,7 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 1088, y: 630},
   ];
   if (
-    checkForColor(timelineCoordinates, '#0000EB') ||
+    checkForColor(timelineCoordinates, '#0000f5') ||
     checkForColor(timelineCoordinates, '#ea3323')
   ) {
     updateStatus('Cache timeline');
@@ -35,7 +35,7 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
 
   // Check for the tactical mode
   const tacticalCoordinates = [{x: 1020, y: 568}];
-  if (!checkForColor(tacticalCoordinates, '#44972B')) {
+  if (!checkForColor(tacticalCoordinates, '#43972a')) {
     updateStatus('Activation du mode tactique');
     await click(canContinue, {...tacticalCoordinates[0]!, radius: 2});
   }
@@ -46,7 +46,7 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 1046, y: 582},
     {x: 1051, y: 578},
   ];
-  if (!checkForColor(circleCoordinates, '#44972B')) {
+  if (!checkForColor(circleCoordinates, '#43972a')) {
     updateStatus('Activation du mode cercle');
     await click(canContinue, {...circleCoordinates[1]!, radius: 2});
   }
@@ -61,8 +61,8 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 42, y: 152},
   ];
   if (
-    checkForColor(challengeCoordinates1, '#CDC4BE') &&
-    checkForColor(challengeCoordinates2, '#FFFFFF')
+    checkForColor(challengeCoordinates1, '#ccc4be') &&
+    checkForColor(challengeCoordinates2, '#ffffff')
   ) {
     updateStatus('Cache challenge');
     await click(canContinue, {x: 23, y: 82, radius: 2});

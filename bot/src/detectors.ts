@@ -106,7 +106,7 @@ export function isCoffreOpen(): boolean {
 }
 
 export function isEmptyItem(center: Coordinate): boolean {
-  const noItemColor = '#beb999';
+  const noItemColor = '#bdb99c';
   return checkForColor(
     [
       center,
