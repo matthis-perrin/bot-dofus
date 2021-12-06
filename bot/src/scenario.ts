@@ -22,6 +22,7 @@ import {
 } from '../../common/src/model';
 import {click, randSleep, sleep, waitForMapChange} from './actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
+import {deleteBagsScenario} from './delete_scenario';
 import {
   hasLevelUpModal,
   isCharacterSelectionScreen,
@@ -111,7 +112,8 @@ function getDirection(current: Coordinate, nextMap: Coordinate): Direction {
 export const mapLoopScenario: Scenario = async ctx => {
   const {ia, canContinue, updateStatus} = ctx;
   // await connectionScenario(ctx);
-  // console.log(isDisconnected());
+
+  // await deleteBagsScenario(ctx);
   // return;
 
   /* eslint-disable no-await-in-loop */

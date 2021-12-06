@@ -1,5 +1,8 @@
+import {moveMouseSmooth} from 'robotjs';
+
 import {click, sleep} from '../actions';
-import {checkForColor} from '../colors';
+import {BLUE, checkForColor, GREEN, RED} from '../colors';
+import {imageCoordinateToScreenCoordinate} from '../coordinate';
 import {isPlayerTurn} from '../detectors';
 import {ScenarioContext} from '../scenario_runner';
 
@@ -25,17 +28,14 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 1088, y: 607},
     {x: 1088, y: 630},
   ];
-  if (
-    checkForColor(timelineCoordinates, '#0000f5') ||
-    checkForColor(timelineCoordinates, '#ea3323')
-  ) {
+  if (checkForColor(timelineCoordinates, BLUE, 15) || checkForColor(timelineCoordinates, RED, 15)) {
     updateStatus('Cache timeline');
     await click(canContinue, {x: 1119, y: 628, radius: 3, fast: true});
   }
 
   // Check for the tactical mode
   const tacticalCoordinates = [{x: 1020, y: 568}];
-  if (!checkForColor(tacticalCoordinates, '#43972a')) {
+  if (!checkForColor(tacticalCoordinates, GREEN, 15)) {
     updateStatus('Activation du mode tactique');
     await click(canContinue, {...tacticalCoordinates[0]!, radius: 2});
   }
@@ -46,7 +46,7 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 1046, y: 582},
     {x: 1051, y: 578},
   ];
-  if (!checkForColor(circleCoordinates, '#43972a')) {
+  if (!checkForColor(circleCoordinates, GREEN, 15)) {
     updateStatus('Activation du mode cercle');
     await click(canContinue, {...circleCoordinates[1]!, radius: 2});
   }
@@ -60,9 +60,11 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 42, y: 98},
     {x: 42, y: 152},
   ];
+
+  console.log('challenge');
   if (
-    checkForColor(challengeCoordinates1, '#ccc4be') &&
-    checkForColor(challengeCoordinates2, '#ffffff')
+    checkForColor(challengeCoordinates1, '#ccc4be', 25, true) &&
+    checkForColor(challengeCoordinates2, '#ffffff', 25, true)
   ) {
     updateStatus('Cache challenge');
     await click(canContinue, {x: 23, y: 82, radius: 2});

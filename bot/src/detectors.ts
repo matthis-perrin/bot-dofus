@@ -1,5 +1,5 @@
 import {Coordinate} from '../../common/src/coordinates';
-import {checkForColor} from './colors';
+import {checkForColor, ORANGE} from './colors';
 
 export function isInFight(): 'in-fight' | 'not-in-fight' | 'unknown' {
   const topCoordinates: Coordinate[] = [
@@ -33,8 +33,8 @@ export function isPlayerTurn(): boolean {
       {x: 667, y: 692},
       {x: 671, y: 690},
     ],
-    '#ed702d',
-    5
+    ORANGE,
+    10
   );
 }
 

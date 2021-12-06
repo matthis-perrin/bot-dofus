@@ -3,10 +3,30 @@ import {getPixelColor, moveMouseSmooth} from 'robotjs';
 import {Coordinate} from '../../common/src/coordinates';
 import {imageCoordinateToScreenCoordinate} from './coordinate';
 
+const OLD_MAC_ORANGE = '#fc6621';
+const NEW_MAC_ORANGE = '#ed702d';
+export const ORANGE = averageHex(OLD_MAC_ORANGE, NEW_MAC_ORANGE);
+
+const OLD_MAC_BLUE = '#0b24fb';
+const NEW_MAC_BLUE = '#0000f5';
+export const BLUE = averageHex(OLD_MAC_BLUE, NEW_MAC_BLUE);
+
+const OLD_MAC_RED = '#fc0d1d';
+const NEW_MAC_RED = '#ea3323';
+export const RED = averageHex(OLD_MAC_RED, NEW_MAC_RED);
+
+const OLD_MAC_GREEN = '#149718';
+const NEW_MAC_GREEN = '#43972a';
+export const GREEN = averageHex(OLD_MAC_GREEN, NEW_MAC_GREEN);
+
 export interface Rgb {
   r: number;
   g: number;
   b: number;
+}
+
+function averageHex(hex1: string, hex2: string) {
+  return rgbToHex(getColorAverage([hexToRgb(hex1), hexToRgb(hex2)]));
 }
 
 export function getColorAverage(colors: Rgb[]): Rgb {
@@ -46,8 +66,12 @@ export function hexToRgb(color: string): Rgb {
   return {r, g, b};
 }
 
+function num(n: number): string {
+  const s = n.toString(16);
+  return s.length > 1 ? s : `0${s}`;
+}
 export function rgbToHex(rgb: Rgb): string {
-  return `${rgb.r.toString(16)}${rgb.g.toString(16)}${rgb.b.toString(16)}`;
+  return `#${num(rgb.r)}${num(rgb.g)}${num(rgb.b)}`;
 }
 
 export function colorDistance(color1: Rgb, color2: Rgb): number {
@@ -62,13 +86,20 @@ export function colorDistance(color1: Rgb, color2: Rgb): number {
 export function checkForColor(
   coordinates: Coordinate[],
   targetColor: string,
-  tolerance = 25
+  tolerance = 25,
+  debug = false
 ): boolean {
   const color = hexToRgb(targetColor);
   const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
-  if (distance <= tolerance && distance > 0) {
-    console.log({color, colorAverage, averageHex: rgbToHex(colorAverage), distance});
+  if (debug) {
+    console.log({
+      color,
+      colorHex: rgbToHex(color),
+      colorAverage,
+      averageHex: rgbToHex(colorAverage),
+      distance,
+    });
   }
   return distance <= tolerance;
 }

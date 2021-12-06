@@ -4,7 +4,7 @@ import {keyTap} from 'robotjs';
 import {mapCoordinateToImageCoordinate, squareCenter} from '../../../common/src/coordinates';
 import {MapScan} from '../../../common/src/model';
 import {click, moveToSafeZone, sleep} from '../actions';
-import {checkForColor} from '../colors';
+import {checkForColor, ORANGE} from '../colors';
 import {
   firstShortestPaths,
   getEnnemiesCoordinates,
@@ -203,7 +203,7 @@ export const fightScenario: Scenario = async ctx => {
     {x: 1015, y: 620},
     {x: 1085, y: 620},
   ];
-  if (checkForColor(readyButtonCoordinates, '#ED702D')) {
+  if (checkForColor(readyButtonCoordinates, ORANGE, 10)) {
     updateStatus('Click sur bouton "Ready"');
     const readyCenterX = 1050;
     const readyCenterY = 620;

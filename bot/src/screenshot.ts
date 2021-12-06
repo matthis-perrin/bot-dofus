@@ -11,7 +11,7 @@ import {
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 import {fishPopupScreenshotSize, MapScan, SquareType} from '../../common/src/model';
-import {colorDistance, getColorAverage, hexToRgb, Rgb} from './colors';
+import {BLUE, colorDistance, getColorAverage, hexToRgb, RED, Rgb} from './colors';
 import {gameCoordinates} from './coordinate';
 
 export interface RgbImage {
@@ -35,8 +35,8 @@ for (let y = 1; y < VERTICAL_SQUARES - 1; y++) {
 
 function identifyColor(circleColor: Rgb, squareColor: Rgb): SquareType {
   const circleTypesAndDistance: [SquareType, number][] = [
-    [SquareType.Red, colorDistance(circleColor, hexToRgb('#ea3323'))],
-    [SquareType.Blue, colorDistance(circleColor, hexToRgb('#0000f5'))],
+    [SquareType.Red, colorDistance(circleColor, hexToRgb(RED))],
+    [SquareType.Blue, colorDistance(circleColor, hexToRgb(BLUE))],
   ];
   const squareTypesAndDistance: [SquareType, number][] = [
     [SquareType.Light, colorDistance(squareColor, hexToRgb('#84878c'))],
