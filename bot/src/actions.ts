@@ -56,10 +56,12 @@ export async function click(
 }
 
 export async function moveToSafeZone(canContinue: CanContinue): Promise<void> {
+  const minSpeed = 0;
+  const maxSpeed = 0.75;
+  const randomSpeed = minSpeed + Math.random() * (maxSpeed - minSpeed);
   const safeZoneScreen = imageCoordinateToScreenCoordinate(safeZone);
-  moveMouseSmooth(safeZoneScreen.x, safeZoneScreen.y);
+  moveMouseSmooth(safeZoneScreen.x, safeZoneScreen.y, randomSpeed);
   await canContinue();
-  await sleep(canContinue, Math.random() * 500 + 0);
 }
 
 export async function sleep(canContinue: CanContinue, ms: number): Promise<void> {

@@ -34,8 +34,7 @@ export const connectionScenario: Scenario = async ctx => {
     keyTap('r', 'command');
     await randSleep(canContinue, 3000, 3500);
     if (!(await waitFor(ctx, isDisconnected))) {
-      // eslint-disable-next-line node/no-process-exit
-      process.exit(1);
+      stopBotEntirely();
     }
   }
 

@@ -1,4 +1,4 @@
-import {keyTap, keyToggle, mouseToggle, moveMouseSmooth} from 'robotjs';
+import {keyTap, mouseToggle, moveMouseSmooth} from 'robotjs';
 
 import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
 import {click, randSleep, sleep, waitFor, waitForMapChange} from '../actions';
@@ -7,16 +7,18 @@ import {imageCoordinateToScreenCoordinate} from '../coordinate';
 import {isCoffreOpen, isEmptyItem} from '../detectors';
 import {Scenario} from '../scenario_runner';
 import {goOutOfHouseScenario} from './go_out_of_house_scenario';
-import {goUpOfHouseScenario} from './go_up_of_house';
+import {goUpOfHouseScenario} from './go_up_of_house_scenario';
 
-export const emptyInventory: Scenario = async ctx => {
+export const emptyBankScenario: Scenario = async ctx => {
   const {canContinue, ia, updateStatus} = ctx;
 
   const lastData = await ia.refresh();
   if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
-    updateStatus('Infos écran non disponible. En attente...');
+    updateStatus(
+      `Infos écran non disponible (${lastData.coordinate.label} ${lastData.coordinate.score}). En attente...`
+    );
     await sleep(canContinue, 500);
-    return emptyInventory(ctx);
+    return emptyBankScenario(ctx);
   }
 
   const {coordinate} = lastData.coordinate;
@@ -65,7 +67,6 @@ export const emptyInventory: Scenario = async ctx => {
     }
   }
   /* eslint-enable no-await-in-loop */
-  keyToggle(String.fromCharCode(16), 'up');
 
   // Close the coffre
   keyTap('escape');

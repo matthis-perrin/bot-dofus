@@ -1,15 +1,17 @@
 import {Coordinate} from '../../common/src/coordinates';
 import {
   CoordinateData,
-  FightScenarioData,
   FishData,
+  MapScan,
   ScenarioStatusWithTime,
+  ScenarioType,
   SoleilData,
 } from '../../common/src/model';
 import {createDataStore} from './data_store';
 
 export interface ServerState {
   screenshot: string;
+  mapScan: MapScan;
   soleil: SoleilData;
   coordinate: CoordinateData;
   fish: FishData;
@@ -17,6 +19,7 @@ export interface ServerState {
 
 const serverStateStore = createDataStore<ServerState>({
   screenshot: '',
+  mapScan: {},
   soleil: [],
   coordinate: {label: '', score: 0, coordinate: {x: 0, y: 0}},
   fish: [],
@@ -29,15 +32,13 @@ export const setServerState = serverStateStore.setData;
 
 interface ScenarioState {
   isRunning: boolean;
-  fightScenario: FightScenarioData;
+  currentScenario: ScenarioType;
   statusHistory: ScenarioStatusWithTime[];
 }
 
 const scenarioStateStore = createDataStore<ScenarioState>({
   isRunning: false,
-  fightScenario: {
-    isInFight: false,
-  },
+  currentScenario: ScenarioType.Fishing,
   statusHistory: [],
 });
 export const useScenarioState = scenarioStateStore.useData;

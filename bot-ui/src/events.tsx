@@ -19,7 +19,7 @@ export function subscribeToEvents(): void {
       }
       setScenarioState({
         isRunning: event.data.isRunning,
-        fightScenario: event.data.fightScenario,
+        currentScenario: event.data.currentScenario,
         statusHistory,
       });
     } else {

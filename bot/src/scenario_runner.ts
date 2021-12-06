@@ -1,11 +1,12 @@
-import {keyTap} from 'robotjs';
-
-import {MapScan, ScenarioStatus, ScenarioStatusWithTime} from '../../common/src/model';
-import {isFull, isInFight} from './detectors';
+import {ScenarioStatus, ScenarioStatusWithTime, ScenarioType} from '../../common/src/model';
+import {isDisconnected, isFull, isInFight} from './detectors';
+import {fightScenario} from './fight/fight_scenario';
 import {Intelligence} from './intelligence';
-import {deleteBagsScenario} from './scenario/delete_bags_scenario';
-import {emptyInventory} from './scenario/empty_inventory';
-import {scanMap} from './screenshot';
+import {restart, stopBotEntirely} from './process';
+import {mapLoopScenario} from './scenario';
+import {connectionScenario} from './scenario/connection_scenario';
+import {emptyBankScenario} from './scenario/empty_bank_scenario';
+import {postFightScenario} from './scenario/post_fight_scenario';
 import {sendEvent} from './server';
 
 const MAX_TIME_IN_FIGHT_MS = 10 * 60 * 1000; // 5 minutes
@@ -21,182 +22,152 @@ export interface ScenarioContext {
 
 export type Scenario = (ctx: ScenarioContext) => Promise<void>;
 
-class StopScenarioError extends Error {
+class PauseScenarioError extends Error {
   public constructor() {
     super();
-    this.name = 'StopScenarioError';
+    this.name = 'PauseScenarioError';
   }
 }
-class FightStartedError extends Error {
-  public constructor() {
+export class StartScenarioError extends Error {
+  public constructor(public readonly type: ScenarioType) {
     super();
-    this.name = 'FightStartedError';
-  }
-}
-class FightEndedError extends Error {
-  public constructor() {
-    super();
-    this.name = 'FightEndedError';
+    this.name = 'StartScenarioError';
   }
 }
 
 export class ScenarioRunner {
   private isRunning = false;
-  private isInFight = false;
-  private mapScan: MapScan | undefined;
-  private mapScanInterval: NodeJS.Timeout | undefined;
+  private currentScenario: ScenarioType;
   private readonly statusHistory: ScenarioStatusWithTime[] = [];
   private readonly listeners = new Set<() => void>();
 
-  public constructor(
-    private readonly ia: Intelligence,
-    private readonly scenario: Scenario,
-    private readonly fightScenario: Scenario
-  ) {}
+  public constructor(private readonly ia: Intelligence) {
+    this.currentScenario = ScenarioType.Fishing;
+  }
+
+  public start(): void {
+    this.updateStatus(`START SCENARIO ${this.currentScenario}`);
+    // CONNECTION
+    if (this.currentScenario === ScenarioType.Connection) {
+      this.runScenario(connectionScenario, async () => {
+        if (!this.isRunning) {
+          throw new PauseScenarioError();
+        }
+        await Promise.resolve();
+      });
+    }
+    // FIGHT
+    else if (this.currentScenario === ScenarioType.Fight) {
+      const startTime = Date.now();
+      this.runScenario(fightScenario, async () => {
+        if (Date.now() - startTime > MAX_TIME_IN_FIGHT_MS) {
+          throw new StartScenarioError(ScenarioType.Connection);
+        }
+        if (!this.isRunning) {
+          throw new PauseScenarioError();
+        }
+        if (isDisconnected()) {
+          throw new StartScenarioError(ScenarioType.Connection);
+        }
+        const fightStatus = isInFight();
+        if (fightStatus === 'not-in-fight') {
+          throw new StartScenarioError(ScenarioType.PostFight);
+        }
+        await Promise.resolve();
+      });
+    }
+    // FISHING
+    else if (this.currentScenario === ScenarioType.Fishing) {
+      this.runScenario(mapLoopScenario, async () => {
+        if (!this.isRunning) {
+          throw new PauseScenarioError();
+        }
+        if (isDisconnected()) {
+          throw new StartScenarioError(ScenarioType.Connection);
+        }
+        const fightStatus = isInFight();
+        if (fightStatus === 'in-fight') {
+          throw new StartScenarioError(ScenarioType.Fight);
+        }
+        if (isFull()) {
+          throw new StartScenarioError(ScenarioType.EmptyBank);
+        }
+        await Promise.resolve();
+      });
+    }
+    // POST FIGHT
+    else if (this.currentScenario === ScenarioType.PostFight) {
+      this.runScenario(postFightScenario, async () => {
+        if (!this.isRunning) {
+          throw new PauseScenarioError();
+        }
+        if (isDisconnected()) {
+          throw new StartScenarioError(ScenarioType.Connection);
+        }
+        const fightStatus = isInFight();
+        if (fightStatus === 'in-fight') {
+          throw new StartScenarioError(ScenarioType.Fight);
+        } else if (fightStatus === 'unknown') {
+          throw new StartScenarioError(ScenarioType.Connection);
+        }
+        await Promise.resolve();
+      });
+    }
+    // EMPTY BANK
+    else if (this.currentScenario === ScenarioType.EmptyBank) {
+      this.runScenario(emptyBankScenario, async () => {
+        if (!this.isRunning) {
+          throw new PauseScenarioError();
+        }
+        if (isDisconnected()) {
+          throw new StartScenarioError(ScenarioType.Connection);
+        }
+        const fightStatus = isInFight();
+        if (fightStatus === 'in-fight') {
+          throw new StartScenarioError(ScenarioType.Fight);
+        }
+        await Promise.resolve();
+      });
+    } else {
+      console.error(`Invalid ScenarioType ${this.currentScenario}`);
+      stopBotEntirely();
+    }
+  }
 
   public stop(): void {
     this.isRunning = false;
   }
 
-  public start(): void {
-    this.isRunning = true;
-    if (this.isInFight) {
-      this.startFightScenario();
-    } else {
-      this.startScenario();
-    }
+  public getCurrentScenario(): ScenarioType {
+    return this.currentScenario;
   }
 
-  private startScenario(): void {
-    this.updateStatus('START SCENARIO PÊCHE');
-    this.scenario({
+  private runScenario(scenario: Scenario, canContinue: CanContinue): void {
+    this.isRunning = true;
+    scenario({
       ia: this.ia,
-      canContinue: async () => {
-        if (!this.isRunning) {
-          throw new StopScenarioError();
-        }
-        if (isInFight() === 'in-fight') {
-          throw new FightStartedError();
-        }
-        return Promise.resolve();
-      },
       updateStatus: newStatus => this.updateStatus(newStatus),
+      canContinue,
     })
-      .then()
+      .then(() => {
+        this.currentScenario = ScenarioType.Fishing;
+        this.start();
+      })
       .catch(err => {
-        if (err instanceof StopScenarioError) {
-          this.updateStatus('STOP SCENARIO PÊCHE');
-        } else if (err instanceof FightStartedError) {
-          this.isInFight = true;
+        if (err instanceof PauseScenarioError) {
+          this.updateStatus(`PAUSE SCENARIO ${this.currentScenario}`);
+        } else if (err instanceof StartScenarioError) {
+          this.updateStatus(`INTERRUPTION SCENARIO ${this.currentScenario}`);
+          this.currentScenario = err.type;
           this.start();
         } else {
           console.error(err);
-          this.updateStatus(`ERREUR durant l'execution du scenario pêche:\n${String(err)}`);
+          this.updateStatus(
+            `ERREUR durant l'execution du scenario ${this.currentScenario}:\n${String(err)}`
+          );
           this.stop();
+          restart();
         }
-      });
-  }
-
-  private startFightScenario(): void {
-    const fightSecurityTimer = setTimeout(() => {
-      this.updateStatus('Combat trop long ! Déclenchement de la sécurité');
-      keyTap('r', 'command');
-      // eslint-disable-next-line node/no-process-exit
-      process.exit(0);
-    }, MAX_TIME_IN_FIGHT_MS);
-
-    this.updateStatus('START SCENARIO COMBAT');
-    this.mapScan = scanMap();
-    this.emit();
-    if (this.mapScanInterval === undefined) {
-      this.mapScanInterval = setInterval(() => {
-        this.mapScan = scanMap();
-        this.emit();
-      }, 1000);
-    }
-    this.fightScenario({
-      ia: this.ia,
-      canContinue: async () => {
-        if (!this.isRunning) {
-          throw new StopScenarioError();
-        }
-        if (isInFight() === 'not-in-fight') {
-          throw new FightEndedError();
-        }
-        return Promise.resolve();
-      },
-      updateStatus: newStatus => this.updateStatus(newStatus),
-    })
-      .then()
-      .catch(err => {
-        if (err instanceof StopScenarioError) {
-          this.updateStatus('STOP SCENARIO COMBAT');
-        } else if (err instanceof FightEndedError) {
-          this.isInFight = false;
-          setTimeout(() => {
-            keyTap('escape');
-            deleteBagsScenario({
-              ia: this.ia,
-              canContinue: async () => {
-                if (isInFight() === 'in-fight') {
-                  throw new FightStartedError();
-                }
-                return Promise.resolve();
-              },
-              updateStatus: newStatus => this.updateStatus(newStatus),
-            })
-              .then(() => {
-                if (isFull()) {
-                  console.log('Full!', new Date().toLocaleString());
-                  emptyInventory({
-                    ia: this.ia,
-                    canContinue: async () => {
-                      if (isInFight() === 'in-fight') {
-                        throw new FightStartedError();
-                      }
-                      return Promise.resolve();
-                    },
-                    updateStatus: newStatus => this.updateStatus(newStatus),
-                  })
-                    .then(() => {
-                      this.start();
-                    })
-                    .catch(err => {
-                      console.log(err);
-                      // eslint-disable-next-line node/no-process-exit
-                      process.exit();
-                    });
-                } else {
-                  this.start();
-                }
-              })
-              .catch(err => {
-                if (err instanceof FightStartedError) {
-                  this.isInFight = true;
-                  this.start();
-                } else {
-                  console.error(err);
-                  this.updateStatus(
-                    `ERREUR durant l'execution du scenario vidage:\n${String(err)}`
-                  );
-                  this.stop();
-                }
-              });
-          }, 1000);
-        } else {
-          console.error(err);
-          this.updateStatus(`ERREUR durant l'execution du scenario combat:\n${String(err)}`);
-          this.stop();
-        }
-        if (this.mapScanInterval) {
-          clearInterval(this.mapScanInterval);
-          this.mapScanInterval = undefined;
-          this.mapScan = undefined;
-          this.emit();
-        }
-      })
-      .finally(() => {
-        clearTimeout(fightSecurityTimer);
       });
   }
 
@@ -212,10 +183,7 @@ export class ScenarioRunner {
       type: 'scenario',
       data: {
         isRunning: this.isRunning,
-        fightScenario: {
-          isInFight: this.isInFight,
-          mapScan: this.mapScan,
-        },
+        currentScenario: this.currentScenario,
         statusHistory: this.statusHistory.slice(0, 100),
       },
     });
@@ -227,6 +195,7 @@ export class ScenarioRunner {
       time: Date.now(),
       id: Math.random().toString(36).slice(2),
     });
+    console.log(newStatus);
     this.emit();
   }
 
@@ -235,10 +204,7 @@ export class ScenarioRunner {
       type: 'scenario-new-status',
       data: {
         isRunning: this.isRunning,
-        fightScenario: {
-          isInFight: this.isInFight,
-          mapScan: this.mapScan,
-        },
+        currentScenario: this.currentScenario,
         newStatus: this.statusHistory[0]!,
       },
     });

@@ -32,8 +32,9 @@ export const goUpOfHouseScenario: Scenario = async ctx => {
   } else if (coordinate.x === -1002 && coordinate.y === -1002) {
     // Nothing to do
   } else {
+    // Take a popo
     await click(canContinue, {x: 980, y: 809, radius: 5, double: true});
-    await sleep(canContinue, 2000);
+    await waitForMapChange(ctx, {x: -1000, y: -1000});
     return goUpOfHouseScenario(ctx);
   }
 };

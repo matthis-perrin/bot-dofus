@@ -9,7 +9,7 @@ import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
 import {ScenarioRunner} from './scenario_runner';
-import {convertToPng, screenshot} from './screenshot';
+import {convertToPng, scanMap, screenshot} from './screenshot';
 
 const {readFile, writeFile, mkdir} = promises;
 
@@ -44,6 +44,7 @@ export async function apiHandler(
     return {
       ...data,
       screenshot: png2.toString('base64'),
+      mapScan: scanMap(),
     };
   }
   console.log(url, params);

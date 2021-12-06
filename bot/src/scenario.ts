@@ -19,13 +19,13 @@ import {
   fishPopupSizes,
   FishSize,
   FishType,
+  ScenarioType,
 } from '../../common/src/model';
-import {click, randSleep, sleep, waitForMapChange} from './actions';
+import {click, moveToSafeZone, randSleep, sleep, waitForMapChange} from './actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
-import {hasLevelUpModal, isFull} from './detectors';
+import {hasLevelUpModal} from './detectors';
 import {fishDb} from './fish_db';
-import {emptyInventory} from './scenario/empty_inventory';
-import {CanContinue, Scenario} from './scenario_runner';
+import {CanContinue, Scenario, StartScenarioError} from './scenario_runner';
 
 const mapLoop = [
   {x: 7, y: -4},
@@ -102,37 +102,20 @@ function getDirection(current: Coordinate, nextMap: Coordinate): Direction {
 
 export const mapLoopScenario: Scenario = async ctx => {
   const {ia, canContinue, updateStatus} = ctx;
-  // await connectionScenario(ctx);
-
-  // await deleteBagsScenario(ctx);
-  // return;
+  await canContinue();
 
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    if (isFull()) {
-      await emptyInventory(ctx);
-    }
-
-    await canContinue();
-
-    // // Check if there is a end of fight window to close
-    // const endOfFight =
-    //   checkForColor(
-    //     [
-    //       {x: 522, y: 185},
-    //       {x: 700, y: 185},
-    //     ],
-    //     '514A3D'
-    //   ) && checkForColor([{x: 452, y: 224}], 'D5CFAA');
-    // if (endOfFight) {
-    //   await sleep(canContinue, 1000);
-    //   keyTap('escape');
-    //   await sleep(canContinue, 2000);
-    // }
+    await moveToSafeZone(canContinue);
 
     // Get current data
     const lastData = await ia.refresh();
+    if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
+      updateStatus('Infos écran non disponible. En attente...');
+      await sleep(canContinue, 500);
+      return fishMapScenario(ctx);
+    }
     const coordinate = lastData.coordinate.coordinate;
     const coordinateStr = coordinateToString(coordinate);
 
@@ -149,8 +132,8 @@ export const mapLoopScenario: Scenario = async ctx => {
     // Fish on the map
     await canContinue();
     updateStatus(`Démarrage de la pêche sur la map (${coordinateStr})`);
-    // DESACTIVATION PECHE AUDRIC
     await fishMapScenario(ctx);
+    await moveToSafeZone(canContinue);
 
     // Check if we changed map
     const newLastData = await ia.refresh();
@@ -226,7 +209,7 @@ export const mapLoopScenario: Scenario = async ctx => {
       updateStatus(
         `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
           .map(s => coordinateToString(s))
-          .join(', ')}. Le premier soleil qui m'est pas un angle est choisi.`
+          .join(', ')}. Le premier soleil qui n'est pas un angle est choisi.`
       );
       // }
     }
@@ -237,18 +220,14 @@ export const mapLoopScenario: Scenario = async ctx => {
     const soleilCenter = squareCenter(soleilPx);
 
     await click(canContinue, {...soleilCenter, radius: 10});
-    await canContinue();
+    await moveToSafeZone(canContinue);
 
     // In case no map changed occured, we restart
     if (!(await waitForMapChange(ctx, nextMap))) {
-      // Last loop
       updateStatus(
-        `La map ${coordinateToString(
-          nextMap
-        )} n'est toujours pas identifiée. Pause de 5s avant redémarrage du scénario.`
+        `La map ${coordinateToString(nextMap)} n'est toujours pas identifiée, déco/reco.`
       );
-      await sleep(canContinue, 5000);
-      return mapLoopScenario(ctx);
+      throw new StartScenarioError(ScenarioType.Connection);
     }
 
     updateStatus(`Déplacement terminé`);
@@ -297,6 +276,15 @@ export const fishMapScenario: Scenario = async ctx => {
 
   /* eslint-disable no-await-in-loop */
   for (const fish of fishes) {
+    // Check if we changed map
+    const checkMapData = await ia.refresh();
+    if (
+      checkMapData.coordinate.coordinate.x !== lastData.coordinate.coordinate.x ||
+      checkMapData.coordinate.coordinate.y !== lastData.coordinate.coordinate.y
+    ) {
+      return;
+    }
+
     updateStatus(`Pêche de ${fishToString(fish)} en ${coordinateToString(fish.coordinate)}`);
     // Click on the fish
     const fishTopLeft = mapCoordinateToImageCoordinate(fish.coordinate);
@@ -324,16 +312,13 @@ export const fishMapScenario: Scenario = async ctx => {
 
     // Click on the popup
     await click(canContinue, {x: popupCoordinate.x + 20, y: popupCoordinate.y + 48, radius: 10});
+    await moveToSafeZone(canContinue);
 
-    await canContinue();
     updateStatus(`Attente de fin de pêche`);
-    const waitTime = 5000 + fishingTimePerFish[fish.size ?? FishSize.Giant];
+    const waitTime =
+      5000 + fishingTimePerFish[fish.type ?? FishType.River][fish.size ?? FishSize.Giant];
     await sleep(canContinue, waitTime);
     await checkLvlUp(canContinue);
-    if (isFull()) {
-      await emptyInventory(ctx);
-      return;
-    }
 
     const newLastData = await ia.refresh();
     if (
@@ -351,11 +336,19 @@ export const fishMapScenario: Scenario = async ctx => {
   /* eslint-enable no-await-in-loop */
 };
 
-const fishingTimePerFish: Record<FishSize, number> = {
-  [FishSize.Small]: 10300,
-  [FishSize.Medium]: 11300,
-  [FishSize.Big]: 12300,
-  [FishSize.Giant]: 20000,
+const fishingTimePerFish: Record<FishType, Record<FishSize, number>> = {
+  [FishType.River]: {
+    [FishSize.Small]: 9200,
+    [FishSize.Medium]: 8200,
+    [FishSize.Big]: 7200,
+    [FishSize.Giant]: 20000,
+  },
+  [FishType.Sea]: {
+    [FishSize.Small]: 9200,
+    [FishSize.Medium]: 8200,
+    [FishSize.Big]: 6500,
+    [FishSize.Giant]: 20000,
+  },
 };
 
 export async function checkLvlUp(canContinue: CanContinue): Promise<void> {

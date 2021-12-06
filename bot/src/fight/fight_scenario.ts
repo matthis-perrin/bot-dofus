@@ -196,6 +196,7 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
 
 export const fightScenario: Scenario = async ctx => {
   const {canContinue, updateStatus} = ctx;
+  await canContinue();
 
   // Check if the 'Ready" button is there. If that's the case, click it.
   updateStatus('Detection du bouton "Ready"');

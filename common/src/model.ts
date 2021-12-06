@@ -87,7 +87,7 @@ export interface ScenarioMessage {
   type: 'scenario';
   data: {
     isRunning: boolean;
-    fightScenario: FightScenarioData;
+    currentScenario: ScenarioType;
     statusHistory: ScenarioStatusWithTime[];
   };
 }
@@ -96,7 +96,7 @@ export interface ScenarioStatusMessage {
   type: 'scenario-new-status';
   data: {
     isRunning: boolean;
-    fightScenario: FightScenarioData;
+    currentScenario: ScenarioType;
     newStatus: ScenarioStatusWithTime;
   };
 }
@@ -104,3 +104,11 @@ export interface ScenarioStatusMessage {
 export type Message =
   | ScenarioMessage
   | ScenarioStatusMessage;
+
+export enum ScenarioType {
+  PostFight = 'PostFight',
+  EmptyBank = 'EmptyBank',
+  Fight = 'Fight',
+  Connection = 'Connection',
+  Fishing = 'Fishing',
+}

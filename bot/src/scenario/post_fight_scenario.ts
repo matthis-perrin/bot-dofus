@@ -4,8 +4,9 @@ import {click, randSleep} from '../actions';
 import {isEmptyItem, isInventoryOpen} from '../detectors';
 import {Scenario} from '../scenario_runner';
 
-export const deleteBagsScenario: Scenario = async ctx => {
+export const postFightScenario: Scenario = async ctx => {
   const {canContinue} = ctx;
+  keyTap('escape');
   // Wait a bit
   await randSleep(canContinue, 1000, 1500);
   // Click on the inventory icon if needed

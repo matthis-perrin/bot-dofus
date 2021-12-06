@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import styled from 'styled-components';
 
-import {SquareType} from '../../../common/src/model';
+import {ScenarioType, SquareType} from '../../../common/src/model';
 import {ORANGE} from '../colors';
-import {setSquareOverlay, useClientState, useScenarioState} from '../stores';
+import {setSquareOverlay, useScenarioState, useServerState} from '../stores';
 
 function getColorFromSquareType(mapType: SquareType): string {
   if (mapType === SquareType.Red) {
@@ -21,14 +21,14 @@ function getColorFromSquareType(mapType: SquareType): string {
 }
 
 export const FightModule: React.FC = () => {
-  const {action} = useClientState();
-  const {fightScenario} = useScenarioState();
-  const isRunning = action === 'view-fight';
+  const {currentScenario} = useScenarioState();
+  const {mapScan} = useServerState();
+  const isRunning = currentScenario === ScenarioType.Fight;
 
   useEffect(() => {
-    if (isRunning && fightScenario.mapScan !== undefined) {
+    if (isRunning) {
       setSquareOverlay({
-        overlay: Object.entries(fightScenario.mapScan).flatMap(([x, data]) =>
+        overlay: Object.entries(mapScan).flatMap(([x, data]) =>
           Object.entries(data).map(([y, type]) => ({
             coordinate: {x: parseFloat(x), y: parseFloat(y)},
             color: getColorFromSquareType(type),
@@ -38,7 +38,7 @@ export const FightModule: React.FC = () => {
     } else {
       setSquareOverlay({overlay: undefined});
     }
-  }, [fightScenario.mapScan, isRunning]);
+  }, [mapScan, isRunning]);
 
   return (
     <Wrapper>

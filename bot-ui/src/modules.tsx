@@ -25,7 +25,6 @@ export const Modules: React.FC = () => {
   const clientState = useClientState();
 
   const handleFishModeClick = useCallback(() => setClientState({action: 'editing-fish'}), []);
-  const handleFightModeClick = useCallback(() => setClientState({action: 'view-fight'}), []);
   const handleStop = useCallback(() => setClientState({action: undefined}), []);
   const handleMapScreenshotClick = useCallback(
     () => setClientState({action: 'take-screenshot'}),
@@ -68,10 +67,6 @@ export const Modules: React.FC = () => {
           <Spacing width={16} />
           <Button onClick={handleMapScreenshotClick} disabled={clientState.action !== undefined}>
             Map screenshot
-          </Button>
-          <Spacing width={16} />
-          <Button onClick={handleFightModeClick} disabled={clientState.action !== undefined}>
-            Mode fight
           </Button>
           <Spacing width={16} />
           {clientState.action !== undefined ? (

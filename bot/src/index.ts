@@ -3,10 +3,8 @@ import 'source-map-support/register';
 
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
-import {fightScenario} from './fight/fight_scenario';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
-import {mapLoopScenario} from './scenario';
 import {getCredentials} from './scenario/connection_scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {startServer} from './server';
@@ -23,7 +21,7 @@ async function run(): Promise<void> {
   ]);
 
   const ai = new Intelligence(soleilModel, mapModel, fishPopupModel);
-  const runner = new ScenarioRunner(ai, mapLoopScenario, fightScenario);
+  const runner = new ScenarioRunner(ai);
   startServer(ai, runner);
   runner.start();
   console.log(new Date().toLocaleString());
