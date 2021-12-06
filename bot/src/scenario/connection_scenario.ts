@@ -9,6 +9,7 @@ import {
   isInFight,
   isServerSelectionScreen,
 } from '../detectors';
+import {stopBotEntirely} from '../process';
 import {Scenario} from '../scenario_runner';
 
 const {readFile} = promises;
@@ -27,10 +28,8 @@ export async function getCredentials(): Promise<{username: string; password: str
 
 export const connectionScenario: Scenario = async ctx => {
   const {canContinue} = ctx;
-  console.log(0);
   // Check if we are on the login screen
   if (!isDisconnected() && !isServerSelectionScreen() && !isCharacterSelectionScreen()) {
-    console.log(1);
     // If not, restart the game
     keyTap('r', 'command');
     await randSleep(canContinue, 3000, 3500);
@@ -41,7 +40,6 @@ export const connectionScenario: Scenario = async ctx => {
   }
 
   if (isDisconnected()) {
-    console.log(2);
     // Remove some of the modals
     await randSleep(canContinue, 500, 700);
     keyTap('enter');
@@ -67,33 +65,29 @@ export const connectionScenario: Scenario = async ctx => {
 
     // Wait for next screen
     if (!(await waitFor(ctx, isServerSelectionScreen))) {
-      // eslint-disable-next-line node/no-process-exit
-      process.exit(1);
+      stopBotEntirely();
     }
   }
 
   if (isServerSelectionScreen()) {
-    console.log(3);
     // Select second server
     await click(canContinue, {x: 380, y: 463, radius: 20, double: true});
 
     // Wait for next screen
     if (!(await waitFor(ctx, isCharacterSelectionScreen))) {
-      // eslint-disable-next-line node/no-process-exit
-      process.exit(1);
+      stopBotEntirely();
     }
   }
 
   if (isCharacterSelectionScreen()) {
-    console.log(4);
     // Select the first character
-    await click(canContinue, {x: 565, y: 676, radius: 10, double: true});
+    await click(canContinue, {x: 177, y: 468, radius: 5, double: true});
 
     // Wait for next screen
     if (!(await waitFor(ctx, () => isInFight() !== 'unknown'))) {
-      // eslint-disable-next-line node/no-process-exit
-      process.exit(1);
+      stopBotEntirely();
     }
+    return;
   }
 
   throw new Error('Should never happen');

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "yarn build-bot-ui && yarn build-bot && yarn start-bot",
-    "start-bot": "forever bot/dist/main.js",
+    "start-bot": "node start.js",
     "build-bot": "pushd bot && yarn install && yarn build && popd",
     "build-bot-ui": "pushd bot-ui && yarn install && yarn build && popd"
   },
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.7",
-    "forever": "^4.0.1",
+    "forever-monitor": "^3.0.3",
     "typescript": "^4.4.4"
   }
 }

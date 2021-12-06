@@ -91,14 +91,14 @@ export function checkForColor(
   const color = hexToRgb(targetColor);
   const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
-  // if (debug) {
-  //   console.log({
-  //     color,
-  //     colorHex: rgbToHex(color),
-  //     colorAverage,
-  //     averageHex: rgbToHex(colorAverage),
-  //     distance,
-  //   });
-  // }
+  if (distance <= tolerance && distance > 0) {
+    console.log({
+      color,
+      colorHex: rgbToHex(color),
+      colorAverage,
+      averageHex: rgbToHex(colorAverage),
+      distance,
+    });
+  }
   return distance <= tolerance;
 }
