@@ -40,6 +40,17 @@ export const DISCONNECTED_NEWS_HEADER_BROWN = averageHex(
   NEW_MAC_DISCONNECTED_NEWS_HEADER_BROWN
 );
 
+const OLD_MAC_DISCONNECTED_BUTTON_ORANGE = '#df9234';
+const NEW_MAC_DISCONNECTED_BUTTON_ORANGE = '#ea8d24';
+export const DISCONNECTED_BUTTON_ORANGE = averageHex(
+  OLD_MAC_DISCONNECTED_BUTTON_ORANGE,
+  NEW_MAC_DISCONNECTED_BUTTON_ORANGE
+);
+
+const OLD_MAC_FULL_PODS_GREEN = '#63bc3e';
+const NEW_MAC_FULL_PODS_GREEN = '#78bc4b';
+export const FULL_PODS_GREEN = averageHex(OLD_MAC_FULL_PODS_GREEN, NEW_MAC_FULL_PODS_GREEN);
+
 export interface Rgb {
   r: number;
   g: number;
@@ -113,13 +124,13 @@ export function checkForColor(
   const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
   // if (true || (distance <= tolerance && distance > 0)) {
-  //   console.log({
-  //     color,
-  //     colorHex: rgbToHex(color),
-  //     colorAverage,
-  //     averageHex: rgbToHex(colorAverage),
-  //     distance,
-  //   });
+  // console.log({
+  //   color,
+  //   colorHex: rgbToHex(color),
+  //   colorAverage,
+  //   averageHex: rgbToHex(colorAverage),
+  //   distance,
+  // });
   // }
   return distance <= tolerance;
 }

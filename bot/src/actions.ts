@@ -44,7 +44,7 @@ export async function click(
 
   mouseClick(button);
   if (double) {
-    await sleepInternal(100);
+    await sleepInternal(200);
     mouseClick(button);
   }
   await canContinue();
@@ -112,7 +112,7 @@ export async function waitFor(
   const SLEEP_DURATION_MS = 300;
   const startTime = Date.now();
   let detected = false;
-  updateStatus(`Attente de changement de map`);
+  updateStatus(`Attente de transition`);
   while (Date.now() - startTime < MAX_WAIT_TIME_MS) {
     // eslint-disable-next-line no-await-in-loop
     await sleep(canContinue, SLEEP_DURATION_MS);

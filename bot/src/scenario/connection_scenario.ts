@@ -10,7 +10,7 @@ import {
   isServerSelectionScreen,
 } from '../detectors';
 import {logError, logEvent} from '../logger';
-import {stopBotEntirely} from '../process';
+import {restart, stopBotEntirely} from '../process';
 import {Scenario} from '../scenario_runner';
 
 const {readFile} = promises;
@@ -38,8 +38,9 @@ export const connectionScenario: Scenario = async ctx => {
     keyTap('r', 'command');
     await randSleep(canContinue, 3000, 3500);
     if (!(await waitFor(ctx, isDisconnected))) {
-      await logError('connection', 'unknown screen');
-      stopBotEntirely();
+      await logError('connection', 'unknown screen, restart in 10-15 minutes');
+      await randSleep(canContinue, 10 * 60 * 1000, 15 * 60 * 1000);
+      await restart();
     }
   }
 
@@ -70,7 +71,7 @@ export const connectionScenario: Scenario = async ctx => {
     // Wait for next screen
     if (!(await waitFor(ctx, isServerSelectionScreen))) {
       await logError('connection', 'timeout after waiting for server selection screen');
-      stopBotEntirely();
+      await restart();
     }
   }
 
@@ -81,7 +82,7 @@ export const connectionScenario: Scenario = async ctx => {
     // Wait for next screen
     if (!(await waitFor(ctx, isCharacterSelectionScreen))) {
       await logError('connection', 'timeout after waiting for character selection screen');
-      stopBotEntirely();
+      await restart();
     }
   }
 
@@ -91,7 +92,7 @@ export const connectionScenario: Scenario = async ctx => {
 
     // Wait for next screen
     if (!(await waitFor(ctx, () => isInFight() !== 'unknown'))) {
-      stopBotEntirely();
+      await restart();
     }
     return;
   }

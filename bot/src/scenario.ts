@@ -26,6 +26,7 @@ import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} fr
 import {hasLevelUpModal} from './detectors';
 import {fishDb} from './fish_db';
 import {logError, logEvent} from './logger';
+import {restart} from './process';
 import {CanContinue, Scenario, StartScenarioError} from './scenario_runner';
 
 const mapLoop = [
@@ -118,8 +119,7 @@ export const mapLoopScenario: Scenario = async ctx => {
         `unknown map ${lastData.coordinate.label} ${lastData.coordinate.score}`
       );
       updateStatus('Infos écran non disponible. En attente...');
-      await sleep(canContinue, 500);
-      return fishMapScenario(ctx);
+      await restart();
     }
     const coordinate = lastData.coordinate.coordinate;
     const coordinateStr = coordinateToString(coordinate);
@@ -127,10 +127,8 @@ export const mapLoopScenario: Scenario = async ctx => {
     // Map identification
     const indexInMapLoop = mapLoop.findIndex(m => m.x === coordinate.x && m.y === coordinate.y);
     if (indexInMapLoop === -1) {
-      updateStatus(
-        `Map courante (${coordinateStr}) n'est pas dans le chemin. Pause de 5s avant redémarrage du scénario.`
-      );
-      await sleep(canContinue, 5000);
+      updateStatus(`Map courante (${coordinateStr}) n'est pas dans le chemin. Prise de popo.`);
+      await click(canContinue, {x: 1024, y: 806, radius: 5, double: true});
       return mapLoopScenario(ctx);
     }
 
@@ -256,8 +254,7 @@ export const fishMapScenario: Scenario = async ctx => {
       `unknown map ${lastData.coordinate.label} ${lastData.coordinate.score}`
     );
     updateStatus('Infos écran non disponible. En attente...');
-    await sleep(canContinue, 500);
-    return fishMapScenario(ctx);
+    await restart();
   }
 
   const allFishes = fishDb.get(lastData.coordinate.coordinate);

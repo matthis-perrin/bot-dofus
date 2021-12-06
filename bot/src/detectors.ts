@@ -1,9 +1,11 @@
 import {Coordinate} from '../../common/src/coordinates';
 import {
   checkForColor,
+  DISCONNECTED_BUTTON_ORANGE,
   DISCONNECTED_DARK_BROWN,
   DISCONNECTED_LIGHT_BROWN,
   DISCONNECTED_NEWS_HEADER_BROWN,
+  FULL_PODS_GREEN,
   ORANGE,
 } from './colors';
 
@@ -64,8 +66,8 @@ export function isFull(): boolean {
       {x: 600, y: 688},
       {x: 610, y: 698},
     ],
-    '#78bc4b',
-    5
+    FULL_PODS_GREEN,
+    10
   );
 }
 
@@ -257,8 +259,8 @@ export function isCharacterSelectionScreen(): boolean {
         {x: 520, y: 676},
         {x: 609, y: 676},
       ],
-      '#df9234',
-      5
+      DISCONNECTED_BUTTON_ORANGE,
+      10
     )
   );
 }

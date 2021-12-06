@@ -1,6 +1,7 @@
 import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
 import {click, moveToSafeZone, sleep, waitForMapChange} from '../actions';
 import {logError} from '../logger';
+import {restart} from '../process';
 import {Scenario} from '../scenario_runner';
 
 export const goOutOfHouseScenario: Scenario = async ctx => {
@@ -13,8 +14,7 @@ export const goOutOfHouseScenario: Scenario = async ctx => {
       `unknown map ${lastData.coordinate.label} ${lastData.coordinate.score}`
     );
     updateStatus('Infos écran non disponible. En attente...');
-    await sleep(canContinue, 500);
-    return goOutOfHouseScenario(ctx);
+    await restart();
   }
 
   const {coordinate} = lastData.coordinate;

@@ -6,6 +6,7 @@ import {checkForColor} from '../colors';
 import {imageCoordinateToScreenCoordinate} from '../coordinate';
 import {isCoffreOpen, isEmptyItem} from '../detectors';
 import {logError, logEvent} from '../logger';
+import {restart} from '../process';
 import {Scenario} from '../scenario_runner';
 import {goOutOfHouseScenario} from './go_out_of_house_scenario';
 import {goUpOfHouseScenario} from './go_up_of_house_scenario';
@@ -24,8 +25,7 @@ export const emptyBankScenario: Scenario = async ctx => {
     updateStatus(
       `Infos écran non disponible (${lastData.coordinate.label} ${lastData.coordinate.score}). En attente...`
     );
-    await sleep(canContinue, 500);
-    return emptyBankScenario(ctx);
+    await restart();
   }
 
   const {coordinate} = lastData.coordinate;

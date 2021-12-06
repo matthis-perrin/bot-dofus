@@ -168,7 +168,7 @@ export class ScenarioRunner {
             `ERREUR durant l'execution du scenario ${this.currentScenario}:\n${String(err)}`
           );
           this.stop();
-          restart();
+          restart().catch(() => {});
         }
       });
   }
