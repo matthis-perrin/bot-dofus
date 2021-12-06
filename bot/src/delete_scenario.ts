@@ -32,8 +32,7 @@ export const deleteBagsScenario: Scenario = async ctx => {
         {x: firstItemCenter.x - 10, y: firstItemCenter.y - 10},
       ],
       noItemColor,
-      3,
-      true
+      3
     );
     if (hasNoItem) {
       break;

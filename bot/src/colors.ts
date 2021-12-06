@@ -1,4 +1,4 @@
-import {getPixelColor, moveMouseSmooth} from 'robotjs';
+import {getPixelColor} from 'robotjs';
 
 import {Coordinate} from '../../common/src/coordinates';
 import {imageCoordinateToScreenCoordinate} from './coordinate';
@@ -25,7 +25,7 @@ export interface Rgb {
   b: number;
 }
 
-function averageHex(hex1: string, hex2: string) {
+function averageHex(hex1: string, hex2: string): string {
   return rgbToHex(getColorAverage([hexToRgb(hex1), hexToRgb(hex2)]));
 }
 
@@ -86,20 +86,19 @@ export function colorDistance(color1: Rgb, color2: Rgb): number {
 export function checkForColor(
   coordinates: Coordinate[],
   targetColor: string,
-  tolerance = 25,
-  debug = false
+  tolerance = 25
 ): boolean {
   const color = hexToRgb(targetColor);
   const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
-  if (debug) {
-    console.log({
-      color,
-      colorHex: rgbToHex(color),
-      colorAverage,
-      averageHex: rgbToHex(colorAverage),
-      distance,
-    });
-  }
+  // if (debug) {
+  //   console.log({
+  //     color,
+  //     colorHex: rgbToHex(color),
+  //     colorAverage,
+  //     averageHex: rgbToHex(colorAverage),
+  //     distance,
+  //   });
+  // }
   return distance <= tolerance;
 }

@@ -65,7 +65,6 @@ export const emptyInventory: Scenario = async ctx => {
     }
   }
   /* eslint-enable no-await-in-loop */
-  // eslint-disable-next-line unicorn/prefer-code-point
   keyToggle(String.fromCharCode(16), 'up');
 
   // Close the coffre

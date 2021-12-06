@@ -1,8 +1,5 @@
-import {moveMouseSmooth} from 'robotjs';
-
 import {click, sleep} from '../actions';
 import {BLUE, checkForColor, GREEN, RED} from '../colors';
-import {imageCoordinateToScreenCoordinate} from '../coordinate';
 import {isPlayerTurn} from '../detectors';
 import {ScenarioContext} from '../scenario_runner';
 
@@ -61,10 +58,9 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 42, y: 152},
   ];
 
-  console.log('challenge');
   if (
-    checkForColor(challengeCoordinates1, '#ccc4be', 25, true) &&
-    checkForColor(challengeCoordinates2, '#ffffff', 25, true)
+    checkForColor(challengeCoordinates1, '#ccc4be', 5) &&
+    checkForColor(challengeCoordinates2, '#ffffff', 5)
   ) {
     updateStatus('Cache challenge');
     await click(canContinue, {x: 23, y: 82, radius: 2});

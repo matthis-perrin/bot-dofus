@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-unassigned-import
 import 'source-map-support/register';
 
-import {isInFight} from './detectors';
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fightScenario} from './fight/fight_scenario';

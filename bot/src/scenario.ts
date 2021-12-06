@@ -22,17 +22,8 @@ import {
 } from '../../common/src/model';
 import {click, randSleep, sleep, waitForMapChange} from './actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
-import {deleteBagsScenario} from './delete_scenario';
-import {
-  hasLevelUpModal,
-  isCharacterSelectionScreen,
-  isDisconnected,
-  isFull,
-  isInFight,
-  isServerSelectionScreen,
-} from './detectors';
+import {hasLevelUpModal, isFull} from './detectors';
 import {fishDb} from './fish_db';
-import {connectionScenario} from './scenario/connection_scenario';
 import {emptyInventory} from './scenario/empty_inventory';
 import {CanContinue, Scenario} from './scenario_runner';
 
