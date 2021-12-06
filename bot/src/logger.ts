@@ -25,7 +25,8 @@ function getTodayPath(): string {
 export async function logEvent(event: string): Promise<void> {
   const dir = getTodayPath();
   await mkdir(dir, {recursive: true});
-  await appendFile(join(dir, 'events.txt'), `[${new Date().toLocaleString()}] ${event}\n`);
+  const eventStr = `[${new Date().toLocaleString()}] ${event}`;
+  await appendFile(join(dir, 'events.txt'), `${eventStr}\n`);
 }
 
 let recentLogs: ScenarioStatusWithTime[] = [];
@@ -37,9 +38,11 @@ export async function logError(context: string, err: unknown): Promise<void> {
   const dateStr = new Date().toLocaleTimeString();
   const dir = join(getTodayPath(), `error-${dateStr}`);
   await mkdir(dir, {recursive: true});
+  const errStr = `[${context}] ${String(err)}`;
+  console.log(errStr);
   await appendFile(
     join(dir, 'error.txt'),
-    `[${context}] ${String(err)}\n\n----\nRecent logs\n----\n\n${recentLogs
+    `${errStr}\n\n----\nRecent logs\n----\n\n${recentLogs
       .map(log => `[${new Date(log.time).toLocaleString()}] ${log.value}`)
       .join('\n')}`
   );
