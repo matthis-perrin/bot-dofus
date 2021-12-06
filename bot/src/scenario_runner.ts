@@ -75,7 +75,7 @@ export class ScenarioRunner {
         if (!this.isRunning) {
           throw new StopScenarioError();
         }
-        if (isInFight()) {
+        if (isInFight() === 'in-fight') {
           throw new FightStartedError();
         }
         return Promise.resolve();
@@ -120,7 +120,7 @@ export class ScenarioRunner {
         if (!this.isRunning) {
           throw new StopScenarioError();
         }
-        if (!isInFight()) {
+        if (isInFight() === 'not-in-fight') {
           throw new FightEndedError();
         }
         return Promise.resolve();
@@ -138,7 +138,7 @@ export class ScenarioRunner {
             deleteBagsScenario({
               ia: this.ia,
               canContinue: async () => {
-                if (isInFight()) {
+                if (isInFight() === 'in-fight') {
                   throw new FightStartedError();
                 }
                 return Promise.resolve();
@@ -151,7 +151,7 @@ export class ScenarioRunner {
                   emptyInventory({
                     ia: this.ia,
                     canContinue: async () => {
-                      if (isInFight()) {
+                      if (isInFight() === 'in-fight') {
                         throw new FightStartedError();
                       }
                       return Promise.resolve();

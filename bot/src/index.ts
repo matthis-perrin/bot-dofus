@@ -7,6 +7,7 @@ import {fightScenario} from './fight/fight_scenario';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
 import {mapLoopScenario} from './scenario';
+import {getCredentials} from './scenario/connection_scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {startServer} from './server';
 import {loadFishPopupModel, loadMapModel, loadSoleilModel} from './tensorflow';
@@ -18,6 +19,7 @@ async function run(): Promise<void> {
     loadFishPopupModel(),
     initDofusWindow(),
     fishDb.init(),
+    getCredentials(),
   ]);
 
   const ai = new Intelligence(soleilModel, mapModel, fishPopupModel);

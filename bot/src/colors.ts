@@ -1,4 +1,4 @@
-import {getPixelColor} from 'robotjs';
+import {getPixelColor, moveMouseSmooth} from 'robotjs';
 
 import {Coordinate} from '../../common/src/coordinates';
 import {imageCoordinateToScreenCoordinate} from './coordinate';
@@ -39,9 +39,10 @@ export function fetchColorAverage(coordinates: Coordinate[]): Rgb {
 }
 
 export function hexToRgb(color: string): Rgb {
-  const r = parseInt(color.slice(0, 2), 16);
-  const g = parseInt(color.slice(2, 4), 16);
-  const b = parseInt(color.slice(4, 6), 16);
+  const c = color.startsWith('#') ? color.slice(1) : color;
+  const r = parseInt(c.slice(0, 2), 16);
+  const g = parseInt(c.slice(2, 4), 16);
+  const b = parseInt(c.slice(4, 6), 16);
   return {r, g, b};
 }
 

@@ -203,7 +203,7 @@ export const fightScenario: Scenario = async ctx => {
     {x: 1015, y: 620},
     {x: 1085, y: 620},
   ];
-  if (checkForColor(readyButtonCoordinates, 'ED702D')) {
+  if (checkForColor(readyButtonCoordinates, '#ED702D')) {
     updateStatus('Click sur bouton "Ready"');
     const readyCenterX = 1050;
     const readyCenterY = 620;

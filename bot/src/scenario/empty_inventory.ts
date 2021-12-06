@@ -57,7 +57,7 @@ export const emptyInventory: Scenario = async ctx => {
     moveMouseSmooth(dropZoneScreenCenter.x, dropZoneScreenCenter.y);
     mouseToggle('up');
     await randSleep(canContinue, 500, 600);
-    if (checkForColor([{x: dropZoneCenter.x - 100, y: dropZoneCenter.y - 20}], 'ffffff', 5)) {
+    if (checkForColor([{x: dropZoneCenter.x - 100, y: dropZoneCenter.y - 20}], '#ffffff', 5)) {
       await click(canContinue, {x: dropZoneCenter.x - 167, y: dropZoneCenter.y - 22, radius: 3});
       await randSleep(canContinue, 300, 500);
       await click(canContinue, {x: dropZoneCenter.x - 167, y: dropZoneCenter.y - 22, radius: 3});

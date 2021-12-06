@@ -35,13 +35,13 @@ for (let y = 1; y < VERTICAL_SQUARES - 1; y++) {
 
 function identifyColor(circleColor: Rgb, squareColor: Rgb): SquareType {
   const circleTypesAndDistance: [SquareType, number][] = [
-    [SquareType.Red, colorDistance(circleColor, hexToRgb('ea3323'))],
-    [SquareType.Blue, colorDistance(circleColor, hexToRgb('0000f5'))],
+    [SquareType.Red, colorDistance(circleColor, hexToRgb('#ea3323'))],
+    [SquareType.Blue, colorDistance(circleColor, hexToRgb('#0000f5'))],
   ];
   const squareTypesAndDistance: [SquareType, number][] = [
-    [SquareType.Light, colorDistance(squareColor, hexToRgb('84878c'))],
-    [SquareType.Dark, colorDistance(squareColor, hexToRgb('777a7f'))],
-    [SquareType.Wall, colorDistance(squareColor, hexToRgb('c8c8c8'))],
+    [SquareType.Light, colorDistance(squareColor, hexToRgb('#84878c'))],
+    [SquareType.Dark, colorDistance(squareColor, hexToRgb('#777a7f'))],
+    [SquareType.Wall, colorDistance(squareColor, hexToRgb('#c8c8c8'))],
   ];
   const circleType = circleTypesAndDistance
     .filter(v => v[1] < 25)

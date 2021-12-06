@@ -22,8 +22,16 @@ import {
 } from '../../common/src/model';
 import {click, randSleep, sleep, waitForMapChange} from './actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
-import {hasLevelUpModal, isFull} from './detectors';
+import {
+  hasLevelUpModal,
+  isCharacterSelectionScreen,
+  isDisconnected,
+  isFull,
+  isInFight,
+  isServerSelectionScreen,
+} from './detectors';
 import {fishDb} from './fish_db';
+import {connectionScenario} from './scenario/connection_scenario';
 import {emptyInventory} from './scenario/empty_inventory';
 import {CanContinue, Scenario} from './scenario_runner';
 
@@ -102,6 +110,9 @@ function getDirection(current: Coordinate, nextMap: Coordinate): Direction {
 
 export const mapLoopScenario: Scenario = async ctx => {
   const {ia, canContinue, updateStatus} = ctx;
+  // await connectionScenario(ctx);
+  // console.log(isDisconnected());
+  // return;
 
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
@@ -146,7 +157,7 @@ export const mapLoopScenario: Scenario = async ctx => {
     await canContinue();
     updateStatus(`Démarrage de la pêche sur la map (${coordinateStr})`);
     // DESACTIVATION PECHE AUDRIC
-    // await fishMapScenario(ctx);
+    await fishMapScenario(ctx);
 
     // Check if we changed map
     const newLastData = await ia.refresh();

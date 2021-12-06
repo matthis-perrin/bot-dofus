@@ -1,7 +1,7 @@
 import {Coordinate} from '../../common/src/coordinates';
-import {checkForColor, fetchColorAverage} from './colors';
+import {checkForColor} from './colors';
 
-export function isInFight(): boolean {
+export function isInFight(): 'in-fight' | 'not-in-fight' | 'unknown' {
   const topCoordinates: Coordinate[] = [
     {x: 1095, y: 740},
     {x: 1095, y: 755},
@@ -13,11 +13,18 @@ export function isInFight(): boolean {
     {x: 1095, y: 825},
   ];
 
-  const topColor = fetchColorAverage(topCoordinates);
-  const bottomColor = fetchColorAverage(bottomCoordinates);
-  const topIsLighter =
-    topColor.r + topColor.g + topColor.b > bottomColor.r + bottomColor.g + bottomColor.b;
-  return topIsLighter;
+  if (
+    checkForColor(topCoordinates, '#454035', 5) &&
+    checkForColor(bottomCoordinates, '#b3ac90', 5)
+  ) {
+    return 'not-in-fight';
+  } else if (
+    checkForColor(topCoordinates, '#b3ac90', 5) &&
+    checkForColor(bottomCoordinates, '#454035', 5)
+  ) {
+    return 'in-fight';
+  }
+  return 'unknown';
 }
 
 export function isPlayerTurn(): boolean {
@@ -26,7 +33,7 @@ export function isPlayerTurn(): boolean {
       {x: 667, y: 692},
       {x: 671, y: 690},
     ],
-    'ed702d',
+    '#ed702d',
     5
   );
 }
@@ -40,7 +47,7 @@ export function hasLevelUpModal(): boolean {
       {x: 685, y: 370},
       {x: 775, y: 330},
     ],
-    'd4cfae',
+    '#d4cfae',
     5
   );
 }
@@ -51,7 +58,7 @@ export function isFull(): boolean {
       {x: 600, y: 688},
       {x: 610, y: 698},
     ],
-    '78bc4b',
+    '#78bc4b',
     5
   );
 }
@@ -69,7 +76,7 @@ export function isInventoryOpen(): boolean {
       {x: 470, y: 150},
       {x: 716, y: 256},
     ],
-    '504a3e',
+    '#504a3e',
     5
   );
 }
@@ -83,7 +90,7 @@ export function isCoffreOpen(): boolean {
         {x: 275, y: 147},
         {x: 1067, y: 147},
       ],
-      '504a3e',
+      '#504a3e',
       5
     ) &&
     checkForColor(
@@ -92,14 +99,14 @@ export function isCoffreOpen(): boolean {
         {x: 221, y: 613},
         {x: 964, y: 600},
       ],
-      'd4cfae',
+      '#d4cfae',
       5
     )
   );
 }
 
 export function isEmptyItem(center: Coordinate): boolean {
-  const noItemColor = 'beb999';
+  const noItemColor = '#beb999';
   return checkForColor(
     [
       center,
@@ -115,5 +122,137 @@ export function isEmptyItem(center: Coordinate): boolean {
     ],
     noItemColor,
     3
+  );
+}
+
+export function isDisconnected(): boolean {
+  return (
+    checkForColor(
+      [
+        {x: 40, y: 40},
+        {x: 40, y: 383},
+        {x: 40, y: 660},
+        {x: 255, y: 825},
+        {x: 255, y: 825},
+        {x: 973, y: 825},
+        {x: 1100, y: 445},
+        {x: 1100, y: 120},
+        {x: 800, y: 20},
+        {x: 400, y: 20},
+      ],
+      '#000000',
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 236, y: 730},
+        {x: 400, y: 730},
+        {x: 575, y: 730},
+        {x: 740, y: 730},
+        {x: 913, y: 730},
+      ],
+      '#474138',
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 236, y: 647},
+        {x: 400, y: 647},
+        {x: 575, y: 647},
+        {x: 740, y: 647},
+        {x: 913, y: 647},
+      ],
+      '#776f5c',
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 850, y: 242},
+        {x: 970, y: 242},
+      ],
+      '#423c2d',
+      5
+    )
+  );
+}
+
+export function hasReconnectModal(): boolean {
+  return checkForColor(
+    [
+      {x: 642, y: 480},
+      {x: 720, y: 480},
+    ],
+    '#ed6c2d',
+    5
+  );
+}
+
+export function isServerSelectionScreen(): boolean {
+  return (
+    checkForColor(
+      [
+        {x: 30, y: 30},
+        {x: 30, y: 350},
+        {x: 30, y: 600},
+        {x: 30, y: 815},
+        {x: 250, y: 760},
+        {x: 560, y: 760},
+        {x: 1100, y: 760},
+        {x: 1100, y: 600},
+        {x: 1100, y: 350},
+        {x: 1100, y: 50},
+        {x: 250, y: 30},
+        {x: 560, y: 30},
+      ],
+      '#282620',
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 380, y: 260},
+        {x: 428, y: 260},
+      ],
+      '#282620',
+      5
+    )
+  );
+}
+
+export function isCharacterSelectionScreen(): boolean {
+  return (
+    checkForColor(
+      [
+        {x: 30, y: 30},
+        {x: 30, y: 350},
+        {x: 30, y: 600},
+        {x: 30, y: 815},
+        {x: 250, y: 760},
+        {x: 560, y: 760},
+        {x: 1100, y: 760},
+        {x: 1100, y: 600},
+        {x: 1100, y: 350},
+        {x: 1100, y: 50},
+        {x: 250, y: 30},
+        {x: 560, y: 30},
+      ],
+      '#282620',
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 375, y: 323},
+        {x: 428, y: 323},
+      ],
+      '#2f2825',
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 520, y: 676},
+        {x: 609, y: 676},
+      ],
+      '#df9234',
+      5
+    )
   );
 }
