@@ -2,6 +2,7 @@ import {ScenarioStatus, ScenarioStatusWithTime, ScenarioType} from '../../common
 import {isDisconnected, isFull, isInFight} from './detectors';
 import {fightScenario} from './fight/fight_scenario';
 import {Intelligence} from './intelligence';
+import {logError, setRecentLogs} from './logger';
 import {restart, stopBotEntirely} from './process';
 import {mapLoopScenario} from './scenario';
 import {connectionScenario} from './scenario/connection_scenario';
@@ -129,8 +130,7 @@ export class ScenarioRunner {
         await Promise.resolve();
       });
     } else {
-      console.error(`Invalid ScenarioType ${this.currentScenario}`);
-      stopBotEntirely();
+      logError('runner', `Invalid ScenarioType ${this.currentScenario}`).finally(stopBotEntirely);
     }
   }
 
@@ -161,7 +161,9 @@ export class ScenarioRunner {
           this.currentScenario = err.type;
           this.start();
         } else {
-          console.error(err);
+          logError('runner', `Error with scenario ${this.currentScenario}:\n${String(err)}`).catch(
+            () => {}
+          );
           this.updateStatus(
             `ERREUR durant l'execution du scenario ${this.currentScenario}:\n${String(err)}`
           );
@@ -184,9 +186,13 @@ export class ScenarioRunner {
       data: {
         isRunning: this.isRunning,
         currentScenario: this.currentScenario,
-        statusHistory: this.statusHistory.slice(0, 100),
+        statusHistory: this.getRecentHistory(),
       },
     });
+  }
+
+  private getRecentHistory(): ScenarioStatusWithTime[] {
+    return this.statusHistory.slice(0, 100);
   }
 
   private updateStatus(newStatus: ScenarioStatus): void {
@@ -195,7 +201,7 @@ export class ScenarioRunner {
       time: Date.now(),
       id: Math.random().toString(36).slice(2),
     });
-    console.log(newStatus);
+    setRecentLogs(this.getRecentHistory());
     this.emit();
   }
 

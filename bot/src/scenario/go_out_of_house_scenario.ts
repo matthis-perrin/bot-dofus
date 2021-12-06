@@ -1,5 +1,6 @@
 import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
 import {click, moveToSafeZone, sleep, waitForMapChange} from '../actions';
+import {logError} from '../logger';
 import {Scenario} from '../scenario_runner';
 
 export const goOutOfHouseScenario: Scenario = async ctx => {
@@ -7,6 +8,10 @@ export const goOutOfHouseScenario: Scenario = async ctx => {
 
   const lastData = await ia.refresh();
   if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
+    await logError(
+      'go out of house',
+      `unknown map ${lastData.coordinate.label} ${lastData.coordinate.score}`
+    );
     updateStatus('Infos écran non disponible. En attente...');
     await sleep(canContinue, 500);
     return goOutOfHouseScenario(ctx);
@@ -18,6 +23,7 @@ export const goOutOfHouseScenario: Scenario = async ctx => {
     if (await waitForMapChange(ctx, {x: -26, y: -56})) {
       return goOutOfHouseScenario(ctx);
     }
+    await logError('go out of house', `map change to outside of the house failed`);
     updateStatus('Changement de map non réussi. Restart dans 5 sec');
     await sleep(canContinue, 5000);
     return goOutOfHouseScenario(ctx);
@@ -27,6 +33,7 @@ export const goOutOfHouseScenario: Scenario = async ctx => {
     if (await waitForMapChange(ctx, {x: -1000, y: -1000})) {
       return goOutOfHouseScenario(ctx);
     }
+    await logError('go out of house', `map change to -1000/-1000 failed`);
     updateStatus('Changement de map non réussi. Restart dans 5 sec');
     await sleep(canContinue, 5000);
     return goOutOfHouseScenario(ctx);
@@ -36,6 +43,7 @@ export const goOutOfHouseScenario: Scenario = async ctx => {
     if (await waitForMapChange(ctx, {x: -1001, y: -1001})) {
       return goOutOfHouseScenario(ctx);
     }
+    await logError('go out of house', `map change to -1001/-1001 failed`);
     updateStatus('Changement de map non réussi. Restart dans 5 sec');
     await sleep(canContinue, 5000);
     return goOutOfHouseScenario(ctx);

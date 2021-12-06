@@ -19,6 +19,27 @@ const OLD_MAC_GREEN = '#149718';
 const NEW_MAC_GREEN = '#43972a';
 export const GREEN = averageHex(OLD_MAC_GREEN, NEW_MAC_GREEN);
 
+const OLD_MAC_DISCONNECTED_DARK_BROWN = '#474138';
+const NEW_MAC_DISCONNECTED_DARK_BROWN = '#3f3a32';
+export const DISCONNECTED_DARK_BROWN = averageHex(
+  OLD_MAC_DISCONNECTED_DARK_BROWN,
+  NEW_MAC_DISCONNECTED_DARK_BROWN
+);
+
+const OLD_MAC_DISCONNECTED_LIGHT_BROWN = '#776f5c';
+const NEW_MAC_DISCONNECTED_LIGHT_BROWN = '#6b6453';
+export const DISCONNECTED_LIGHT_BROWN = averageHex(
+  OLD_MAC_DISCONNECTED_LIGHT_BROWN,
+  NEW_MAC_DISCONNECTED_LIGHT_BROWN
+);
+
+const OLD_MAC_DISCONNECTED_NEWS_HEADER_BROWN = '#423c2d';
+const NEW_MAC_DISCONNECTED_NEWS_HEADER_BROWN = '#3b3628';
+export const DISCONNECTED_NEWS_HEADER_BROWN = averageHex(
+  OLD_MAC_DISCONNECTED_NEWS_HEADER_BROWN,
+  NEW_MAC_DISCONNECTED_NEWS_HEADER_BROWN
+);
+
 export interface Rgb {
   r: number;
   g: number;
@@ -91,14 +112,14 @@ export function checkForColor(
   const color = hexToRgb(targetColor);
   const colorAverage = fetchColorAverage(coordinates);
   const distance = colorDistance(colorAverage, color);
-  if (distance <= tolerance && distance > 0) {
-    console.log({
-      color,
-      colorHex: rgbToHex(color),
-      colorAverage,
-      averageHex: rgbToHex(colorAverage),
-      distance,
-    });
-  }
+  // if (true || (distance <= tolerance && distance > 0)) {
+  //   console.log({
+  //     color,
+  //     colorHex: rgbToHex(color),
+  //     colorAverage,
+  //     averageHex: rgbToHex(colorAverage),
+  //     distance,
+  //   });
+  // }
   return distance <= tolerance;
 }

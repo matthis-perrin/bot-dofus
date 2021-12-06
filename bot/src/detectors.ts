@@ -1,5 +1,11 @@
 import {Coordinate} from '../../common/src/coordinates';
-import {checkForColor, ORANGE} from './colors';
+import {
+  checkForColor,
+  DISCONNECTED_DARK_BROWN,
+  DISCONNECTED_LIGHT_BROWN,
+  DISCONNECTED_NEWS_HEADER_BROWN,
+  ORANGE,
+} from './colors';
 
 export function isInFight(): 'in-fight' | 'not-in-fight' | 'unknown' {
   const topCoordinates: Coordinate[] = [
@@ -151,8 +157,8 @@ export function isDisconnected(): boolean {
         {x: 740, y: 730},
         {x: 913, y: 730},
       ],
-      '#474138',
-      5
+      DISCONNECTED_DARK_BROWN,
+      10
     ) &&
     checkForColor(
       [
@@ -162,15 +168,15 @@ export function isDisconnected(): boolean {
         {x: 740, y: 647},
         {x: 913, y: 647},
       ],
-      '#776f5c',
-      5
+      DISCONNECTED_LIGHT_BROWN,
+      10
     ) &&
     checkForColor(
       [
         {x: 850, y: 242},
         {x: 970, y: 242},
       ],
-      '#423c2d',
+      DISCONNECTED_NEWS_HEADER_BROWN,
       5
     )
   );

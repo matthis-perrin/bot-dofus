@@ -2,6 +2,7 @@ import {keyTap} from 'robotjs';
 
 import {click, randSleep} from '../actions';
 import {isEmptyItem, isInventoryOpen} from '../detectors';
+import {logError} from '../logger';
 import {Scenario} from '../scenario_runner';
 
 export const postFightScenario: Scenario = async ctx => {
@@ -19,6 +20,10 @@ export const postFightScenario: Scenario = async ctx => {
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
+    if (!isInventoryOpen()) {
+      await logError('post fight', `Inventory not opened`);
+      return;
+    }
     const firstItemCenter = {x: 910, y: 245};
     if (isEmptyItem(firstItemCenter)) {
       break;

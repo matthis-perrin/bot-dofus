@@ -9,6 +9,7 @@ import {
   isInFight,
   isServerSelectionScreen,
 } from '../detectors';
+import {logError, logEvent} from '../logger';
 import {stopBotEntirely} from '../process';
 import {Scenario} from '../scenario_runner';
 
@@ -28,12 +29,16 @@ export async function getCredentials(): Promise<{username: string; password: str
 
 export const connectionScenario: Scenario = async ctx => {
   const {canContinue} = ctx;
+
+  await logEvent('connection');
+
   // Check if we are on the login screen
   if (!isDisconnected() && !isServerSelectionScreen() && !isCharacterSelectionScreen()) {
     // If not, restart the game
     keyTap('r', 'command');
     await randSleep(canContinue, 3000, 3500);
     if (!(await waitFor(ctx, isDisconnected))) {
+      await logError('connection', 'unknown screen');
       stopBotEntirely();
     }
   }
@@ -64,6 +69,7 @@ export const connectionScenario: Scenario = async ctx => {
 
     // Wait for next screen
     if (!(await waitFor(ctx, isServerSelectionScreen))) {
+      await logError('connection', 'timeout after waiting for server selection screen');
       stopBotEntirely();
     }
   }
@@ -74,6 +80,7 @@ export const connectionScenario: Scenario = async ctx => {
 
     // Wait for next screen
     if (!(await waitFor(ctx, isCharacterSelectionScreen))) {
+      await logError('connection', 'timeout after waiting for character selection screen');
       stopBotEntirely();
     }
   }
@@ -89,5 +96,6 @@ export const connectionScenario: Scenario = async ctx => {
     return;
   }
 
-  throw new Error('Should never happen');
+  await logError('connection', 'should never happen, unknown screen');
+  stopBotEntirely();
 };

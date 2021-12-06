@@ -14,6 +14,7 @@ import {
   hashCoordinate,
   mapToGrid,
 } from '../fight';
+import {logError, logEvent} from '../logger';
 import {Scenario, ScenarioContext} from '../scenario_runner';
 import {scanMap} from '../screenshot';
 import {bestCoffrePosition} from './coffre';
@@ -66,6 +67,7 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
   const mapScan = scanMap();
   const result = identifyParticipants(mapScan, fightContext);
   if ('error' in result) {
+    await logError('fight', result.error);
     ctx.updateStatus(`${result.error}, aucune action possible`);
     return;
   }
@@ -162,6 +164,7 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
     const freshScan = scanMap();
     const freshResult = identifyParticipants(freshScan, fightContext);
     if ('error' in freshResult) {
+      await logError('fight', freshResult.error);
       ctx.updateStatus(`${freshResult.error}, aucune action possible`);
       return;
     }
@@ -197,6 +200,8 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
 export const fightScenario: Scenario = async ctx => {
   const {canContinue, updateStatus} = ctx;
   await canContinue();
+
+  await logEvent('Fight');
 
   // Check if the 'Ready" button is there. If that's the case, click it.
   updateStatus('Detection du bouton "Ready"');

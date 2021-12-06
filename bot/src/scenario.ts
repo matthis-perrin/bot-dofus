@@ -25,6 +25,7 @@ import {click, moveToSafeZone, randSleep, sleep, waitForMapChange} from './actio
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from './coordinate';
 import {hasLevelUpModal} from './detectors';
 import {fishDb} from './fish_db';
+import {logError, logEvent} from './logger';
 import {CanContinue, Scenario, StartScenarioError} from './scenario_runner';
 
 const mapLoop = [
@@ -112,6 +113,10 @@ export const mapLoopScenario: Scenario = async ctx => {
     // Get current data
     const lastData = await ia.refresh();
     if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
+      await logError(
+        'map loop',
+        `unknown map ${lastData.coordinate.label} ${lastData.coordinate.score}`
+      );
       updateStatus('Infos écran non disponible. En attente...');
       await sleep(canContinue, 500);
       return fishMapScenario(ctx);
@@ -174,11 +179,11 @@ export const mapLoopScenario: Scenario = async ctx => {
     });
 
     if (soleils.length === 0) {
-      updateStatus(
-        `Pas de soleil dans la direction ${direction} pour la map ${coordinateStr}. Soleils disponibles : ${newLastData.soleil
-          .map(s => coordinateToString(s))
-          .join(', ')}. Pause de 5s avant redémarrage du scénario.`
-      );
+      const status = `Pas de soleil dans la direction ${direction} pour la map ${coordinateStr}. Soleils disponibles : ${newLastData.soleil
+        .map(s => coordinateToString(s))
+        .join(', ')}. Pause de 5s avant redémarrage du scénario.`;
+      await logError('map loop', status);
+      updateStatus(status);
       await sleep(canContinue, 5000);
       return mapLoopScenario(ctx);
     }
@@ -224,6 +229,10 @@ export const mapLoopScenario: Scenario = async ctx => {
 
     // In case no map changed occured, we restart
     if (!(await waitForMapChange(ctx, nextMap))) {
+      await logError(
+        'map loop',
+        `map change from ${coordinateStr} to ${coordinateToString(nextMap)} failed`
+      );
       updateStatus(
         `La map ${coordinateToString(nextMap)} n'est toujours pas identifiée, déco/reco.`
       );
@@ -242,6 +251,10 @@ export const fishMapScenario: Scenario = async ctx => {
 
   const lastData = await ia.refresh();
   if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
+    await logError(
+      'fish map',
+      `unknown map ${lastData.coordinate.label} ${lastData.coordinate.score}`
+    );
     updateStatus('Infos écran non disponible. En attente...');
     await sleep(canContinue, 500);
     return fishMapScenario(ctx);
@@ -267,11 +280,11 @@ export const fishMapScenario: Scenario = async ctx => {
   );
 
   if (ignoredFishes.length > 0) {
-    updateStatus(
-      `*** WARNING *** Poissons incomplets : ${ignoredFishes
-        .map(f => `${fishToString(f)} (${coordinateToString(f.coordinate)})`)
-        .join(', ')}`
-    );
+    const ignoredFishesStr = ignoredFishes
+      .map(f => `${fishToString(f)} (${coordinateToString(f.coordinate)})`)
+      .join(', ');
+    await logError('fish map', `incomplete fishes ${ignoredFishesStr}`);
+    updateStatus(`*** WARNING *** Poissons incomplets : ${ignoredFishesStr}`);
   }
 
   /* eslint-disable no-await-in-loop */
@@ -325,11 +338,11 @@ export const fishMapScenario: Scenario = async ctx => {
       newLastData.coordinate.coordinate.x !== lastData.coordinate.coordinate.x ||
       newLastData.coordinate.coordinate.y !== lastData.coordinate.coordinate.y
     ) {
-      updateStatus(
-        `Changement de map non controllé détecté (${coordinateToString(
-          lastData.coordinate.coordinate
-        )} vers ${coordinateToString(newLastData.coordinate.coordinate)}).`
-      );
+      const msg = `Changement de map non controllé détecté (${coordinateToString(
+        lastData.coordinate.coordinate
+      )} vers ${coordinateToString(newLastData.coordinate.coordinate)}).`;
+      await logError('fish map', msg);
+      updateStatus(msg);
       return;
     }
   }
@@ -354,6 +367,7 @@ const fishingTimePerFish: Record<FishType, Record<FishSize, number>> = {
 export async function checkLvlUp(canContinue: CanContinue): Promise<void> {
   // Check for the lvl up modal color
   if (hasLevelUpModal()) {
+    await logEvent('up');
     console.log('Up!', new Date().toLocaleString());
     // Click on the "Ok" button
     await click(canContinue, {x: 560, y: 370, radius: 10});

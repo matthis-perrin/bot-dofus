@@ -5,6 +5,7 @@ import {click, randSleep, sleep, waitFor, waitForMapChange} from '../actions';
 import {checkForColor} from '../colors';
 import {imageCoordinateToScreenCoordinate} from '../coordinate';
 import {isCoffreOpen, isEmptyItem} from '../detectors';
+import {logError, logEvent} from '../logger';
 import {Scenario} from '../scenario_runner';
 import {goOutOfHouseScenario} from './go_out_of_house_scenario';
 import {goUpOfHouseScenario} from './go_up_of_house_scenario';
@@ -12,8 +13,14 @@ import {goUpOfHouseScenario} from './go_up_of_house_scenario';
 export const emptyBankScenario: Scenario = async ctx => {
   const {canContinue, ia, updateStatus} = ctx;
 
+  await logEvent('empty bank');
+
   const lastData = await ia.refresh();
   if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
+    await logError(
+      'empty bank',
+      `unknown map ${lastData.coordinate.label} ${lastData.coordinate.score}`
+    );
     updateStatus(
       `Infos écran non disponible (${lastData.coordinate.label} ${lastData.coordinate.score}). En attente...`
     );
@@ -34,7 +41,8 @@ export const emptyBankScenario: Scenario = async ctx => {
 
   // Wait for modal to open
   if (!(await waitFor(ctx, isCoffreOpen))) {
-    updateStatus(`Echec de l'ouverture du coffre durant le vidage de l'inventaire`);
+    await logError('empty bank', `Échec de l'ouverture du coffre durant le vidage de l'inventaire`);
+    updateStatus(`Échec de l'ouverture du coffre durant le vidage de l'inventaire`);
     return;
   }
 
