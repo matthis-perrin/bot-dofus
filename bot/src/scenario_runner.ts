@@ -62,6 +62,7 @@ export class ScenarioRunner {
       const startTime = Date.now();
       this.runScenario(fightScenario, async () => {
         if (Date.now() - startTime > MAX_TIME_IN_FIGHT_MS) {
+          logError('runner', 'too much time in fight, restart').catch(console.error);
           throw new StartScenarioError(ScenarioType.Connection);
         }
         if (!this.isRunning) {
@@ -84,6 +85,7 @@ export class ScenarioRunner {
           throw new PauseScenarioError();
         }
         if (isDisconnected()) {
+          logError('runner', 'disconnected during fishing, restart').catch(console.error);
           throw new StartScenarioError(ScenarioType.Connection);
         }
         const fightStatus = isInFight();
@@ -103,6 +105,7 @@ export class ScenarioRunner {
           throw new PauseScenarioError();
         }
         if (isDisconnected()) {
+          logError('runner', 'disconnected after fight, restart').catch(console.error);
           throw new StartScenarioError(ScenarioType.Connection);
         }
         const fightStatus = isInFight();
@@ -113,12 +116,14 @@ export class ScenarioRunner {
       });
     }
     // EMPTY BANK
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     else if (this.currentScenario === ScenarioType.EmptyBank) {
       this.runScenario(emptyBankScenario, async () => {
         if (!this.isRunning) {
           throw new PauseScenarioError();
         }
         if (isDisconnected()) {
+          logError('runner', 'disconnected while emptying to bank, restart').catch(console.error);
           throw new StartScenarioError(ScenarioType.Connection);
         }
         const fightStatus = isInFight();

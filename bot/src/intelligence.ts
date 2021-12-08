@@ -4,7 +4,7 @@ import {fishDb} from './fish_db';
 import {fishingPopupScreenshot, RgbImage, screenshot} from './screenshot';
 import {Predictor} from './tensorflow';
 
-interface Data {
+export interface Data {
   screenshot: RgbImage;
   soleil: SoleilData;
   coordinate: CoordinateData;
