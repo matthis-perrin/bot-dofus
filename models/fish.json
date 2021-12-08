@@ -1250,5 +1250,2440 @@
       "type": "Rivère",
       "size": "Normal"
     }
+  ],
+  "10/19": [
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 25
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 24
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 21
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 20
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 22
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 16
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 19
+      }
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 19
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 20
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 23
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 20
+      }
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 15
+      }
+    }
+  ],
+  "9/19": [
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 19
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 7
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 12
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 3
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 17
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 21
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 17
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 8
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 2
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 8
+      }
+    }
+  ],
+  "8/18": [
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 14
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 9
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 8
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 16
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 10
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 5
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 16
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 11
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 8
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    }
+  ],
+  "7/18": [
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 2
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 6
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 8
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 12
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 1
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    }
+  ],
+  "7/17": [
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 29
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 20
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 27
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 24
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 19
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 15
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 14
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 8
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 6
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 4
+      }
+    }
+  ],
+  "7/16": [
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 24
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 8
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 10
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 13
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 9
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 21
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 27
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 24
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 4
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    }
+  ],
+  "7/15": [
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 7
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 2
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 1
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 5
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 24
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 28
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 25
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 27
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 24
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 19
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 19
+      }
+    }
+  ],
+  "8/14": [
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 12
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 6
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 2
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 17
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 7
+      },
+      "type": "Rivère",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 6
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 17
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 3
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    }
+  ],
+  "8/13": [
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 19
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 21
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 25
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 30
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 28
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 28
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 23
+      }
+    }
+  ],
+  "9/13": [
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 12
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 10
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 9
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 9
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 5
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 3
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 1
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 9
+      }
+    }
+  ],
+  "10/12": [
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 27
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 30
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 29
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 29
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 28
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 22
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    }
+  ],
+  "11/12": [
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 17
+      },
+      "type": "Rivère",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 23
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 25
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 17
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 21
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 26
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 29
+      }
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 20
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 12
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    }
+  ],
+  "12/12": [
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 9
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 11
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 16
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 13
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 18
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 21
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 27
+      }
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 30
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    }
+  ],
+  "12/13": [
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 1
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 1
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 16
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 18
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 20
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 27
+      }
+    }
+  ],
+  "12/18": [
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 15
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 21
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 20
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 18
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 23
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 25
+      }
+    }
+  ],
+  "12/19": [
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 5
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 5
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 8
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 9
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 8
+      },
+      "type": "Rivère",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 14
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 16
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 16
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 19
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 16
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 22
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 25
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    }
+  ],
+  "12/20": [
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 1
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 1
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 5
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 8
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 4
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 2
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 1
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 1
+      }
+    }
+  ],
+  "11/20": [
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 6
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 3
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 0
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    }
+  ],
+  "11/19": [
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 29
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 22
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 21
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 24
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 19
+      }
+    }
+  ],
+  "12/11": [
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 21
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 27
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 19
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 21
+      },
+      "type": "Mer"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 12
+      },
+      "type": "Mer",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 9
+      },
+      "type": "Mer",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 14
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 16
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 11
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 10
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 7
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 3
+      },
+      "type": "Mer",
+      "size": "Petit"
+    }
+  ],
+  "12/10": [
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 20
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 18
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 20
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 19
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 20
+      }
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 16
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 14
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 5
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 18
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 15
+      },
+      "type": "Mer",
+      "size": "Géant"
+    }
+  ],
+  "12/9": [
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 26
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 25
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 22
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 9
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 5
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 0
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 27
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 13
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 20
+      },
+      "type": "Mer",
+      "size": "Petit"
+    }
+  ],
+  "13/8": [
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 25
+      }
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 23
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 17
+      }
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 14
+      }
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 11
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 9
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 8
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 6
+      },
+      "type": "Mer",
+      "size": "Petit"
+    }
+  ],
+  "13/7": [
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 15
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 16
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 14
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 18
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 13
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 29
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 22
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 18
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 14
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 18
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 19
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 15
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 15
+      },
+      "type": "Mer",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 5
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 2
+      },
+      "type": "Mer",
+      "size": "Petit"
+    }
+  ],
+  "13/6": [
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 28
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 16
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 4
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 4
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 21
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 27
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 7
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 6
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 8
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 5
+      },
+      "type": "Mer",
+      "size": "Petit"
+    }
+  ],
+  "13/5": [
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 26
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 21
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 18
+      }
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 11
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 13
+      },
+      "type": "Rivère",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 8
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 7
+      }
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 29
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 25
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 22
+      },
+      "type": "Mer",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 21
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 16
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 12
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 11
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 7
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 2
+      },
+      "type": "Mer",
+      "size": "Gros"
+    }
+  ],
+  "13/4": [
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 26
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 24
+      },
+      "type": "Mer",
+      "size": "Géant"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 26
+      },
+      "type": "Mer",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 28
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 28
+      },
+      "type": "Mer",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 26
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 25
+      },
+      "type": "Mer",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 23
+      },
+      "type": "Mer",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 25
+      },
+      "type": "Mer"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 27
+      },
+      "type": "Mer"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 22
+      },
+      "type": "Mer",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 23
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 1,
+        "y": 23
+      }
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 19
+      },
+      "type": "Mer",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 17
+      },
+      "type": "Mer",
+      "size": "Géant"
+    }
+  ],
+  "12/4": [
+    {
+      "coordinate": {
+        "x": 13,
+        "y": 6
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 3
+      }
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 1
+      },
+      "type": "Mer",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 0
+      }
+    }
+  ],
+  "11/3": [
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 20
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 17
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 15
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 13
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 3,
+        "y": 11
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 10
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    }
+  ],
+  "10/2": [
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 29
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 12,
+        "y": 23
+      },
+      "type": "Rivère",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 19
+      },
+      "type": "Rivère",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 17
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 19
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 18
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 16
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 17
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 12
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 10
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 2,
+        "y": 1
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    }
+  ],
+  "9/1": [
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 20
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 5,
+        "y": 14
+      },
+      "type": "Rivère",
+      "size": "Normal"
+    },
+    {
+      "coordinate": {
+        "x": 4,
+        "y": 11
+      },
+      "type": "Rivère",
+      "size": "Gros"
+    },
+    {
+      "coordinate": {
+        "x": 6,
+        "y": 14
+      },
+      "type": "Rivère",
+      "size": "Petit"
+    },
+    {
+      "coordinate": {
+        "x": 7,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "coordinate": {
+        "x": 9,
+        "y": 10
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 12
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 14
+      }
+    },
+    {
+      "coordinate": {
+        "x": 11,
+        "y": 18
+      }
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 18
+      }
+    }
   ]
 }
