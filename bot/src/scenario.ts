@@ -216,17 +216,17 @@ async function changeMap(
   // Identification of the soleil
   const soleils = data.soleil.filter(s => {
     if (direction === Direction.Right) {
-      return s.coordinate.x === HORIZONTAL_SQUARES - 1;
+      return s.coordinate.x >= HORIZONTAL_SQUARES - 2;
     }
     if (direction === Direction.Left) {
-      return s.coordinate.x === 0;
+      return s.coordinate.x <= 1;
     }
     if (direction === Direction.Top) {
-      return s.coordinate.y === VERTICAL_SQUARES - 1;
+      return s.coordinate.y >= VERTICAL_SQUARES - 2;
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (direction === Direction.Bottom) {
-      return s.coordinate.y === 0;
+      return s.coordinate.y <= 1;
     }
     throw new Error(`Invalid direction ${direction}`);
   });

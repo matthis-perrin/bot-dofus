@@ -25,7 +25,7 @@ async function run(): Promise<void> {
   const ai = new Intelligence(mapModel, fishPopupModel);
   const runner = new ScenarioRunner(ai);
   startServer(ai, runner);
-  // runner.start();
+  runner.start();
   console.log(new Date().toLocaleString());
   setInterval(() => console.log(new Date().toLocaleString()), 15 * 60 * 1000);
 }
