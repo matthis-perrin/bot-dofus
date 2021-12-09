@@ -1,48 +1,87 @@
-import React, {MouseEventHandler, useCallback, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import styled from 'styled-components';
 
+import {apiCall} from '../api';
 import {ORANGE} from '../colors';
-import {formatScore} from '../format';
-import {Button} from '../fragments';
-import {Spacing} from '../spacing';
-import {useServerState} from '../stores';
+import {formatCoordinate} from '../format';
+import {
+  getServerState,
+  getSquareFetching,
+  setSquareFetching,
+  useClientState,
+  useServerState,
+} from '../stores';
 
 export const SoleilModule: React.FC = () => {
-  const serverState = useServerState();
-  const [showAll, setShowAll] = useState(false);
+  const {coordinate, soleil} = useServerState();
+  const {action} = useClientState();
+  const isRunning = action === 'editing-soleil';
 
-  const soleils = serverState.soleil.filter(s => s.label === 'OK');
-  const notSoleils = serverState.soleil.filter(s => s.label !== 'OK');
+  const [initial, setInitial] = useState(false);
 
-  const handleToggleShowAllClick = useCallback<MouseEventHandler>(() => {
-    setShowAll(showAll => !showAll);
-  }, []);
+  useEffect(() => {
+    const {soleilFetcher: current} = getSquareFetching();
+    if (current === undefined) {
+      return;
+    }
+    const selectedSquares = [
+      ...soleil.map(f => ({
+        fillColor: '#dcd61faa',
+        coordinate: f.coordinate,
+        content: <Fragment />,
+      })),
+    ];
+
+    setSquareFetching({...getSquareFetching(), soleilFetcher: {...current, selectedSquares}});
+  }, [soleil, initial]);
+
+  useEffect(() => {
+    if (isRunning) {
+      setSquareFetching({
+        ...getSquareFetching(),
+        soleilFetcher: {
+          ...(getSquareFetching().soleilFetcher ?? {selectedSquares: []}),
+          // hoverColor: '#223679',
+          hoverColor: '#ffffff55',
+          onSquareClick: c => {
+            const current = getServerState().soleil.find(
+              f => f.coordinate.x === c.x && f.coordinate.y === c.y
+            );
+            if (current) {
+              apiCall('/delete-soleil', {
+                soleil: current.coordinate,
+                map: coordinate.coordinate,
+              }).catch(console.error);
+            } else {
+              apiCall('/set-soleil', {
+                soleil: {coordinate: c},
+                map: coordinate.coordinate,
+              }).catch(console.error);
+            }
+          },
+        },
+      });
+      setInitial(true);
+    } else {
+      setSquareFetching({...getSquareFetching(), soleilFetcher: undefined});
+    }
+  }, [coordinate.coordinate, isRunning]);
 
   return (
     <Wrapper>
-      <Column>
-        <Title>Soleil</Title>
-        {soleils.map(s => (
-          <Line key={`${s.x}/${s.y}`}>
-            <Pos>{`${s.x}/${s.y}`}</Pos>
-            <Score>{formatScore(s.score, 2)}</Score>
-          </Line>
-        ))}
-      </Column>
-      <Spacing width={16} />
-      <Sep />
-      <Spacing width={16} />
-      <Column>
-        <Title>Pas Soleil</Title>
-        {(showAll ? notSoleils : notSoleils.slice(0, 4)).map(s => (
-          <Line key={`${s.x}/${s.y}`}>
-            <Pos>{`${s.x}/${s.y}`}</Pos>
-            <Score>{`(${formatScore(s.score, 2)})`}</Score>
-          </Line>
-        ))}
-        <Spacing height={8} />
-        <Button onClick={handleToggleShowAllClick}>{showAll ? 'Cacher' : 'Tout afficher'}</Button>
-      </Column>
+      <Title>Soleils :</Title>
+      {soleil.length === 0 ? (
+        <NoSoleil>Aucun soleils répertoriés sur cette map</NoSoleil>
+      ) : (
+        soleil.map(f => {
+          const pos = formatCoordinate(f.coordinate);
+          return (
+            <SoleilLine key={pos}>
+              <SoleilPos>{pos}</SoleilPos>
+            </SoleilLine>
+          );
+        })
+      )}
     </Wrapper>
   );
 };
@@ -50,26 +89,19 @@ SoleilModule.displayName = 'SoleilModule';
 
 const Wrapper = styled.div`
   display: flex;
-`;
-
-const Column = styled.div`
-  display: flex;
   flex-direction: column;
 `;
+
 const Title = styled.div`
   color: ${ORANGE};
   margin-bottom: 4px;
 `;
-const Line = styled.div`
+
+const SoleilLine = styled.div`
   display: flex;
   align-items: center;
 `;
-const Pos = styled.div`
+const SoleilPos = styled.div`
   width: 56px;
 `;
-const Score = styled.div``;
-
-const Sep = styled.div`
-  width: 1px;
-  background-color: #ffffff44;
-`;
+const NoSoleil = styled.div``;

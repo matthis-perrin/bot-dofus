@@ -31,11 +31,15 @@ class FishDb {
 
   public async set(mapCoordinate: Coordinate, fish: Fish): Promise<void> {
     const key = this.coordinateKey(mapCoordinate);
-    let newFishes = this.fishes[key] ?? [];
-    newFishes = newFishes.filter(
-      f => f.coordinate.x !== fish.coordinate.x || f.coordinate.y !== fish.coordinate.y
+    const newFishes = this.fishes[key] ?? [];
+    const fishIndex = newFishes.findIndex(
+      f => f.coordinate.x === fish.coordinate.x && f.coordinate.y === fish.coordinate.y
     );
-    newFishes.push(fish);
+    if (fishIndex === -1) {
+      newFishes.push(fish);
+    } else {
+      newFishes.splice(fishIndex, 1, fish);
+    }
     this.fishes[key] = newFishes;
     await this.save();
   }

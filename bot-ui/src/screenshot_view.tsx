@@ -8,7 +8,6 @@ import {
   HORIZONTAL_SQUARES,
   imageCoordinateToMapCoordinate,
   mapCoordinateToImageCoordinate,
-  soleilCoordinateToMapCoordinate,
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 import {formatCoordinate} from './format';
@@ -27,10 +26,11 @@ function mapCoordinateToCssStyles(coordinate: Coordinate): React.CSSProperties {
 
 export const ScreenshotView: React.FC = () => {
   const serverState = useServerState();
-  const {fetcher} = useSquareFetching();
+  const {fishFetcher, soleilFetcher} = useSquareFetching();
   const {overlay} = useSquareOverlay();
 
-  const soleils = serverState.soleil.filter(s => s.label === 'OK');
+  const fetcher = fishFetcher ?? soleilFetcher;
+  const soleils = serverState.soleil;
 
   const getCoordinate = useCallback((e: MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -79,22 +79,22 @@ export const ScreenshotView: React.FC = () => {
           onClick={handleClick}
         />
         {soleils.map(s => {
-          const pixelCoordinates = mapCoordinateToImageCoordinate(
-            soleilCoordinateToMapCoordinate({x: s.x, y: s.y})
-          );
+          const pixelCoordinates = mapCoordinateToImageCoordinate({
+            x: s.coordinate.x,
+            y: s.coordinate.y,
+          });
           return (
             <SquareHighlight
-              key={`${s.x},${s.y}`}
+              key={`${s.coordinate.x},${s.coordinate.y}`}
               style={{position: 'absolute', left: pixelCoordinates.x, top: pixelCoordinates.y}}
-              color="red"
+              borderColor="red"
             ></SquareHighlight>
           );
         })}
         {fetcher && hoveredSquare ? (
           <SquareHighlight
             style={mapCoordinateToCssStyles(hoveredSquare)}
-            color={fetcher.hoverColor}
-            filled
+            fillColor={fetcher.hoverColor}
           ></SquareHighlight>
         ) : (
           <Fragment />
@@ -103,7 +103,8 @@ export const ScreenshotView: React.FC = () => {
           <SquareHighlight
             key={formatCoordinate(s.coordinate)}
             style={mapCoordinateToCssStyles(s.coordinate)}
-            color={s.color}
+            borderColor={s.borderColor}
+            fillColor={s.fillColor}
           >
             {s.content}
           </SquareHighlight>
@@ -112,8 +113,7 @@ export const ScreenshotView: React.FC = () => {
           <SquareHighlight
             key={formatCoordinate(s.coordinate)}
             style={mapCoordinateToCssStyles(s.coordinate)}
-            color={s.color}
-            filled
+            fillColor={s.color}
           ></SquareHighlight>
         ))}
       </Wrapper>

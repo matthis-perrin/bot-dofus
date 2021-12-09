@@ -9,22 +9,23 @@ import {logEvent} from './logger';
 import {getCredentials} from './scenario/connection_scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {startServer} from './server';
-import {loadFishPopupModel, loadMapModel, loadSoleilModel} from './tensorflow';
+import {soleilDb} from './soleil_db';
+import {loadFishPopupModel, loadMapModel} from './tensorflow';
 
 async function run(): Promise<void> {
   await logEvent('start');
-  const [soleilModel, mapModel, fishPopupModel] = await Promise.all([
-    loadSoleilModel(),
+  const [mapModel, fishPopupModel] = await Promise.all([
     loadMapModel(),
     loadFishPopupModel(),
     initDofusWindow(),
     fishDb.init(),
+    soleilDb.init(),
     getCredentials(),
   ]);
-  const ai = new Intelligence(soleilModel, mapModel, fishPopupModel);
+  const ai = new Intelligence(mapModel, fishPopupModel);
   const runner = new ScenarioRunner(ai);
   startServer(ai, runner);
-  runner.start();
+  // runner.start();
   console.log(new Date().toLocaleString());
   setInterval(() => console.log(new Date().toLocaleString()), 15 * 60 * 1000);
 }

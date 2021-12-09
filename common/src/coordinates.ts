@@ -14,13 +14,6 @@ export const SQUARE_SIZE = {
   height: (2 * GAME_HEIGHT) / VERTICAL_SQUARES,
 };
 
-export function soleilCoordinateToMapCoordinate(coordinate: Coordinate): Coordinate {
-  return {
-    x: coordinate.x,
-    y: coordinate.y * 2,
-  };
-}
-
 export function mapCoordinateToImageCoordinate(coordinate: Coordinate): Coordinate {
   const {x, y} = coordinate;
 

@@ -50,11 +50,11 @@ export const FishModule: React.FC = () => {
   }, [coordinate.coordinate, currentFish]);
 
   useEffect(() => {
-    const {fetcher: current} = getSquareFetching();
+    const {fishFetcher: current} = getSquareFetching();
     if (current === undefined) {
       return;
     }
-    const fishes = fish.filter(
+    const fishs = fish.filter(
       f =>
         currentFish === undefined ||
         f.coordinate.x !== currentFish.coordinate.x ||
@@ -62,8 +62,8 @@ export const FishModule: React.FC = () => {
     );
 
     const selectedSquares = [
-      ...fishes.map((f, i) => ({
-        color: '#223679',
+      ...fishs.map((f, i) => ({
+        borderColor: '#223679',
         coordinate: f.coordinate,
         content: (
           <FishPreview>
@@ -78,7 +78,7 @@ export const FishModule: React.FC = () => {
 
     if (currentFish !== undefined) {
       selectedSquares.push({
-        color: '#223679',
+        borderColor: '#223679',
         coordinate: currentFish.coordinate,
         content: (
           <Fragment>
@@ -89,7 +89,7 @@ export const FishModule: React.FC = () => {
             </FishPreview>
             <FishForm
               fish={currentFish}
-              canDelete={fishes.length !== fish.length}
+              canDelete={fishs.length !== fish.length}
               onSubmit={handleCurrentFishSave}
               onCancel={handleCurrentFishCancel}
               onDelete={handleCurrentFishDelete}
@@ -99,7 +99,7 @@ export const FishModule: React.FC = () => {
       });
     }
 
-    setSquareFetching({fetcher: {...current, selectedSquares}});
+    setSquareFetching({...getSquareFetching(), fishFetcher: {...current, selectedSquares}});
   }, [
     currentFish,
     fish,
@@ -112,8 +112,9 @@ export const FishModule: React.FC = () => {
   useEffect(() => {
     if (isRunning) {
       setSquareFetching({
-        fetcher: {
-          ...(getSquareFetching().fetcher ?? {selectedSquares: []}),
+        ...getSquareFetching(),
+        fishFetcher: {
+          ...(getSquareFetching().fishFetcher ?? {selectedSquares: []}),
           // hoverColor: '#223679',
           hoverColor: '#ffffff55',
           onSquareClick: c => {
@@ -126,7 +127,7 @@ export const FishModule: React.FC = () => {
       });
       setInitial(true);
     } else {
-      setSquareFetching({fetcher: undefined});
+      setSquareFetching({...getSquareFetching(), fishFetcher: undefined});
     }
   }, [isRunning]);
 

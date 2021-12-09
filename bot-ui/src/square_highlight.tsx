@@ -4,13 +4,13 @@ import styled from 'styled-components';
 import {SQUARE_SIZE} from '../../common/src/coordinates';
 
 interface SquareProps {
-  color: string;
-  filled?: boolean;
+  borderColor?: string;
+  fillColor?: string;
   style?: CSSProperties;
   children?: JSX.Element;
 }
 
-export const SquareHighlight: FC<SquareProps> = ({color, filled, style, children}) => {
+export const SquareHighlight: FC<SquareProps> = ({borderColor, fillColor, style, children}) => {
   const w = SQUARE_SIZE.width;
   const h = SQUARE_SIZE.height;
   return (
@@ -18,8 +18,8 @@ export const SquareHighlight: FC<SquareProps> = ({color, filled, style, children
       <Svg viewBox={`0 0 ${w} ${h}`}>
         {/* left, top, right, bottom */}
         <path
-          fill={filled ? color : 'none'}
-          stroke={color}
+          fill={fillColor ?? 'none'}
+          stroke={borderColor ?? 'none'}
           strokeWidth={4}
           d={`
             M 0 ${h / 2}

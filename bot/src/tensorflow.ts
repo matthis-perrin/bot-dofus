@@ -77,7 +77,5 @@ async function loadModel(
 }
 
 export const loadMapModel = async (): Promise<Predictor> => loadModel('./models/map', 128);
-export const loadSoleilModel = async (): Promise<Predictor> =>
-  loadModel('./models/soleil', 40, p => (p.score < 0.92 ? {...p, label: 'OK'} : p));
 export const loadFishPopupModel = async (): Promise<Predictor> =>
   loadModel('./models/fish_popup', 40);

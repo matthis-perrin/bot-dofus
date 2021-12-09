@@ -48,7 +48,7 @@ export const setScenarioState = scenarioStateStore.setData;
 //
 
 interface ClientState {
-  action?: 'editing-fish' | 'take-screenshot' | 'view-fight';
+  action?: 'editing-fish' | 'editing-soleil' | 'take-screenshot' | 'view-fight';
 }
 
 const clientStateStore = createDataStore<ClientState>({});
@@ -61,7 +61,8 @@ export const setClientState = clientStateStore.setData;
 interface SquareFetcher {
   selectedSquares: {
     coordinate: Coordinate;
-    color: string;
+    borderColor?: string;
+    fillColor?: string;
     content?: JSX.Element;
   }[];
   hoverColor: string;
@@ -69,7 +70,8 @@ interface SquareFetcher {
 }
 
 interface SquareFetching {
-  fetcher?: SquareFetcher;
+  fishFetcher?: SquareFetcher;
+  soleilFetcher?: SquareFetcher;
 }
 
 const squareFetchingStore = createDataStore<SquareFetching>({});

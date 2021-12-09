@@ -7,7 +7,6 @@ import {
   GAME_WIDTH,
   HORIZONTAL_SQUARES,
   mapCoordinateToImageCoordinate,
-  SQUARE_SIZE,
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 import {fishPopupScreenshotSize, MapScan, SquareType} from '../../common/src/model';
@@ -18,11 +17,6 @@ export interface RgbImage {
   data: Uint8Array;
   width: number;
   height: number;
-}
-
-interface SquareScreenshot {
-  coordinate: Coordinate;
-  image: RgbImage;
 }
 
 const ALL_SOLEIL_POS: Coordinate[] = [];
@@ -111,7 +105,6 @@ export function scanMap(): MapScan {
 
 export function screenshot(): {
   game: RgbImage;
-  border: SquareScreenshot[];
 } {
   // Take a screenshot of the game zone
   const {x, y} = gameCoordinates;
@@ -128,31 +121,7 @@ export function screenshot(): {
     ];
   }
 
-  const soleils = ALL_SOLEIL_POS.map(soleil => {
-    const xPx = Math.round(soleil.x * SQUARE_SIZE.width);
-    const yPx = Math.round(soleil.y * SQUARE_SIZE.height);
-    const wPx = Math.round(SQUARE_SIZE.width);
-    const hPx = Math.round(SQUARE_SIZE.height);
-    const buffer = Buffer.allocUnsafe(wPx * hPx * 3);
-    for (let i = 0; i < hPx; i++) {
-      game.copy(
-        buffer,
-        i * wPx * 3,
-        (xPx + (yPx + i) * GAME_WIDTH * 2) * 3,
-        (xPx + (yPx + i) * GAME_WIDTH * 2 + wPx) * 3
-      );
-    }
-    return {
-      coordinate: soleil,
-      image: {
-        data: buffer,
-        width: wPx,
-        height: hPx,
-      },
-    };
-  });
-
-  return {game: {data: game, width: 2 * GAME_WIDTH, height: 2 * GAME_HEIGHT}, border: soleils};
+  return {game: {data: game, width: 2 * GAME_WIDTH, height: 2 * GAME_HEIGHT}};
 }
 
 export function fishingPopupScreenshot(mousePos: Coordinate): RgbImage {

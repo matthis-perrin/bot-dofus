@@ -6,7 +6,6 @@ import {
   GAME_WIDTH,
   HORIZONTAL_SQUARES,
   mapCoordinateToImageCoordinate,
-  soleilCoordinateToMapCoordinate,
   SQUARE_SIZE,
   squareCenter,
   squareIsAngle,
@@ -216,28 +215,25 @@ async function changeMap(
 
   // Identification of the soleil
   const soleils = data.soleil.filter(s => {
-    if (s.label !== 'OK') {
-      return false;
-    }
     if (direction === Direction.Right) {
-      return s.x === HORIZONTAL_SQUARES - 1;
+      return s.coordinate.x === HORIZONTAL_SQUARES - 1;
     }
     if (direction === Direction.Left) {
-      return s.x === 0;
+      return s.coordinate.x === 0;
     }
     if (direction === Direction.Top) {
-      return s.y === VERTICAL_SQUARES - 1;
+      return s.coordinate.y === VERTICAL_SQUARES - 1;
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (direction === Direction.Bottom) {
-      return s.y === 0;
+      return s.coordinate.y === 0;
     }
     throw new Error(`Invalid direction ${direction}`);
   });
 
   if (soleils.length === 0) {
     const status = `Pas de soleil dans la direction ${direction} pour la map ${currentMapStr}. Soleils disponibles : ${data.soleil
-      .map(s => coordinateToString(s))
+      .map(s => coordinateToString(s.coordinate))
       .join(', ')}. Pause de 5s avant redémarrage du scénario.`;
     await logError('map loop', status);
     updateStatus(status);
@@ -248,28 +244,28 @@ async function changeMap(
   let soleil = soleils[0]!;
   if (soleils.length > 1) {
     soleil = [...soleils].sort((s1, s2) => {
-      if (squareIsAngle(s1)) {
-        if (squareIsAngle(s2)) {
+      if (squareIsAngle(s1.coordinate)) {
+        if (squareIsAngle(s2.coordinate)) {
           return -1;
         }
         return 1;
       }
-      if (squareIsAngle(s2)) {
+      if (squareIsAngle(s2.coordinate)) {
         return -1;
       }
       return -1;
     })[0]!;
     updateStatus(
       `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
-        .map(s => coordinateToString(s))
+        .map(s => coordinateToString(s.coordinate))
         .join(', ')}. Le premier soleil qui n'est pas un angle est choisi.`
     );
     // }
   }
 
   // Click on the soleil
-  updateStatus(`Déplacement en ${coordinateToString(soleil)}`);
-  const soleilPx = mapCoordinateToImageCoordinate(soleilCoordinateToMapCoordinate(soleil));
+  updateStatus(`Déplacement en ${coordinateToString(soleil.coordinate)}`);
+  const soleilPx = mapCoordinateToImageCoordinate(soleil.coordinate);
   const soleilCenter = squareCenter(soleilPx);
 
   await click(canContinue, {...soleilCenter, radius: 10});
@@ -327,113 +323,9 @@ export const mapLoopScenario: Scenario = async ctx => {
       return mapLoopScenario(ctx);
     }
 
+    // Change map
     const nextMap = mapLoop[(indexInMapLoop + 1) % mapLoop.length]!;
-    const nextMapStr = coordinateToString(nextMap);
-    const direction = getDirection(coordinate, nextMap);
-    updateStatus(
-      `Fin de la pêche sur la map (${coordinateStr}). Prochaine map est ${nextMapStr} (${direction})`
-    );
-
-    // Identification of the soleil
-    let soleils = newLastData.soleil.filter(s => {
-      if (s.label !== 'OK') {
-        return false;
-      }
-      if (direction === Direction.Right) {
-        return s.x === HORIZONTAL_SQUARES - 1;
-      }
-      if (direction === Direction.Left) {
-        return s.x === 0;
-      }
-      if (direction === Direction.Top) {
-        return s.y === VERTICAL_SQUARES - 1;
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (direction === Direction.Bottom) {
-        return s.y === 0;
-      }
-      throw new Error(`Invalid direction ${direction}`);
-    });
-// Special case when going from 8;-4 vers 7;-4. We take the soleil the furthest right
-if (coordinate.x === 8 && coordinate.y === -4 && nextMap.x === 7 && nextMap.y === -4) {
-soleils=[{x:0, y:13.5, score:0, label:''}];
-updateStatus(
-`Pas de soleil disponible pour la direction ${direction} Cas particulier 8;-4 vers 7;-4, le soleil le plus à droite est choisi.`
-);
-}
-// Special case when going from 8;3 vers 8;4. We take the soleil the furthest right
-if (coordinate.x === 8 && coordinate.y === 3 && nextMap.x === 8 && nextMap.y === 4) {
-soleils=[{x:3, y:15, score:0, label:''}];
-updateStatus(
-`Pas de soleil disponible pour la direction ${direction} Cas particulier 8;3 vers 8;4, le soleil le plus à droite est choisi.`
-);
-}
-// Special case when going from 13;16 vers 13;15. We take the soleil the furthest right
-if (coordinate.x === 13 && coordinate.y === 16 && nextMap.x === 13 && nextMap.y === 15) {
-soleils=[{x:7, y:0.5, score:0, label:''}];
-updateStatus(
-`Pas de soleil disponible pour la direction ${direction} Cas particulier 13;16 vers 13;15, le soleil le plus à droite est choisi.`
-);
-}
-// Special case when going from 12;15 vers 12;14. We take the soleil the furthest right
-if (coordinate.x === 12 && coordinate.y === 15 && nextMap.x === 12 && nextMap.y === 14) {
-soleils=[{x:6, y:0.5, score:0, label:''}];
-updateStatus(
-`Pas de soleil disponible pour la direction ${direction} Cas particulier 12;15 vers 12;14, le soleil le plus à droite est choisi.`
-);
-}
-    if (soleils.length === 0) {
-      const status = `Pas de soleil dans la direction ${direction} pour la map ${coordinateStr}. Soleils disponibles : ${newLastData.soleil
-        .map(s => coordinateToString(s))
-        .join(', ')}. Pause de 5s avant redémarrage du scénario.`;
-      await logError('map loop', status);
-      updateStatus(status);
-      await sleep(canContinue, 5000);
-      return mapLoopScenario(ctx);
-    }
-
-    let soleil = soleils[0]!;
-    if (soleils.length > 1) {
-      soleil = [...soleils].sort((s1, s2) => {
-        if (squareIsAngle(s1)) {
-          if (squareIsAngle(s2)) {
-            return -1;
-          }
-          return 1;
-        }
-        if (squareIsAngle(s2)) {
-          return -1;
-        }
-        return -1;
-      })[0]!;
-      updateStatus(
-        `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
-          .map(s => coordinateToString(s))
-          .join(', ')}. Le premier soleil qui n'est pas un angle est choisi.`
-      );
-      // }
-    }
-
-    // Click on the soleil
-    updateStatus(`Déplacement en ${coordinateToString(soleil)}`);
-    const soleilPx = mapCoordinateToImageCoordinate(soleilCoordinateToMapCoordinate(soleil));
-    const soleilCenter = squareCenter(soleilPx);
-
-    await click(canContinue, {...soleilCenter, radius: 10});
-    await moveToSafeZone(canContinue);
-
-    // In case no map changed occured, we restart
-    if (!(await waitForMapChange(ctx, nextMap))) {
-      await logError(
-        'map loop',
-        `map change from ${coordinateStr} to ${coordinateToString(nextMap)} failed`
-      );
-      updateStatus(
-        `La map ${coordinateToString(nextMap)} n'est toujours pas identifiée, déco/reco.`
-      );
-      throw new StartScenarioError(ScenarioType.Connection);
-    }
-
+    await changeMap(ctx, lastData, coordinate, nextMap, 3);
     updateStatus(`Déplacement terminé`);
   }
   /* eslint-enable no-await-in-loop */

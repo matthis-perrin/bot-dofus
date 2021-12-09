@@ -2,12 +2,13 @@ import {Coordinate} from '../../common/src/coordinates';
 import {CoordinateData, FishData, SoleilData} from '../../common/src/model';
 import {fishDb} from './fish_db';
 import {fishingPopupScreenshot, RgbImage, screenshot} from './screenshot';
+import {soleilDb} from './soleil_db';
 import {Predictor} from './tensorflow';
 
 export interface Data {
   screenshot: RgbImage;
-  soleil: SoleilData;
   coordinate: CoordinateData;
+  soleil: SoleilData;
   fish: FishData;
 }
 
@@ -15,7 +16,6 @@ export class Intelligence {
   private readonly lastData: Data | undefined;
 
   public constructor(
-    private readonly soleilModel: Predictor,
     private readonly mapModel: Predictor,
     private readonly fishPopupModel: Predictor
   ) {}
@@ -31,18 +31,11 @@ export class Intelligence {
   }
 
   public async refresh(): Promise<Data> {
-    const {game, border} = screenshot();
-    const [mapPrediction, soleil] = await Promise.all([
-      this.mapModel(game),
-      await Promise.all(
-        border.map(async square => {
-          const soleilPrediction = await this.soleilModel(square.image);
-          return {...square.coordinate, ...soleilPrediction};
-        })
-      ),
-    ]);
+    const {game} = screenshot();
+    const mapPrediction = await this.mapModel(game);
     const [x = '', y = ''] = mapPrediction.label.split('h')!;
     const coordinate = {...mapPrediction, coordinate: {x: parseFloat(x), y: parseFloat(y)}};
+    const soleil = soleilDb.get(coordinate.coordinate);
     const fish = fishDb.get(coordinate.coordinate);
 
     return {

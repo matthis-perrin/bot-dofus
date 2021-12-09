@@ -21,6 +21,10 @@ export interface Fish {
   distance?: number;
 }
 
+export interface Soleil {
+  coordinate: Coordinate;
+}
+
 export const fishPopupSizes: Record<FishType, Record<FishSize, {width: number; height: number}>> = {
   [FishType.Sea]: {
     [FishSize.Small]: {width: 187, height: 64},
@@ -43,13 +47,6 @@ export const fishPopupScreenshotSize = fishPopupSizes[FishType.Sea][FishSize.Med
 
 export const allFishDistance = [1, 2, 3, 4, 5, 6, 7, 8];
 
-export type SoleilData = {
-    x: number;
-    y: number;
-    score: number;
-    label: string;
-}[];
-
 export interface CoordinateData {
   score: number;
   label: string;
@@ -58,6 +55,7 @@ export interface CoordinateData {
 export const COORDINATE_MIN_SCORE = 0.70;
 
 export type FishData = Fish[]
+export type SoleilData = Soleil[]
 
 //
 

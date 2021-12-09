@@ -4,12 +4,13 @@ import {networkInterfaces} from 'os';
 import {join} from 'path';
 
 import {Coordinate, GAME_HEIGHT, GAME_WIDTH} from '../../common/src/coordinates';
-import {Fish, Message} from '../../common/src/model';
+import {Fish, Message, Soleil} from '../../common/src/model';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
 import {ScenarioRunner} from './scenario_runner';
 import {convertToPng, scanMap, screenshot} from './screenshot';
+import {soleilDb} from './soleil_db';
 
 const {readFile, writeFile, mkdir} = promises;
 
@@ -37,13 +38,13 @@ export async function apiHandler(
 ): Promise<unknown> {
   if (url === '/refresh') {
     const data = await ia.refresh();
-    const png2 = await convertToPng(data.screenshot, {
+    const png = await convertToPng(data.screenshot, {
       width: (2 * GAME_WIDTH) / 3,
       height: (2 * GAME_HEIGHT) / 3,
     });
     return {
       ...data,
-      screenshot: png2.toString('base64'),
+      screenshot: png.toString('base64'),
       mapScan: scanMap(),
     };
   }
@@ -60,6 +61,12 @@ export async function apiHandler(
     return {};
   } else if (url === '/delete-fish') {
     await fishDb.delete(params.map as Coordinate, params.fish as Coordinate);
+    return {};
+  } else if (url === '/set-soleil') {
+    await soleilDb.set(params.map as Coordinate, params.soleil as Soleil);
+    return {};
+  } else if (url === '/delete-soleil') {
+    await soleilDb.delete(params.map as Coordinate, params.soleil as Coordinate);
     return {};
   } else if (url === '/take-screenshot') {
     const {x, y} = params as Coordinate;

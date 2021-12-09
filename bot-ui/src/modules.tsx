@@ -25,6 +25,7 @@ export const Modules: React.FC = () => {
   const clientState = useClientState();
 
   const handleFishModeClick = useCallback(() => setClientState({action: 'editing-fish'}), []);
+  const handleSoleilModeClick = useCallback(() => setClientState({action: 'editing-soleil'}), []);
   const handleStop = useCallback(() => setClientState({action: undefined}), []);
   const handleMapScreenshotClick = useCallback(
     () => setClientState({action: 'take-screenshot'}),
@@ -63,6 +64,10 @@ export const Modules: React.FC = () => {
         <ModuleActions>
           <Button onClick={handleFishModeClick} disabled={clientState.action !== undefined}>
             Mode poissons
+          </Button>
+          <Spacing width={16} />
+          <Button onClick={handleSoleilModeClick} disabled={clientState.action !== undefined}>
+            Mode soleil
           </Button>
           <Spacing width={16} />
           <Button onClick={handleMapScreenshotClick} disabled={clientState.action !== undefined}>
