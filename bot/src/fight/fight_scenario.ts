@@ -3,7 +3,7 @@ import {keyTap} from 'robotjs';
 
 import {mapCoordinateToImageCoordinate, squareCenter} from '../../../common/src/coordinates';
 import {MapScan} from '../../../common/src/model';
-import {click, moveToSafeZone, sleep} from '../actions';
+import {click, moveToSafeZone, sleep, sleepInternal} from '../actions';
 import {checkForColor, ORANGE} from '../colors';
 import {
   firstShortestPaths,
@@ -26,18 +26,27 @@ interface FightContext {
   chanceDone: boolean;
 }
 
-function identifyParticipants(
+async function identifyParticipants(
   mapScan: MapScan,
-  fightContext: FightContext
-): {ennemies: GridCoordinate[]; player: GridCoordinate} | {error: string} {
+  fightContext: FightContext,
+  maxTry = 3
+): Promise<{ennemies: GridCoordinate[]; player: GridCoordinate} | {error: string}> {
   const ennemies = getEnnemiesCoordinates(mapScan).map(mapToGrid);
   if (ennemies.length === 0) {
-    return {error: `Aucun ennemies détectés`};
+    if (maxTry <= 1) {
+      return {error: `Aucun ennemies détectés`};
+    }
+    await sleepInternal(500);
+    return identifyParticipants(scanMap(), fightContext, maxTry - 1);
   }
 
   const players = getPlayersCoordinates(mapScan).map(mapToGrid);
   if (players.length === 0) {
-    return {error: `Aucun joueurs détectés`};
+    if (maxTry <= 1) {
+      return {error: `Aucun joueurs détectés`};
+    }
+    await sleepInternal(500);
+    return identifyParticipants(scanMap(), fightContext, maxTry - 1);
   }
 
   if (fightContext.coffre === undefined) {
@@ -65,7 +74,7 @@ function identifyParticipants(
 
 export async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Promise<void> {
   const mapScan = scanMap();
-  const result = identifyParticipants(mapScan, fightContext);
+  const result = await identifyParticipants(mapScan, fightContext);
   if ('error' in result) {
     await logError('fight', result.error);
     ctx.updateStatus(`${result.error}, aucune action possible`);
@@ -162,7 +171,7 @@ export async function playerTurn(ctx: ScenarioContext, fightContext: FightContex
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const freshScan = scanMap();
-    const freshResult = identifyParticipants(freshScan, fightContext);
+    const freshResult = await identifyParticipants(freshScan, fightContext);
     if ('error' in freshResult) {
       await logError('fight', freshResult.error);
       ctx.updateStatus(`${freshResult.error}, aucune action possible`);
