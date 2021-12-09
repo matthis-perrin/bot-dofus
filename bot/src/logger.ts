@@ -2,7 +2,7 @@ import {promises} from 'fs';
 import {join} from 'path';
 
 import {ScenarioStatusWithTime} from '../../common/src/model';
-import {convertToPng, screenshot} from './screenshot';
+import {convertToPng, RgbImage, screenshot} from './screenshot';
 
 const {mkdir, appendFile, writeFile} = promises;
 
@@ -34,6 +34,13 @@ export function setRecentLogs(logs: ScenarioStatusWithTime[]): void {
   recentLogs = logs;
 }
 
+const SCREENSHOT_HISTORY_SIZE = 10;
+let lastScreenshots: RgbImage[] = [];
+export function addScreenshot(rgbImage: RgbImage): void {
+  lastScreenshots.unshift(rgbImage);
+  lastScreenshots = lastScreenshots.slice(0, SCREENSHOT_HISTORY_SIZE);
+}
+
 export async function logError(context: string, err: unknown): Promise<void> {
   const dateStr = new Date().toLocaleTimeString();
   const dir = join(getTodayPath(), `error-${dateStr}`);
@@ -46,5 +53,10 @@ export async function logError(context: string, err: unknown): Promise<void> {
       .map(log => `[${new Date(log.time).toLocaleString()}] ${log.value}`)
       .join('\n')}`
   );
-  await writeFile(join(dir, 'screenshot.png'), await convertToPng(screenshot().game));
+  const currentScreenshot = screenshot().game;
+  await Promise.all(
+    [currentScreenshot, ...lastScreenshots].map(async (s, i) =>
+      writeFile(join(dir, `screenshot-${i}.png`), await convertToPng(s))
+    )
+  );
 }

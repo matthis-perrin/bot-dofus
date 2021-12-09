@@ -12,6 +12,7 @@ import {
 import {fishPopupScreenshotSize, MapScan, SquareType} from '../../common/src/model';
 import {BLUE, colorDistance, getColorAverage, hexToRgb, RED, Rgb} from './colors';
 import {gameCoordinates} from './coordinate';
+import {addScreenshot} from './logger';
 
 export interface RgbImage {
   data: Uint8Array;
@@ -121,7 +122,9 @@ export function screenshot(): {
     ];
   }
 
-  return {game: {data: game, width: 2 * GAME_WIDTH, height: 2 * GAME_HEIGHT}};
+  const gameImage = {data: game, width: 2 * GAME_WIDTH, height: 2 * GAME_HEIGHT};
+  addScreenshot(gameImage);
+  return {game: gameImage};
 }
 
 export function fishingPopupScreenshot(mousePos: Coordinate): RgbImage {
