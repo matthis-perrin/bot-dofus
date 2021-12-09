@@ -35,9 +35,9 @@ export function setRecentLogs(logs: ScenarioStatusWithTime[]): void {
 }
 
 const SCREENSHOT_HISTORY_SIZE = 10;
-let lastScreenshots: RgbImage[] = [];
+let lastScreenshots: {image: RgbImage; ts: number}[] = [];
 export function addScreenshot(rgbImage: RgbImage): void {
-  lastScreenshots.unshift(rgbImage);
+  lastScreenshots.unshift({image: rgbImage, ts: Date.now()});
   lastScreenshots = lastScreenshots.slice(0, SCREENSHOT_HISTORY_SIZE);
 }
 
@@ -53,10 +53,13 @@ export async function logError(context: string, err: unknown): Promise<void> {
       .map(log => `[${new Date(log.time).toLocaleString()}] ${log.value}`)
       .join('\n')}`
   );
-  const currentScreenshot = screenshot().game;
+  const currentScreenshot = {image: screenshot().game, ts: Date.now()};
   await Promise.all(
     [currentScreenshot, ...lastScreenshots].map(async (s, i) =>
-      writeFile(join(dir, `screenshot-${i}.png`), await convertToPng(s))
+      writeFile(
+        join(dir, `screenshot-${i}-${new Date(s.ts).toLocaleTimeString()}.png`),
+        await convertToPng(s.image)
+      )
     )
   );
 }
