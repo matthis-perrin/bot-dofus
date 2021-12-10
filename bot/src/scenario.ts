@@ -15,6 +15,7 @@ import {
   allFishSize,
   allFishType,
   COORDINATE_MIN_SCORE,
+  Fish,
   fishPopupSizes,
   FishSize,
   FishType,
@@ -28,6 +29,12 @@ import {Data} from './intelligence';
 import {logError, logEvent} from './logger';
 import {restart} from './process';
 import {CanContinue, Scenario, ScenarioContext, StartScenarioError} from './scenario_runner';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function shouldFish(f: Fish): boolean {
+  // return f.size !== FishSize.Small && f.size !== FishSize.Giant && f.type === FishType.Sea
+  return true;
+}
 
 // const mapLoop = [
 //   {x: 7, y: -4},
@@ -347,9 +354,7 @@ export const fishMapScenario: Scenario = async ctx => {
   }
 
   const allFishes = fishDb.get(lastData.coordinate.coordinate);
-  const fishes = allFishes.filter(
-    f => f.size !== FishSize.Small && f.size !== FishSize.Giant && f.type === FishType.Sea
-  );
+  const fishes = allFishes.filter(shouldFish);
   const ignoredFishes = allFishes.filter(f => f.size === undefined || f.type === undefined);
 
   const fishSummary = [...allFishSize, undefined]
