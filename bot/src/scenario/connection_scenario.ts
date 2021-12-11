@@ -3,10 +3,10 @@ import {keyTap, typeStringDelayed} from 'robotjs';
 
 import {click, randSleep, waitFor} from '../actions';
 import {
+  getSpellsBarStatus,
   hasReconnectModal,
   isCharacterSelectionScreen,
   isDisconnected,
-  isInFight,
   isServerSelectionScreen,
 } from '../detectors';
 import {logError, logEvent} from '../logger';
@@ -91,7 +91,7 @@ export const connectionScenario: Scenario = async ctx => {
     await click(canContinue, {x: 177, y: 468, radius: 5, double: true});
 
     // Wait for next screen
-    if (!(await waitFor(ctx, () => isInFight() !== 'unknown'))) {
+    if (!(await waitFor(ctx, () => getSpellsBarStatus() !== 'unknown'))) {
       await restart();
     }
     return;

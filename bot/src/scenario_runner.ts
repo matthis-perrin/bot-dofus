@@ -1,12 +1,12 @@
 import {ScenarioStatus, ScenarioStatusWithTime, ScenarioType} from '../../common/src/model';
-import {isDisconnected, isFull, isInFight} from './detectors';
-import {fightScenario} from './fight/fight_scenario';
+import {isDisconnected, isFull, isInFight, isInFightPreparation} from './detectors';
 import {Intelligence} from './intelligence';
 import {logError, setRecentLogs} from './logger';
 import {restart, stopBotEntirely} from './process';
-import {mapLoopScenario} from './scenario';
 import {connectionScenario} from './scenario/connection_scenario';
 import {emptyBankScenario} from './scenario/empty_bank_scenario';
+import {fightScenario} from './scenario/fight_scenario';
+import {fishingScenario} from './scenario/fishing_scenario';
 import {postFightScenario} from './scenario/post_fight_scenario';
 import {sendEvent} from './server';
 
@@ -71,8 +71,7 @@ export class ScenarioRunner {
         if (isDisconnected()) {
           throw new StartScenarioError(ScenarioType.Connection);
         }
-        const fightStatus = isInFight();
-        if (fightStatus === 'not-in-fight') {
+        if (!(isInFight() || isInFightPreparation())) {
           throw new StartScenarioError(ScenarioType.PostFight);
         }
         await Promise.resolve();
@@ -80,7 +79,7 @@ export class ScenarioRunner {
     }
     // FISHING
     else if (this.currentScenario === ScenarioType.Fishing) {
-      this.runScenario(mapLoopScenario, async () => {
+      this.runScenario(fishingScenario, async () => {
         if (!this.isRunning) {
           throw new PauseScenarioError();
         }
@@ -88,8 +87,7 @@ export class ScenarioRunner {
           logError('runner', 'disconnected during fishing, restart').catch(console.error);
           throw new StartScenarioError(ScenarioType.Connection);
         }
-        const fightStatus = isInFight();
-        if (fightStatus === 'in-fight') {
+        if (isInFightPreparation() || isInFight()) {
           throw new StartScenarioError(ScenarioType.Fight);
         }
         if (isFull()) {
@@ -108,8 +106,7 @@ export class ScenarioRunner {
           logError('runner', 'disconnected after fight, restart').catch(console.error);
           throw new StartScenarioError(ScenarioType.Connection);
         }
-        const fightStatus = isInFight();
-        if (fightStatus === 'in-fight') {
+        if (isInFightPreparation() || isInFight()) {
           throw new StartScenarioError(ScenarioType.Fight);
         }
         await Promise.resolve();
@@ -126,8 +123,7 @@ export class ScenarioRunner {
           logError('runner', 'disconnected while emptying to bank, restart').catch(console.error);
           throw new StartScenarioError(ScenarioType.Connection);
         }
-        const fightStatus = isInFight();
-        if (fightStatus === 'in-fight') {
+        if (isInFightPreparation() || isInFight()) {
           throw new StartScenarioError(ScenarioType.Fight);
         }
         await Promise.resolve();

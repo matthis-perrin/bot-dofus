@@ -4,7 +4,7 @@ import {keyTap} from 'robotjs';
 import {mapCoordinateToImageCoordinate, squareCenter} from '../../../common/src/coordinates';
 import {MapScan} from '../../../common/src/model';
 import {click, moveToSafeZone, sleep, sleepInternal} from '../actions';
-import {checkForColor, ORANGE} from '../colors';
+import {isInFightPreparation} from '../detectors';
 import {
   firstShortestPaths,
   getEnnemiesCoordinates,
@@ -14,12 +14,12 @@ import {
   hashCoordinate,
   mapToGrid,
 } from '../fight';
+import {bestCoffrePosition} from '../fight/coffre';
+import {ensureCleanFightZone, waitForPlayerTurn} from '../fight/interface';
+import {easiestEnnemyForSpell, Spell, Spells} from '../fight/spell';
 import {logError, logEvent} from '../logger';
 import {Scenario, ScenarioContext} from '../scenario_runner';
 import {scanMap} from '../screenshot';
-import {bestCoffrePosition} from './coffre';
-import {ensureCleanFightZone, waitForPlayerTurn} from './interface';
-import {easiestEnnemyForSpell, Spell, Spells} from './spell';
 
 interface FightContext {
   coffre?: GridCoordinate;
@@ -72,7 +72,7 @@ async function identifyParticipants(
   return {ennemies, player};
 }
 
-export async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Promise<void> {
+async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Promise<void> {
   const mapScan = scanMap();
   const result = await identifyParticipants(mapScan, fightContext);
   if ('error' in result) {
@@ -214,16 +214,21 @@ export const fightScenario: Scenario = async ctx => {
 
   // Check if the 'Ready" button is there. If that's the case, click it.
   updateStatus('Detection du bouton "Ready"');
-  const readyButtonCoordinates = [
-    {x: 1015, y: 620},
-    {x: 1085, y: 620},
-  ];
-  if (checkForColor(readyButtonCoordinates, ORANGE, 10)) {
+  if (isInFightPreparation()) {
     updateStatus('Click sur bouton "Ready"');
     const readyCenterX = 1050;
     const readyCenterY = 620;
-    await click(canContinue, {x: readyCenterX, y: readyCenterY, radius: 10, fast: true});
+    await click(canContinue, {
+      x: readyCenterX,
+      y: readyCenterY,
+      radius: 10,
+      fast: true,
+      byPassCanContinue: true,
+    });
   }
+
+  await sleepInternal(1000);
+  await canContinue();
 
   const fightContext: FightContext = {
     chanceDone: false,

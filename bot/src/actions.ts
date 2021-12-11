@@ -18,11 +18,15 @@ export async function click(
     radius: number;
     fast?: boolean;
     double?: boolean;
+    byPassCanContinue?: boolean;
   }
 ): Promise<Coordinate> {
-  await canContinue();
+  const {x, y, radius, button = 'left', fast, double, byPassCanContinue} = opts;
 
-  const {x, y, radius, button = 'left', fast, double} = opts;
+  const canContinueInternal: CanContinue = async () =>
+    byPassCanContinue ? Promise.resolve() : canContinue();
+  await canContinueInternal();
+
   const target = imageCoordinateToScreenCoordinate({x, y});
   const randomAngle = Math.random() * 2 * Math.PI;
   const randomRadius = Math.random() * radius;
@@ -37,20 +41,20 @@ export async function click(
   };
 
   moveMouseSmooth(clickCoordinate.x, clickCoordinate.y, randomSpeed);
-  await canContinue();
+  await canContinueInternal();
 
-  await sleep(canContinue, Math.random() * 500);
-  await canContinue();
+  await sleep(canContinueInternal, Math.random() * 500);
+  await canContinueInternal();
 
   mouseClick(button);
   if (double) {
     await sleepInternal(200);
     mouseClick(button);
   }
-  await canContinue();
+  await canContinueInternal();
 
-  await sleep(canContinue, Math.random() * 500);
-  await canContinue();
+  await sleep(canContinueInternal, Math.random() * 500);
+  await canContinueInternal();
 
   return screenCoordinateToImageCoordinate(clickCoordinate);
 }

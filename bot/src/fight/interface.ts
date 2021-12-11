@@ -1,6 +1,6 @@
 import {click, sleep} from '../actions';
 import {BLUE, checkForColor, GREEN, RED} from '../colors';
-import {isPlayerTurn} from '../detectors';
+import {getSpellsBarStatus, isPlayerTurn} from '../detectors';
 import {ScenarioContext} from '../scenario_runner';
 
 export async function waitForPlayerTurn(ctx: ScenarioContext): Promise<void> {
@@ -57,12 +57,16 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 42, y: 98},
     {x: 42, y: 152},
   ];
-
   if (
     checkForColor(challengeCoordinates1, '#ccc4be', 5) &&
     checkForColor(challengeCoordinates2, '#ffffff', 5)
   ) {
     updateStatus('Cache challenge');
     await click(canContinue, {x: 23, y: 82, radius: 2});
+  }
+
+  // Check for the spells bar to be opened
+  if (getSpellsBarStatus() === 'closed') {
+    await click(canContinue, {x: 1105, y: 762, radius: 3});
   }
 }

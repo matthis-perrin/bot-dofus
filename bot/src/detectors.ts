@@ -9,7 +9,7 @@ import {
   ORANGE,
 } from './colors';
 
-export function isInFight(): 'in-fight' | 'not-in-fight' | 'unknown' {
+export function getSpellsBarStatus(): 'opened' | 'closed' | 'unknown' {
   const topCoordinates: Coordinate[] = [
     {x: 1095, y: 740},
     {x: 1095, y: 755},
@@ -25,12 +25,12 @@ export function isInFight(): 'in-fight' | 'not-in-fight' | 'unknown' {
     checkForColor(topCoordinates, '#454035', 5) &&
     checkForColor(bottomCoordinates, '#b3ac90', 5)
   ) {
-    return 'not-in-fight';
+    return 'closed';
   } else if (
     checkForColor(topCoordinates, '#b3ac90', 5) &&
     checkForColor(bottomCoordinates, '#454035', 5)
   ) {
-    return 'in-fight';
+    return 'opened';
   }
   return 'unknown';
 }
@@ -258,5 +258,24 @@ export function isCharacterSelectionScreen(): boolean {
       DISCONNECTED_BUTTON_ORANGE,
       10
     )
+  );
+}
+
+export function isInFightPreparation(): boolean {
+  const readyButtonCoordinates = [
+    {x: 1015, y: 620},
+    {x: 1085, y: 620},
+  ];
+  return checkForColor(readyButtonCoordinates, ORANGE, 10);
+}
+
+export function isInFight(): boolean {
+  return checkForColor(
+    [
+      {x: 730, y: 819},
+      {x: 761, y: 801},
+    ],
+    ORANGE,
+    10
   );
 }

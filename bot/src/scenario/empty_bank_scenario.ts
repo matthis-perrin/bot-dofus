@@ -78,6 +78,7 @@ export const emptyBankScenario: Scenario = async ctx => {
 
   // Close the coffre
   keyTap('escape');
+  updateStatus('Closing coffre window');
   await randSleep(canContinue, 500, 750);
 
   // Get out of the house

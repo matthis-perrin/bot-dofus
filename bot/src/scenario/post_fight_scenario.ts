@@ -6,7 +6,8 @@ import {logError} from '../logger';
 import {Scenario} from '../scenario_runner';
 
 export const postFightScenario: Scenario = async ctx => {
-  const {canContinue} = ctx;
+  const {canContinue, updateStatus} = ctx;
+  updateStatus('Closing post fight window');
   keyTap('escape');
   // Wait a bit
   await randSleep(canContinue, 1000, 1500);
@@ -42,6 +43,7 @@ export const postFightScenario: Scenario = async ctx => {
   /* eslint-enable no-await-in-loop */
   // Once we are done deleting, press escape to close inventory
   if (isInventoryOpen()) {
+    updateStatus('Closing inventory window');
     keyTap('escape');
   }
   // Wait a bit
