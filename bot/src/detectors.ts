@@ -114,23 +114,19 @@ export function isCoffreOpen(): boolean {
 }
 
 export function isEmptyItem(center: Coordinate): boolean {
-  const noItemColor = '#bdb99c';
-  return checkForColor(
-    [
-      center,
-      {x: center.x + 10, y: center.y + 10},
-      {x: center.x + 10, y: center.y + 0},
-      {x: center.x + 10, y: center.y - 10},
-      {x: center.x + 0, y: center.y + 10},
-      {x: center.x + 0, y: center.y + 0},
-      {x: center.x + 0, y: center.y - 10},
-      {x: center.x - 10, y: center.y + 10},
-      {x: center.x - 10, y: center.y + 0},
-      {x: center.x - 10, y: center.y - 10},
-    ],
-    noItemColor,
-    3
-  );
+  const noItemColor = '#beb89a';
+  return [
+    center,
+    {x: center.x + 10, y: center.y + 10},
+    {x: center.x + 10, y: center.y + 0},
+    {x: center.x + 10, y: center.y - 10},
+    {x: center.x + 0, y: center.y + 10},
+    {x: center.x + 0, y: center.y + 0},
+    {x: center.x + 0, y: center.y - 10},
+    {x: center.x - 10, y: center.y + 10},
+    {x: center.x - 10, y: center.y + 0},
+    {x: center.x - 10, y: center.y - 10},
+  ].every(c => checkForColor([c], noItemColor, 5));
 }
 
 export function isDisconnected(): boolean {
