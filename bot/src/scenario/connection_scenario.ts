@@ -1,7 +1,7 @@
 import {promises} from 'fs';
 import {keyTap, typeStringDelayed} from 'robotjs';
 
-import {click, randSleep, waitFor} from '../actions';
+import {click, randSleep, sleep, waitFor} from '../actions';
 import {
   getSpellsBarStatus,
   hasReconnectModal,
@@ -94,6 +94,8 @@ export const connectionScenario: Scenario = async ctx => {
     if (!(await waitFor(ctx, () => getSpellsBarStatus() !== 'unknown'))) {
       await restart();
     }
+    // Wait a bit so the UI loads fully
+    await sleep(canContinue, 2000);
     return;
   }
 

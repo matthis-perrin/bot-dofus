@@ -1,12 +1,13 @@
 import {keyTap} from 'robotjs';
 
-import {click, randSleep} from '../actions';
+import {click, randSleep, sleep} from '../actions';
 import {isEmptyItem, isInventoryOpen} from '../detectors';
 import {logError} from '../logger';
 import {Scenario} from '../scenario_runner';
 
 export const postFightScenario: Scenario = async ctx => {
   const {canContinue, updateStatus} = ctx;
+  await sleep(canContinue, 1000);
   updateStatus('Closing post fight window');
   keyTap('escape');
   // Wait a bit
