@@ -11,6 +11,7 @@ import {createDataStore} from './data_store';
 
 export interface ServerState {
   screenshot: string;
+  inventory: string;
   mapScan: MapScan;
   soleil: SoleilData;
   coordinate: CoordinateData;
@@ -19,6 +20,7 @@ export interface ServerState {
 
 const serverStateStore = createDataStore<ServerState>({
   screenshot: '',
+  inventory: '',
   mapScan: {},
   soleil: [],
   coordinate: {label: '', score: 0, coordinate: {x: 0, y: 0}},

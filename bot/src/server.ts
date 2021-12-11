@@ -42,9 +42,11 @@ export async function apiHandler(
       width: (2 * GAME_WIDTH) / 3,
       height: (2 * GAME_HEIGHT) / 3,
     });
+    const inventory = await readFile('./inventory/last.png').catch(() => Buffer.from(''));
     return {
       ...data,
       screenshot: png.toString('base64'),
+      inventory: inventory.toString('base64'),
       mapScan: scanMap(),
     };
   }

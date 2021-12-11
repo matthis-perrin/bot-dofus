@@ -155,7 +155,8 @@ export function fishingPopupScreenshot(mousePos: Coordinate): RgbImage {
 
 export async function convertToPng(
   img: RgbImage,
-  resize?: {width: number; height: number}
+  resize?: {width: number; height: number},
+  crop?: {x: number; y: number; width: number; height: number}
 ): Promise<Buffer> {
   return new Promise<Buffer>((resolve, reject) => {
     // eslint-disable-next-line no-new
@@ -174,8 +175,11 @@ export async function convertToPng(
           jimpBuffer[dstOffset + 3] = 255;
         }
       }
-      const finalImage = resize ? jimpImage.resize(resize.width, resize.height) : jimpImage;
-      resolve(finalImage.getBufferAsync(MIME_PNG));
+      const resizedImage = resize ? jimpImage.resize(resize.width, resize.height) : jimpImage;
+      const croppedImage = crop
+        ? resizedImage.crop(crop.x * 2, crop.y * 2, crop.width * 2, crop.height * 2)
+        : resizedImage;
+      resolve(croppedImage.getBufferAsync(MIME_PNG));
     });
   });
 }

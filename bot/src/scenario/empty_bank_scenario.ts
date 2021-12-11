@@ -1,3 +1,5 @@
+import {promises} from 'fs';
+import {join} from 'path';
 import {keyTap, mouseToggle, moveMouseSmooth} from 'robotjs';
 
 import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
@@ -5,11 +7,21 @@ import {click, randSleep, sleep, waitFor, waitForMapChange} from '../actions';
 import {checkForColor} from '../colors';
 import {imageCoordinateToScreenCoordinate} from '../coordinate';
 import {isCoffreOpen, isEmptyItem} from '../detectors';
-import {logError, logEvent} from '../logger';
+import {logError, logEvent, padLeft} from '../logger';
 import {restart} from '../process';
 import {Scenario} from '../scenario_runner';
 import {goOutOfHouseScenario} from './go_out_of_house_scenario';
 import {goUpOfHouseScenario} from './go_up_of_house_scenario';
+
+const {rename, mkdir} = promises;
+
+export function getTodayPath(): string {
+  const date = new Date();
+  const yyyy = date.getFullYear();
+  const mm = padLeft(String(date.getMonth() + 1), 2, '0');
+  const dd = padLeft(String(date.getDate()), 2, '0');
+  return join(`./inventory/${yyyy}-${mm}-${dd}`);
+}
 
 export const emptyBankScenario: Scenario = async ctx => {
   const {canContinue, ia, updateStatus} = ctx;
@@ -80,6 +92,11 @@ export const emptyBankScenario: Scenario = async ctx => {
   keyTap('escape');
   updateStatus('Closing coffre window');
   await randSleep(canContinue, 500, 750);
+
+  // Backup "last inventory" image
+  const dir = getTodayPath();
+  await mkdir(dir, {recursive: true});
+  await rename(join('./inventory/last.png'), join(dir, `${Date.now()}.png`));
 
   // Get out of the house
   await goOutOfHouseScenario(ctx);

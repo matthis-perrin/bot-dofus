@@ -7,6 +7,7 @@ import {Block, Button} from './fragments';
 import {CoordinateModule} from './modules/coordinate_module';
 import {FightModule} from './modules/fight_module';
 import {FishModule} from './modules/fish_module';
+import {InventoryModule} from './modules/inventory_module';
 import {ScenarioModule} from './modules/scenario_module';
 import {SoleilModule} from './modules/soleil_module';
 import {Spacing} from './spacing';
@@ -110,6 +111,10 @@ export const Modules: React.FC = () => {
       <Spacing height={16} />
       <Block>
         <SoleilModule />
+      </Block>
+      <Spacing height={16} />
+      <Block>
+        <InventoryModule />
       </Block>
     </Wrapper>
   );

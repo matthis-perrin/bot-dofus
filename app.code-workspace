@@ -20,6 +20,9 @@
     },
     {
       "path": "logs"
+    },
+    {
+      "path": "inventory"
     }
   ],
   "settings": {
