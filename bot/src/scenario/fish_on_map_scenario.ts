@@ -1,4 +1,4 @@
-import {getMousePos} from 'robotjs';
+import {getMousePos, keyTap} from 'robotjs';
 
 import {
   Coordinate,
@@ -18,7 +18,7 @@ import {
 } from '../../../common/src/model';
 import {click, moveToSafeZone, randSleep, sleep} from '../actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from '../coordinate';
-import {hasLevelUpModal} from '../detectors';
+import {hasLevelUpModal, isTalkingToPnj} from '../detectors';
 import {hashCoordinate} from '../fight';
 import {fishDb} from '../fish_db';
 import {logError, logEvent} from '../logger';
@@ -152,6 +152,14 @@ export const fishOnMapScenario: Scenario = async ctx => {
     if (!hasFish) {
       updateStatus(`Poisson non présent. Click dans la safe-zone.`);
       await click(canContinue, {x: currentPos.x + 15, y: currentPos.y + 15, radius: 5});
+
+      // Check that we haven't clicked on a pnj or percepteur
+      if (isTalkingToPnj()) {
+        updateStatus('Fermeture de la fenêtre de dialogue');
+        keyTap('escape');
+        await sleep(canContinue, 1000);
+      }
+
       continue;
     }
 

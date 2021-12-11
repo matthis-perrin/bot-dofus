@@ -51,6 +51,10 @@ const OLD_MAC_FULL_PODS_GREEN = '#63bc3e';
 const NEW_MAC_FULL_PODS_GREEN = '#78bc4b';
 export const FULL_PODS_GREEN = averageHex(OLD_MAC_FULL_PODS_GREEN, NEW_MAC_FULL_PODS_GREEN);
 
+const OLD_MAC_PERCEPTEUR_WHITE = '#fffed0';
+const NEW_MAC_PERCEPTEUR_WHITE = '#ffffd3';
+export const PERCEPTEUR_WHITE = averageHex(OLD_MAC_PERCEPTEUR_WHITE, NEW_MAC_PERCEPTEUR_WHITE);
+
 export interface Rgb {
   r: number;
   g: number;

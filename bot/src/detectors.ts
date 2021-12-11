@@ -7,6 +7,7 @@ import {
   DISCONNECTED_NEWS_HEADER_BROWN,
   FULL_PODS_GREEN,
   ORANGE,
+  PERCEPTEUR_WHITE,
 } from './colors';
 
 export function getSpellsBarStatus(): 'opened' | 'closed' | 'unknown' {
@@ -49,9 +50,6 @@ export function isPlayerTurn(): boolean {
 export function hasLevelUpModal(): boolean {
   return checkForColor(
     [
-      {x: 342, y: 307},
-      {x: 360, y: 370},
-      {x: 450, y: 370},
       {x: 685, y: 370},
       {x: 775, y: 330},
     ],
@@ -277,5 +275,17 @@ export function isInFight(): boolean {
     ],
     ORANGE,
     10
+  );
+}
+
+export function isTalkingToPnj(): boolean {
+  return checkForColor(
+    [
+      {x: 180, y: 230},
+      {x: 300, y: 230},
+      {x: 450, y: 230},
+    ],
+    PERCEPTEUR_WHITE,
+    5
   );
 }
