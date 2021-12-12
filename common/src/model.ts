@@ -52,10 +52,10 @@ export interface CoordinateData {
   label: string;
   coordinate: Coordinate;
 }
-export const COORDINATE_MIN_SCORE = 0.70;
+export const COORDINATE_MIN_SCORE = 0.7;
 
-export type FishData = Fish[]
-export type SoleilData = Soleil[]
+export type FishData = Fish[];
+export type SoleilData = Soleil[];
 
 //
 
@@ -78,7 +78,7 @@ export enum SquareType {
 export type MapScan = Record<number, Record<number, SquareType>>;
 export interface FightScenarioData {
   isInFight: boolean;
-  mapScan?: MapScan; 
+  mapScan?: MapScan;
 }
 
 export interface ScenarioMessage {
@@ -99,9 +99,7 @@ export interface ScenarioStatusMessage {
   };
 }
 
-export type Message =
-  | ScenarioMessage
-  | ScenarioStatusMessage;
+export type Message = ScenarioMessage | ScenarioStatusMessage;
 
 export enum ScenarioType {
   PostFight = 'PostFight',
@@ -109,4 +107,5 @@ export enum ScenarioType {
   Fight = 'Fight',
   Connection = 'Connection',
   Fishing = 'Fishing',
+  InitialScenario = 'Initial',
 }

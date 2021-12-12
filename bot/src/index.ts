@@ -5,7 +5,6 @@ import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
-import {logEvent} from './logger';
 import {getCredentials} from './scenario/connection_scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {startServer} from './server';
@@ -13,7 +12,6 @@ import {soleilDb} from './soleil_db';
 import {loadFishPopupModel, loadMapModel} from './tensorflow';
 
 async function run(): Promise<void> {
-  await logEvent('start');
   const [mapModel, fishPopupModel] = await Promise.all([
     loadMapModel(),
     loadFishPopupModel(),

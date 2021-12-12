@@ -7,6 +7,7 @@ import {connectionScenario} from './scenario/connection_scenario';
 import {emptyBankScenario} from './scenario/empty_bank_scenario';
 import {fightScenario} from './scenario/fight_scenario';
 import {fishingScenario} from './scenario/fishing_scenario';
+import {initialScenario} from './scenario/initial_scenario';
 import {postFightScenario} from './scenario/post_fight_scenario';
 import {sendEvent} from './server';
 
@@ -43,13 +44,17 @@ export class ScenarioRunner {
   private readonly listeners = new Set<() => void>();
 
   public constructor(private readonly ia: Intelligence) {
-    this.currentScenario = ScenarioType.Fishing;
+    this.currentScenario = ScenarioType.InitialScenario;
   }
 
   public start(): void {
     this.updateStatus(`START SCENARIO ${this.currentScenario}`);
+    // INITIAL
+    if (this.currentScenario === ScenarioType.InitialScenario) {
+      this.runScenario(initialScenario, async () => {});
+    }
     // CONNECTION
-    if (this.currentScenario === ScenarioType.Connection) {
+    else if (this.currentScenario === ScenarioType.Connection) {
       this.runScenario(connectionScenario, async () => {
         if (!this.isRunning) {
           throw new PauseScenarioError();
@@ -209,6 +214,7 @@ export class ScenarioRunner {
       time: Date.now(),
       id: Math.random().toString(36).slice(2),
     });
+    console.log(newStatus);
     setRecentLogs(this.getRecentHistory());
     this.emit();
   }
