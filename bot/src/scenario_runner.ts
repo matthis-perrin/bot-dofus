@@ -214,7 +214,6 @@ export class ScenarioRunner {
       time: Date.now(),
       id: Math.random().toString(36).slice(2),
     });
-    console.log(newStatus);
     setRecentLogs(this.getRecentHistory());
     this.emit();
   }
