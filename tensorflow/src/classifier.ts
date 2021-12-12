@@ -23,20 +23,28 @@ async function loadImages(dir: string, targetSize: number): Promise<ImageInfo[]>
   const dirs = dirList.filter(f => f.isDirectory());
 
   const imagesAndLabels: ImageInfo[] = [];
-  await Promise.all(
+
+  const filesByDir = await Promise.all(
     dirs.map(async d => {
       const dirPath = join(dir, d.name);
       const dirFiles = (await readdir(dirPath, {withFileTypes: true})).filter(
         f => f.name !== '.DS_Store'
       );
+      return {dirPath, dirFiles, dirName: d.name};
+    })
+  );
+  const maxFilesPerDir = filesByDir.reduce((prev, curr) => Math.max(prev, curr.dirFiles.length), 0);
+
+  await Promise.all(
+    filesByDir.map(async ({dirFiles, dirPath, dirName}) => {
       const loneDir = dirFiles.filter(f => !f.isFile());
       if (loneFiles.length > 0) {
         console.warn(
-          `Found non-file in folders ${d.name}:\n${loneDir.map(f => f.name).join('\n')}`
+          `Found non-file in folders ${dirName}:\n${loneDir.map(f => f.name).join('\n')}`
         );
       }
       const files = dirFiles.filter(f => f.isFile());
-      await Promise.all(
+      const images = await Promise.all(
         files.map(async f => {
           const filePath = join(dirPath, f.name);
           const bitmap = (await Jimp.read(filePath)).bitmap;
@@ -56,16 +64,21 @@ async function loadImages(dir: string, targetSize: number): Promise<ImageInfo[]>
             }
           }
 
-          imagesAndLabels.push({
+          return {
             img: {
               data: rgbBuffer,
               width: targetSize,
               height: targetSize,
             },
-            label: d.name,
-          });
+            label: dirName,
+          };
         })
       );
+      const imageAndDuplicates = [...images];
+      while (imageAndDuplicates.length < maxFilesPerDir) {
+        imageAndDuplicates.push(images[Math.floor(Math.random() * images.length)]!);
+      }
+      imagesAndLabels.push(...imageAndDuplicates.sort(() => (Math.random() > 0.5 ? -1 : 1)));
     })
   );
 
