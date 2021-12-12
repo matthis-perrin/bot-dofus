@@ -18,7 +18,7 @@ export function analyzeMaps(): void {
       if (noDistanceCount === 0) {
         console.log(`🏆 [${map.x};${map.y}]`);
       } else {
-        console.log(`✅ [${map.x};${map.y}] ${noTypeCount} sans type/taille`);
+        console.log(`✅ [${map.x};${map.y}] ${noDistanceCount} sans distances`);
       }
     } else {
       console.log(
