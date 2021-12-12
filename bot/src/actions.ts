@@ -1,4 +1,4 @@
-import {mouseClick, moveMouseSmooth} from 'robotjs';
+import {keyTap, mouseClick, moveMouseSmooth} from 'robotjs';
 
 import {Coordinate} from '../../common/src/coordinates';
 import {COORDINATE_MIN_SCORE} from '../../common/src/model';
@@ -7,6 +7,7 @@ import {
   safeZone,
   screenCoordinateToImageCoordinate,
 } from './coordinate';
+import {isMainMenuOpened} from './detectors';
 import {CanContinue, ScenarioContext} from './scenario_runner';
 
 export async function click(
@@ -132,4 +133,13 @@ export async function waitFor(
   }
 
   return detected;
+}
+
+export async function pressEscape(canContinue: CanContinue): Promise<void> {
+  keyTap('escape');
+  await sleep(canContinue, 1000);
+  if (isMainMenuOpened()) {
+    keyTap('escape');
+    await sleep(canContinue, 1000);
+  }
 }

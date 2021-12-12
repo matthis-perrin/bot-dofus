@@ -2,7 +2,7 @@ import {promises} from 'fs';
 import {join} from 'path';
 import {keyTap} from 'robotjs';
 
-import {click, randSleep, sleep} from '../actions';
+import {click, pressEscape, randSleep, sleep} from '../actions';
 import {isEmptyItem, isInventoryOpen} from '../detectors';
 import {logError} from '../logger';
 import {Scenario} from '../scenario_runner';
@@ -14,7 +14,7 @@ export const postFightScenario: Scenario = async ctx => {
   const {canContinue, updateStatus} = ctx;
   await sleep(canContinue, 1000);
   updateStatus('Closing post fight window');
-  keyTap('escape');
+  await pressEscape(canContinue);
   // Wait a bit
   await randSleep(canContinue, 1000, 1500);
   // Click on the inventory icon if needed
@@ -64,7 +64,7 @@ export const postFightScenario: Scenario = async ctx => {
   // Once we are done deleting, press escape to close inventory
   if (isInventoryOpen()) {
     updateStatus('Closing inventory window');
-    keyTap('escape');
+    await pressEscape(canContinue);
   }
   // Wait a bit
   await randSleep(canContinue, 500, 700);

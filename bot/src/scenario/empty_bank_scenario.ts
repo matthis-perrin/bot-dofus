@@ -1,9 +1,9 @@
 import {promises} from 'fs';
 import {join} from 'path';
-import {keyTap, mouseToggle, moveMouseSmooth} from 'robotjs';
+import {mouseToggle, moveMouseSmooth} from 'robotjs';
 
 import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
-import {click, randSleep, sleep, waitFor, waitForMapChange} from '../actions';
+import {click, pressEscape, randSleep, sleep, waitFor, waitForMapChange} from '../actions';
 import {checkForColor} from '../colors';
 import {imageCoordinateToScreenCoordinate} from '../coordinate';
 import {isCoffreOpen, isEmptyItem} from '../detectors';
@@ -89,7 +89,7 @@ export const emptyBankScenario: Scenario = async ctx => {
   /* eslint-enable no-await-in-loop */
 
   // Close the coffre
-  keyTap('escape');
+  await pressEscape(canContinue);
   updateStatus('Closing coffre window');
   await randSleep(canContinue, 500, 750);
 

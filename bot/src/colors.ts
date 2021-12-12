@@ -55,12 +55,13 @@ const OLD_MAC_PERCEPTEUR_WHITE = '#fffed0';
 const NEW_MAC_PERCEPTEUR_WHITE = '#ffffd3';
 export const PERCEPTEUR_WHITE = averageHex(OLD_MAC_PERCEPTEUR_WHITE, NEW_MAC_PERCEPTEUR_WHITE);
 
-const OLD_MAC_READY_BUTTON_WHITE = '#d5ceac';
-const NEW_MAC_READY_BUTTON_WHITE = '#d4cfae';
-export const READY_BUTTON_WHITE = averageHex(
-  OLD_MAC_READY_BUTTON_WHITE,
-  NEW_MAC_READY_BUTTON_WHITE
-);
+const OLD_MAC_MODAL_BACK = '#d5ceac';
+const NEW_MAC_MODAL_BACK = '#d4cfae';
+export const MODAL_BACK = averageHex(OLD_MAC_MODAL_BACK, NEW_MAC_MODAL_BACK);
+
+const OLD_MAC_HEADER_BROWN = '#514a3d';
+const NEW_MAC_HEADER_BROWN = '#504a3e';
+export const HEADER_BROWN = averageHex(OLD_MAC_HEADER_BROWN, NEW_MAC_HEADER_BROWN);
 
 export interface Rgb {
   r: number;

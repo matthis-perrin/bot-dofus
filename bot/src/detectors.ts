@@ -6,9 +6,10 @@ import {
   DISCONNECTED_LIGHT_BROWN,
   DISCONNECTED_NEWS_HEADER_BROWN,
   FULL_PODS_GREEN,
+  HEADER_BROWN,
+  MODAL_BACK,
   ORANGE,
   PERCEPTEUR_WHITE,
-  READY_BUTTON_WHITE,
 } from './colors';
 
 export function getSpellsBarStatus(): 'opened' | 'closed' | 'unknown' {
@@ -54,7 +55,7 @@ export function hasLevelUpModal(): boolean {
       {x: 685, y: 370},
       {x: 775, y: 330},
     ],
-    '#d4cfae',
+    MODAL_BACK,
     5
   );
 }
@@ -83,7 +84,7 @@ export function isInventoryOpen(): boolean {
       {x: 470, y: 150},
       {x: 716, y: 256},
     ],
-    '#504a3e',
+    HEADER_BROWN,
     5
   );
 }
@@ -97,7 +98,7 @@ export function isCoffreOpen(): boolean {
         {x: 275, y: 147},
         {x: 1067, y: 147},
       ],
-      '#504a3e',
+      HEADER_BROWN,
       5
     ) &&
     checkForColor(
@@ -106,7 +107,7 @@ export function isCoffreOpen(): boolean {
         {x: 221, y: 613},
         {x: 964, y: 600},
       ],
-      '#d4cfae',
+      MODAL_BACK,
       5
     )
   );
@@ -268,7 +269,7 @@ export function isInFightPreparation(): boolean {
   const aroundReadyButtonCoordinates = [{x: 1118, y: 628}];
   return (
     checkForColor(readyButtonCoordinates, ORANGE, 10) &&
-    checkForColor(aroundReadyButtonCoordinates, READY_BUTTON_WHITE, 5)
+    checkForColor(aroundReadyButtonCoordinates, MODAL_BACK, 5)
   );
 }
 
@@ -292,5 +293,29 @@ export function isTalkingToPnj(): boolean {
     ],
     PERCEPTEUR_WHITE,
     5
+  );
+}
+
+export function isMainMenuOpened(): boolean {
+  return (
+    checkForColor(
+      [
+        {x: 555, y: 215},
+        {x: 636, y: 215},
+        {x: 717, y: 215},
+      ],
+      HEADER_BROWN,
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 411, y: 241},
+        {x: 411, y: 454},
+        {x: 719, y: 241},
+        {x: 719, y: 454},
+      ],
+      MODAL_BACK,
+      5
+    )
   );
 }
