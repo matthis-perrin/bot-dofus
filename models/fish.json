@@ -1072,16 +1072,16 @@
   "11/2": [
     {
       "coordinate": {
-        "x": 12,
-        "y": 13
+        "x": 11,
+        "y": 12
       },
       "type": "Rivère",
       "size": "Petit"
     },
     {
       "coordinate": {
-        "x": 11,
-        "y": 12
+        "x": 12,
+        "y": 13
       },
       "type": "Rivère",
       "size": "Petit"
