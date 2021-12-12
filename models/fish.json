@@ -3015,13 +3015,19 @@
       "coordinate": {
         "x": 8,
         "y": 20
-      }
+      },
+      "type": "Mer",
+      "size": "Petit",
+      "distance": 1
     },
     {
       "coordinate": {
         "x": 8,
         "y": 19
-      }
+      },
+      "type": "Mer",
+      "size": "Normal",
+      "distance": 2
     },
     {
       "coordinate": {
@@ -3057,7 +3063,7 @@
       },
       "type": "Mer",
       "size": "Géant",
-      "distance": 8
+      "distance": 6
     },
     {
       "coordinate": {
