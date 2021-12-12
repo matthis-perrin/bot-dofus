@@ -82,6 +82,12 @@ class FishDb {
     await this.save();
   }
 
+  public async inversePositions(mapCoordinate: Coordinate): Promise<void> {
+    const key = this.coordinateKey(mapCoordinate);
+    this.fishes[key] = (this.fishes[key] ?? []).reverse();
+    await this.save();
+  }
+
   public get(mapCoordinate: Coordinate): Fish[] {
     return this.fishes[this.coordinateKey(mapCoordinate)] ?? [];
   }

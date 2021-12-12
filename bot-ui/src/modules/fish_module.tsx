@@ -7,6 +7,8 @@ import {apiCall} from '../api';
 import {ORANGE} from '../colors';
 import {FishForm} from '../fish_form';
 import {formatCoordinate} from '../format';
+import {Button} from '../fragments';
+import {Spacing} from '../spacing';
 import {
   getServerState,
   getSquareFetching,
@@ -48,6 +50,12 @@ export const FishModule: React.FC = () => {
     });
     setCurrentFish(undefined);
   }, [coordinate.coordinate, currentFish]);
+
+  const handleInverseFishPos = useCallback(() => {
+    apiCall('/inverse-positions', {
+      map: coordinate.coordinate,
+    }).catch(console.error);
+  }, [coordinate.coordinate]);
 
   useEffect(() => {
     const {fishFetcher: current} = getSquareFetching();
@@ -177,6 +185,10 @@ export const FishModule: React.FC = () => {
           );
         })
       )}
+      <Spacing height={8} />
+      <div>
+        <Button onClick={handleInverseFishPos}>Inverser</Button>
+      </div>
     </Wrapper>
   );
 };

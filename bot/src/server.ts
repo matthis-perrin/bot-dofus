@@ -64,6 +64,8 @@ export async function apiHandler(
   } else if (url === '/delete-fish') {
     await fishDb.delete(params.map as Coordinate, params.fish as Coordinate);
     return {};
+  } else if (url === '/inverse-positions') {
+    await fishDb.inversePositions(params.map as Coordinate);
   } else if (url === '/set-soleil') {
     await soleilDb.set(params.map as Coordinate, params.soleil as Soleil);
     return {};
