@@ -287,9 +287,9 @@ export function isInFight(): boolean {
 export function isTalkingToPnj(): boolean {
   return checkForColor(
     [
-      {x: 180, y: 230},
       {x: 300, y: 230},
-      {x: 450, y: 230},
+      {x: 390, y: 230},
+      {x: 480, y: 230},
     ],
     PERCEPTEUR_WHITE,
     5
