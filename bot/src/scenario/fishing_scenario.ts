@@ -42,7 +42,7 @@ import {fishOnMapScenario} from './fish_on_map_scenario';
 //   {x: 7, y: -3},
 // ];
 
-const mapLoop = [
+export const mapLoop = [
   {x: 7, y: -4},
   {x: 7, y: -3},
   {x: 7, y: -2},

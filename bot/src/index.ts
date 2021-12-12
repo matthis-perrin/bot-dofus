@@ -5,6 +5,7 @@ import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
+import {analyzeMaps} from './map_quality';
 import {getCredentials} from './scenario/connection_scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {startServer} from './server';
@@ -20,6 +21,7 @@ async function run(): Promise<void> {
     soleilDb.init(),
     getCredentials(),
   ]);
+  analyzeMaps();
   const ai = new Intelligence(mapModel, fishPopupModel);
   const runner = new ScenarioRunner(ai);
   startServer(ai, runner);
