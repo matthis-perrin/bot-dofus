@@ -25,6 +25,8 @@ import {logError, logEvent} from '../logger';
 import {restart} from '../process';
 import {CanContinue, Scenario} from '../scenario_runner';
 
+const MAX_PO = 6;
+
 const fishingTimePerFish: Record<FishType, Record<FishSize, number>> = {
   [FishType.River]: {
     [FishSize.Small]: 7000,
@@ -40,10 +42,9 @@ const fishingTimePerFish: Record<FishType, Record<FishSize, number>> = {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function shouldFish(f: Fish): boolean {
+  return f.distance === undefined || f.distance <= MAX_PO;
   // return f.size !== FishSize.Small && f.size !== FishSize.Giant && f.type === FishType.Sea
-  return true;
 }
 
 function fishToString(info: {size?: FishSize; type?: FishType}): string {
