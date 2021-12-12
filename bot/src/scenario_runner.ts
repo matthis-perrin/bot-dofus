@@ -11,7 +11,7 @@ import {initialScenario} from './scenario/initial_scenario';
 import {postFightScenario} from './scenario/post_fight_scenario';
 import {sendEvent} from './server';
 
-const MAX_TIME_IN_FIGHT_MS = 10 * 60 * 1000; // 5 minutes
+const MAX_TIME_IN_FIGHT_MS = 5 * 60 * 1000; // 5 minutes
 
 export type CanContinue = () => Promise<void>;
 export type UpdateStatus = (status: ScenarioStatus) => void;
