@@ -196,10 +196,25 @@ export async function runClassifier(
 
   //
 
-  // const model = await tf.loadLayersModel(`file://${modelDir}/model.json`) as unknown as tf.Sequential
-  // const labelByNumber = new Map<number, string>(JSON.parse((await (await readFile(join(modelDir, 'labels.json'))).toString())))
+  // const model = (await tf.loadLayersModel(
+  //   `file://${modelDir}/model.json`
+  // )) as unknown as tf.Sequential;
+  // const labelByNumber = new Map<number, string>(
+  //   JSON.parse(await (await readFile(join(modelDir, 'labels.json'))).toString())
+  // );
 
   //
+
+  let worstPrediction = {label: '', score: 1, expected: ''};
+
+  function printPrediction(prediction: {label: string; score: number}, expected: string): void {
+    const isCorrect = prediction.label === expected;
+    console.log(
+      `${isCorrect ? '✅' : '❌'} Input ${expected} - Output ${prediction.label} (Confidence ${
+        Math.round(prediction.score * 1000) / 10
+      }%)`
+    );
+  }
 
   for (const {img, label} of imageInfo) {
     const res = model.predict(
@@ -222,12 +237,13 @@ export async function runClassifier(
       }))
       .sort((v1, v2) => v2.score - v1.score);
     const prediction = predictions[0]!;
-
-    const isCorrect = prediction.label === label;
-    console.log(
-      `${isCorrect ? '✅' : '❌'} Input ${label} - Output ${prediction.label} (Confidence ${
-        Math.round(prediction.score * 1000) / 10
-      }%)`
-    );
+    if (prediction.score < worstPrediction.score) {
+      worstPrediction = {...prediction, expected: label};
+    }
+    printPrediction(prediction, label);
   }
+
+  console.log('=== WORST PREDICTION ===');
+  printPrediction(worstPrediction, worstPrediction.expected);
+  console.log('========================');
 }
