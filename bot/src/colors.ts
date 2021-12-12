@@ -55,6 +55,13 @@ const OLD_MAC_PERCEPTEUR_WHITE = '#fffed0';
 const NEW_MAC_PERCEPTEUR_WHITE = '#ffffd3';
 export const PERCEPTEUR_WHITE = averageHex(OLD_MAC_PERCEPTEUR_WHITE, NEW_MAC_PERCEPTEUR_WHITE);
 
+const OLD_MAC_READY_BUTTON_WHITE = '#d5ceac';
+const NEW_MAC_READY_BUTTON_WHITE = '#d4cfae';
+export const READY_BUTTON_WHITE = averageHex(
+  OLD_MAC_READY_BUTTON_WHITE,
+  NEW_MAC_READY_BUTTON_WHITE
+);
+
 export interface Rgb {
   r: number;
   g: number;

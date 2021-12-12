@@ -30,7 +30,7 @@ class PauseScenarioError extends Error {
   }
 }
 export class StartScenarioError extends Error {
-  public constructor(public readonly type: ScenarioType) {
+  public constructor(public readonly type: ScenarioType, public readonly reason: string) {
     super();
     this.name = 'StartScenarioError';
   }
@@ -63,16 +63,16 @@ export class ScenarioRunner {
       this.runScenario(fightScenario, async () => {
         if (Date.now() - startTime > MAX_TIME_IN_FIGHT_MS) {
           logError('runner', 'too much time in fight, restart').catch(console.error);
-          throw new StartScenarioError(ScenarioType.Connection);
+          throw new StartScenarioError(ScenarioType.Connection, 'too much time in fight');
         }
         if (!this.isRunning) {
           throw new PauseScenarioError();
         }
         if (isDisconnected()) {
-          throw new StartScenarioError(ScenarioType.Connection);
+          throw new StartScenarioError(ScenarioType.Connection, 'isDisconnected');
         }
         if (!(isInFight() || isInFightPreparation())) {
-          throw new StartScenarioError(ScenarioType.PostFight);
+          throw new StartScenarioError(ScenarioType.PostFight, 'fight ended');
         }
         await Promise.resolve();
       });
@@ -85,13 +85,16 @@ export class ScenarioRunner {
         }
         if (isDisconnected()) {
           logError('runner', 'disconnected during fishing, restart').catch(console.error);
-          throw new StartScenarioError(ScenarioType.Connection);
+          throw new StartScenarioError(ScenarioType.Connection, 'isDisconnected');
         }
-        if (isInFightPreparation() || isInFight()) {
-          throw new StartScenarioError(ScenarioType.Fight);
+        if (isInFightPreparation()) {
+          throw new StartScenarioError(ScenarioType.Fight, 'isInFightPreparation');
+        }
+        if (isInFight()) {
+          throw new StartScenarioError(ScenarioType.Fight, 'isInFight');
         }
         if (isFull()) {
-          throw new StartScenarioError(ScenarioType.EmptyBank);
+          throw new StartScenarioError(ScenarioType.EmptyBank, 'isFull');
         }
         await Promise.resolve();
       });
@@ -104,10 +107,13 @@ export class ScenarioRunner {
         }
         if (isDisconnected()) {
           logError('runner', 'disconnected after fight, restart').catch(console.error);
-          throw new StartScenarioError(ScenarioType.Connection);
+          throw new StartScenarioError(ScenarioType.Connection, 'isDisconnected');
         }
-        if (isInFightPreparation() || isInFight()) {
-          throw new StartScenarioError(ScenarioType.Fight);
+        if (isInFightPreparation()) {
+          throw new StartScenarioError(ScenarioType.Fight, 'isInFightPreparation');
+        }
+        if (isInFight()) {
+          throw new StartScenarioError(ScenarioType.Fight, 'isInFight');
         }
         await Promise.resolve();
       });
@@ -121,10 +127,13 @@ export class ScenarioRunner {
         }
         if (isDisconnected()) {
           logError('runner', 'disconnected while emptying to bank, restart').catch(console.error);
-          throw new StartScenarioError(ScenarioType.Connection);
+          throw new StartScenarioError(ScenarioType.Connection, 'isDisconnected');
         }
-        if (isInFightPreparation() || isInFight()) {
-          throw new StartScenarioError(ScenarioType.Fight);
+        if (isInFightPreparation()) {
+          throw new StartScenarioError(ScenarioType.Fight, 'isInFightPreparation');
+        }
+        if (isInFight()) {
+          throw new StartScenarioError(ScenarioType.Fight, 'isInFight');
         }
         await Promise.resolve();
       });
@@ -156,7 +165,7 @@ export class ScenarioRunner {
         if (err instanceof PauseScenarioError) {
           this.updateStatus(`PAUSE SCENARIO ${this.currentScenario}`);
         } else if (err instanceof StartScenarioError) {
-          this.updateStatus(`INTERRUPTION SCENARIO ${this.currentScenario}`);
+          this.updateStatus(`INTERRUPTION SCENARIO ${this.currentScenario} (${err.reason})`);
           this.currentScenario = err.type;
           this.start();
         } else {

@@ -27,16 +27,16 @@ import {CanContinue, Scenario} from '../scenario_runner';
 
 const fishingTimePerFish: Record<FishType, Record<FishSize, number>> = {
   [FishType.River]: {
-    [FishSize.Small]: 9200,
-    [FishSize.Medium]: 8200,
-    [FishSize.Big]: 7200,
-    [FishSize.Giant]: 20000,
+    [FishSize.Small]: 7000,
+    [FishSize.Medium]: 6000,
+    [FishSize.Big]: 5000,
+    [FishSize.Giant]: 4700,
   },
   [FishType.Sea]: {
-    [FishSize.Small]: 9200,
-    [FishSize.Medium]: 8200,
-    [FishSize.Big]: 6500,
-    [FishSize.Giant]: 20000,
+    [FishSize.Small]: 7000,
+    [FishSize.Medium]: 6000,
+    [FishSize.Big]: 4700,
+    [FishSize.Giant]: 4700,
   },
 };
 

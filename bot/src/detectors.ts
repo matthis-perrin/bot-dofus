@@ -8,6 +8,7 @@ import {
   FULL_PODS_GREEN,
   ORANGE,
   PERCEPTEUR_WHITE,
+  READY_BUTTON_WHITE,
 } from './colors';
 
 export function getSpellsBarStatus(): 'opened' | 'closed' | 'unknown' {
@@ -261,10 +262,14 @@ export function isCharacterSelectionScreen(): boolean {
 
 export function isInFightPreparation(): boolean {
   const readyButtonCoordinates = [
-    {x: 1015, y: 620},
-    {x: 1085, y: 620},
+    {x: 1015, y: 628},
+    {x: 1085, y: 628},
   ];
-  return checkForColor(readyButtonCoordinates, ORANGE, 10);
+  const aroundReadyButtonCoordinates = [{x: 1118, y: 628}];
+  return (
+    checkForColor(readyButtonCoordinates, ORANGE, 10) &&
+    checkForColor(aroundReadyButtonCoordinates, READY_BUTTON_WHITE, 5)
+  );
 }
 
 export function isInFight(): boolean {

@@ -166,7 +166,7 @@ async function changeMap(
       `map change from ${currentMapStr} to ${hashCoordinate(nextMap)} failed after many tries`
     );
     updateStatus(`La map ${hashCoordinate(nextMap)} n'est toujours pas identifiée, déco/reco.`);
-    throw new StartScenarioError(ScenarioType.Connection);
+    throw new StartScenarioError(ScenarioType.Connection, 'changing map is too long');
   }
 
   // Get the next map direction
