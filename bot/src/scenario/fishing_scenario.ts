@@ -272,7 +272,7 @@ export const fishingScenario: Scenario = async ctx => {
     // Fish on the map
     await canContinue();
     updateStatus(`Démarrage de la pêche sur la map (${coordinateStr})`);
-    // await fishOnMapScenario(ctx);
+    await fishOnMapScenario(ctx);
     await moveToSafeZone(canContinue);
 
     // Check if we changed map
