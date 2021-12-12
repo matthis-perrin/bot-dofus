@@ -34,9 +34,14 @@ export function setRecentLogs(logs: ScenarioStatusWithTime[]): void {
   recentLogs = logs;
 }
 
-const SCREENSHOT_HISTORY_SIZE = 10;
+const SCREENSHOT_HISTORY_SIZE = 15;
 let lastScreenshots: {image: RgbImage; ts: number}[] = [];
 export function addScreenshot(rgbImage: RgbImage): void {
+  const lastScreenshot = lastScreenshots[0];
+  if (lastScreenshot !== undefined && Date.now() - lastScreenshot.ts < 1000) {
+    // Don't save screenshot more than once per second
+    return;
+  }
   lastScreenshots.unshift({image: rgbImage, ts: Date.now()});
   lastScreenshots = lastScreenshots.slice(0, SCREENSHOT_HISTORY_SIZE);
 }

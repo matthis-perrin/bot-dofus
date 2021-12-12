@@ -9,6 +9,7 @@ import {
 } from './coordinate';
 import {isMainMenuOpened} from './detectors';
 import {CanContinue, ScenarioContext} from './scenario_runner';
+import {screenshot} from './screenshot';
 
 export async function click(
   canContinue: CanContinue,
@@ -53,6 +54,7 @@ export async function click(
     mouseClick(button);
   }
   await canContinueInternal();
+  screenshot(); // Take a screenshot so the logger has it in its history
 
   await sleep(canContinueInternal, Math.random() * 500);
   await canContinueInternal();

@@ -30,7 +30,7 @@ async function identifyParticipants(
   canContinue: CanContinue,
   mapScan: MapScan,
   fightContext: FightContext,
-  maxTry = 3
+  maxTry = 6
 ): Promise<{ennemies: GridCoordinate[]; player: GridCoordinate} | {error: string}> {
   await canContinue();
   const ennemies = getEnnemiesCoordinates(mapScan).map(mapToGrid);
