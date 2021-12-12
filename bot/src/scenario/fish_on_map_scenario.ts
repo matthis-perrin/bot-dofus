@@ -145,7 +145,10 @@ export const fishOnMapScenario: Scenario = async ctx => {
     });
 
     // Check if the fishing popup is here
-    const popupCoordinate = getFishPopupCoordinate(fish.size!, fish.type!);
+    const popupCoordinate = getFishPopupCoordinate(
+      fish.size ?? FishSize.Medium,
+      fish.type ?? FishType.River
+    );
     const popupTopLeft = imageCoordinateToScreenCoordinate(popupCoordinate);
     const hasFish = await ia.hasFishPopup(popupTopLeft);
     await canContinue();
