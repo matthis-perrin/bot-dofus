@@ -47,6 +47,28 @@ function identifyColor(circleColor: Rgb, squareColor: Rgb): SquareType {
   return circleType?.[0] ?? squareType?.[0] ?? SquareType.Unknown;
 }
 
+function getOffsets(x: number, y: number): Coordinate[] {
+  const bottom = {x: 41, y: 33};
+  const left = {x: 15, y: 20};
+  const right = {x: 67, y: 20};
+  if (x === HORIZONTAL_SQUARES - 1 && y === 0) {
+    return [bottom];
+  }
+  if (x === HORIZONTAL_SQUARES - 1 && y === 2 * VERTICAL_SQUARES - 4) {
+    return [left, bottom];
+  }
+  if (x === HORIZONTAL_SQUARES - 2 && y === 2 * VERTICAL_SQUARES - 4) {
+    return [left, bottom];
+  }
+  if (x === HORIZONTAL_SQUARES - 1 && y === 2 * VERTICAL_SQUARES - 2) {
+    return [left, bottom];
+  }
+  if (x === HORIZONTAL_SQUARES - 2 && y === 2 * VERTICAL_SQUARES - 5) {
+    return [bottom];
+  }
+  return [left, right];
+}
+
 export function scanMap(): MapScan {
   // Take a screenshot of the game zone
   const {x, y} = gameCoordinates;
@@ -77,17 +99,12 @@ export function scanMap(): MapScan {
 
   const scan: MapScan = {};
 
-  const topRightOffset = {x: 41, y: 33};
+  // const topRightOffset = {x: 41, y: 33};
   for (let y = 0; y < VERTICAL_SQUARES * 2 - 1; y++) {
     for (let x = 0; x < HORIZONTAL_SQUARES - (y % 2); x++) {
       // Identify square type
       const isTopRight = x === HORIZONTAL_SQUARES - 1 && y === 0;
-      const circleColor = isTopRight
-        ? findPixelColor(x, y, [topRightOffset])
-        : findPixelColor(x, y, [
-            {x: 15, y: 20},
-            {x: 67, y: 20},
-          ]);
+      const circleColor = findPixelColor(x, y, getOffsets(x, y));
       const squareColor = isTopRight ? circleColor : findPixelColor(x, y, [{x: 40, y: 15}]);
       const squareType = identifyColor(circleColor, squareColor);
 
