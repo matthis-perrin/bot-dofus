@@ -54,7 +54,7 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
     {x: 71, y: 123},
   ];
   const challengeCoordinates2 = [
-    {x: 42, y: 98},
+    {x: 42, y: 97},
     {x: 42, y: 152},
   ];
   if (
