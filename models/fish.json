@@ -621,7 +621,8 @@
         "y": 22
       },
       "type": "Mer",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 2
     },
     {
       "coordinate": {
@@ -629,7 +630,8 @@
         "y": 24
       },
       "type": "Mer",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 1
     },
     {
       "coordinate": {
@@ -693,7 +695,8 @@
         "y": 18
       },
       "type": "Mer",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 1
     },
     {
       "coordinate": {
@@ -710,7 +713,8 @@
         "y": 24
       },
       "type": "Mer",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 3
     },
     {
       "coordinate": {
@@ -875,7 +879,8 @@
         "y": 22
       },
       "type": "Mer",
-      "size": "Normal"
+      "size": "Normal",
+      "distance": 3
     },
     {
       "coordinate": {
@@ -941,7 +946,8 @@
         "y": 8
       },
       "type": "Mer",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 1
     },
     {
       "coordinate": {
@@ -949,7 +955,8 @@
         "y": 2
       },
       "type": "Mer",
-      "size": "Gros"
+      "size": "Gros",
+      "distance": 6
     },
     {
       "coordinate": {
@@ -957,7 +964,8 @@
         "y": 8
       },
       "type": "Mer",
-      "size": "Gros"
+      "size": "Gros",
+      "distance": 5
     },
     {
       "coordinate": {
@@ -992,7 +1000,8 @@
         "y": 21
       },
       "type": "Mer",
-      "size": "Normal"
+      "size": "Normal",
+      "distance": 3
     },
     {
       "coordinate": {
@@ -1000,7 +1009,8 @@
         "y": 25
       },
       "type": "Mer",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 2
     }
   ],
   "13/2": [
@@ -1010,7 +1020,8 @@
         "y": 6
       },
       "type": "Rivère",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 2
     },
     {
       "coordinate": {
@@ -1018,7 +1029,8 @@
         "y": 9
       },
       "type": "Rivère",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 3
     },
     {
       "coordinate": {
@@ -1026,7 +1038,8 @@
         "y": 11
       },
       "type": "Mer",
-      "size": "Normal"
+      "size": "Normal",
+      "distance": 5
     },
     {
       "coordinate": {
