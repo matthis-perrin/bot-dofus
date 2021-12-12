@@ -45,7 +45,7 @@ export const fishPopupScreenshotSize = fishPopupSizes[FishType.Sea][FishSize.Med
 
 ////
 
-export const allFishDistance = [1, 2, 3, 4, 5, 6, 7, 8];
+export const allFishDistance = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export interface CoordinateData {
   score: number;

@@ -131,10 +131,11 @@ export const FishForm: React.FC<FishFormProps> = ({
       </Line>
       <Spacing height={32} />
       <Buttons>
-        <span>
+        <LeftButtons>
           <Button onClick={handleSubmit} disabled={isLoading}>
             Valider
           </Button>
+          <Spacing width={8} />
           {canDelete ? (
             <Button onClick={handleDelete} disabled={isLoading}>
               Supprimer
@@ -142,7 +143,7 @@ export const FishForm: React.FC<FishFormProps> = ({
           ) : (
             <Fragment />
           )}
-        </span>
+        </LeftButtons>
         <Button onClick={handleCancel} disabled={isLoading}>
           Annuler
         </Button>
@@ -152,7 +153,7 @@ export const FishForm: React.FC<FishFormProps> = ({
 };
 FishForm.displayName = 'FishForm';
 
-const width = 384;
+const width = 460;
 const height = 128;
 
 const Wrapper = styled(Block)`
@@ -193,4 +194,9 @@ const Buttons = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+`;
+
+const LeftButtons = styled.div`
+  display: flex;
+  align-items: center;
 `;
