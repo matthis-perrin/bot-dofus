@@ -4,7 +4,8 @@ import {Intelligence} from './intelligence';
 import {logError, setRecentLogs} from './logger';
 import {restart, stopBotEntirely} from './process';
 import {connectionScenario} from './scenario/connection_scenario';
-import {emptyBankScenario} from './scenario/empty_bank_scenario';
+import {emptyBankAmaknaScenario} from './scenario/empty_bank_amakna_scenario';
+import {emptyBankHouseScenario} from './scenario/empty_bank_house_scenario';
 import {fightScenario} from './scenario/fight_scenario';
 import {fishingScenario} from './scenario/fishing_scenario';
 import {initialScenario} from './scenario/initial_scenario';
@@ -99,7 +100,7 @@ export class ScenarioRunner {
           throw new StartScenarioError(ScenarioType.Fight, 'isInFight');
         }
         if (isFull()) {
-          throw new StartScenarioError(ScenarioType.EmptyBank, 'isFull');
+          throw new StartScenarioError(ScenarioType.EmptyBankAmakna, 'isFull');
         }
         await Promise.resolve();
       });
@@ -123,15 +124,38 @@ export class ScenarioRunner {
         await Promise.resolve();
       });
     }
-    // EMPTY BANK
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    else if (this.currentScenario === ScenarioType.EmptyBank) {
-      this.runScenario(emptyBankScenario, async () => {
+    // EMPTY BANK HOUSE
+    else if (this.currentScenario === ScenarioType.EmptyBankHouse) {
+      this.runScenario(emptyBankHouseScenario, async () => {
         if (!this.isRunning) {
           throw new PauseScenarioError();
         }
         if (isDisconnected()) {
-          logError('runner', 'disconnected while emptying to bank, restart').catch(console.error);
+          logError('runner', 'disconnected while emptying to bank house, restart').catch(
+            console.error
+          );
+          throw new StartScenarioError(ScenarioType.Connection, 'isDisconnected');
+        }
+        if (isInFightPreparation()) {
+          throw new StartScenarioError(ScenarioType.Fight, 'isInFightPreparation');
+        }
+        if (isInFight()) {
+          throw new StartScenarioError(ScenarioType.Fight, 'isInFight');
+        }
+        await Promise.resolve();
+      });
+    }
+    // EMPTY BANK AMAKNA
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    else if (this.currentScenario === ScenarioType.EmptyBankAmakna) {
+      this.runScenario(emptyBankAmaknaScenario, async () => {
+        if (!this.isRunning) {
+          throw new PauseScenarioError();
+        }
+        if (isDisconnected()) {
+          logError('runner', 'disconnected while emptying to bank amakna, restart').catch(
+            console.error
+          );
           throw new StartScenarioError(ScenarioType.Connection, 'isDisconnected');
         }
         if (isInFightPreparation()) {

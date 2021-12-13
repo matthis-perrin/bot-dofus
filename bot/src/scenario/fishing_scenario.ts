@@ -1,18 +1,10 @@
-import {
-  Coordinate,
-  HORIZONTAL_SQUARES,
-  mapCoordinateToImageCoordinate,
-  squareCenter,
-  squareIsAngle,
-  VERTICAL_SQUARES,
-} from '../../../common/src/coordinates';
-import {COORDINATE_MIN_SCORE, ScenarioType} from '../../../common/src/model';
-import {click, moveToSafeZone, sleep, waitForMapChange} from '../actions';
+import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
+import {click, moveToSafeZone} from '../actions';
 import {hashCoordinate} from '../fight';
-import {Data} from '../intelligence';
 import {logError} from '../logger';
 import {restart} from '../process';
-import {Scenario, ScenarioContext, StartScenarioError} from '../scenario_runner';
+import {Scenario} from '../scenario_runner';
+import {changeMap} from './change_map';
 import {fishOnMapScenario} from './fish_on_map_scenario';
 
 // const mapLoop = [
@@ -124,120 +116,6 @@ export const mapLoop = [
   {x: 8, y: -3},
   {x: 8, y: -4},
 ];
-
-enum Direction {
-  Top = 'haut',
-  Right = 'droite',
-  Bottom = 'bas',
-  Left = 'gauche',
-}
-
-function getDirection(current: Coordinate, nextMap: Coordinate): Direction {
-  if (nextMap.x > current.x) {
-    return Direction.Right;
-  }
-  if (nextMap.x < current.x) {
-    return Direction.Left;
-  }
-  if (nextMap.y > current.y) {
-    return Direction.Top;
-  }
-  if (nextMap.y < current.y) {
-    return Direction.Bottom;
-  }
-  throw new Error(`No direction, the map are the same`);
-}
-
-async function changeMap(
-  ctx: ScenarioContext,
-  data: Data,
-  currentMap: Coordinate,
-  nextMap: Coordinate,
-  maxTries = 3
-): Promise<void> {
-  const {canContinue, updateStatus} = ctx;
-  const currentMapStr = hashCoordinate(currentMap);
-
-  if (maxTries <= 0) {
-    await logError(
-      'map loop',
-      `map change from ${currentMapStr} to ${hashCoordinate(nextMap)} failed after many tries`
-    );
-    updateStatus(`La map ${hashCoordinate(nextMap)} n'est toujours pas identifiée, déco/reco.`);
-    throw new StartScenarioError(ScenarioType.Connection, 'changing map is too long');
-  }
-
-  // Get the next map direction
-  const nextMapStr = hashCoordinate(nextMap);
-  const direction = getDirection(currentMap, nextMap);
-  updateStatus(
-    `Fin de la pêche sur la map (${currentMapStr}). Prochaine map est ${nextMapStr} (${direction})`
-  );
-
-  // Identification of the soleil
-  const soleils = data.soleil.filter(s => {
-    if (direction === Direction.Right) {
-      return s.coordinate.x >= HORIZONTAL_SQUARES - 2;
-    }
-    if (direction === Direction.Left) {
-      return s.coordinate.x <= 1;
-    }
-    if (direction === Direction.Top) {
-      return s.coordinate.y >= VERTICAL_SQUARES - 2;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (direction === Direction.Bottom) {
-      return s.coordinate.y <= 1;
-    }
-    throw new Error(`Invalid direction ${direction}`);
-  });
-
-  if (soleils.length === 0) {
-    const status = `Pas de soleil dans la direction ${direction} pour la map ${currentMapStr}. Soleils disponibles : ${data.soleil
-      .map(s => hashCoordinate(s.coordinate))
-      .join(', ')}. Pause de 5s avant redémarrage du scénario.`;
-    await logError('map loop', status);
-    updateStatus(status);
-    await sleep(canContinue, 5000);
-    return fishingScenario(ctx);
-  }
-
-  let soleil = soleils[0]!;
-  if (soleils.length > 1) {
-    soleil = [...soleils].sort((s1, s2) => {
-      if (squareIsAngle(s1.coordinate)) {
-        if (squareIsAngle(s2.coordinate)) {
-          return -1;
-        }
-        return 1;
-      }
-      if (squareIsAngle(s2.coordinate)) {
-        return -1;
-      }
-      return -1;
-    })[0]!;
-    updateStatus(
-      `Plusieurs soleil disponible pour la direction ${direction} : ${soleils
-        .map(s => hashCoordinate(s.coordinate))
-        .join(', ')}. Le premier soleil qui n'est pas un angle est choisi.`
-    );
-    // }
-  }
-
-  // Click on the soleil
-  updateStatus(`Déplacement en ${hashCoordinate(soleil.coordinate)}`);
-  const soleilPx = mapCoordinateToImageCoordinate(soleil.coordinate);
-  const soleilCenter = squareCenter(soleilPx);
-
-  await click(canContinue, {...soleilCenter, radius: 10});
-  await moveToSafeZone(canContinue);
-
-  // In case no map changed occured, we restart
-  if (!(await waitForMapChange(ctx, nextMap))) {
-    updateStatus(`Trying again`);
-    await changeMap(ctx, data, currentMap, nextMap, maxTries - 1);
-  }
-}
 
 export const fishingScenario: Scenario = async ctx => {
   const {ia, canContinue, updateStatus} = ctx;

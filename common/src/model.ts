@@ -103,7 +103,8 @@ export type Message = ScenarioMessage | ScenarioStatusMessage;
 
 export enum ScenarioType {
   PostFight = 'PostFight',
-  EmptyBank = 'EmptyBank',
+  EmptyBankHouse = 'EmptyBankHouse',
+  EmptyBankAmakna = 'EmptyBankAmakna',
   Fight = 'Fight',
   Connection = 'Connection',
   Fishing = 'Fishing',

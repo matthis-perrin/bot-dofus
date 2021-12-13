@@ -14,7 +14,7 @@ export const initialScenario: Scenario = async ctx => {
     throw new StartScenarioError(ScenarioType.Fight, 'bot started in fight');
   }
   if (isFull()) {
-    throw new StartScenarioError(ScenarioType.EmptyBank, 'bot started full');
+    throw new StartScenarioError(ScenarioType.EmptyBankAmakna, 'bot started full');
   }
   throw new StartScenarioError(ScenarioType.Fishing, 'initial fishing');
 };

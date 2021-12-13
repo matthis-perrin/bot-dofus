@@ -2,20 +2,16 @@ import {promises} from 'fs';
 import {join} from 'path';
 import {mouseToggle, moveMouseSmooth} from 'robotjs';
 
-import {COORDINATE_MIN_SCORE} from '../../../common/src/model';
-import {click, pressEscape, randSleep, sleep, waitFor, waitForMapChange} from '../actions';
+import {click, pressEscape, randSleep, sleep} from '../actions';
 import {checkForColor} from '../colors';
 import {imageCoordinateToScreenCoordinate} from '../coordinate';
-import {isCoffreOpen, isEmptyItem} from '../detectors';
-import {logError, logEvent, padLeft} from '../logger';
-import {restart} from '../process';
+import {isEmptyItem} from '../detectors';
+import {padLeft} from '../logger';
 import {Scenario} from '../scenario_runner';
-import {goOutOfHouseScenario} from './go_out_of_house_scenario';
-import {goUpOfHouseScenario} from './go_up_of_house_scenario';
 
 const {rename, mkdir} = promises;
 
-export function getTodayPath(): string {
+function getTodayPath(): string {
   const date = new Date();
   const yyyy = date.getFullYear();
   const mm = padLeft(String(date.getMonth() + 1), 2, '0');
@@ -23,47 +19,14 @@ export function getTodayPath(): string {
   return join(`./inventory/${yyyy}-${mm}-${dd}`);
 }
 
-export const emptyBankScenario: Scenario = async ctx => {
-  const {canContinue, ia, updateStatus} = ctx;
-
-  await logEvent('empty bank');
-
-  const lastData = await ia.refresh();
-  if (lastData.coordinate.score < COORDINATE_MIN_SCORE) {
-    await logError(
-      'empty bank',
-      `unknown map ${lastData.coordinate.label} ${lastData.coordinate.score}`
-    );
-    updateStatus(
-      `Infos écran non disponible (${lastData.coordinate.label} ${lastData.coordinate.score}). En attente...`
-    );
-    await restart();
-  }
-
-  const {coordinate} = lastData.coordinate;
-  if (coordinate.x !== -1002 || coordinate.y !== -1002) {
-    await goUpOfHouseScenario(ctx);
-  }
-
-  // Click on the coffre
-  const mousePos = await click(canContinue, {x: 891, y: 404, radius: 5});
-
-  // Click on open
-  await click(canContinue, {x: mousePos.x + 67, y: mousePos.y + 80, radius: 10});
-
-  // Wait for modal to open
-  if (!(await waitFor(ctx, isCoffreOpen))) {
-    await logError('empty bank', `Échec de l'ouverture du coffre durant le vidage de l'inventaire`);
-    updateStatus(`Échec de l'ouverture du coffre durant le vidage de l'inventaire`);
-    return;
-  }
+export const emptyToCoffreScenario: Scenario = async ctx => {
+  const {canContinue, updateStatus} = ctx;
 
   // Select resources category
   await click(canContinue, {x: 1054, y: 185, radius: 3});
   await sleep(canContinue, 2000);
 
   // Empty the inventory
-
   const firstItemCenter = {x: 863, y: 270};
   const dropZoneCenter = {x: 249, y: 270};
   const firstItemScreenCenter = imageCoordinateToScreenCoordinate(firstItemCenter);
@@ -96,14 +59,9 @@ export const emptyBankScenario: Scenario = async ctx => {
   // Backup "last inventory" image
   const dir = getTodayPath();
   await mkdir(dir, {recursive: true});
-  await rename(join('./inventory/last.png'), join(dir, `${Date.now()}.png`));
-
-  // Get out of the house
-  await goOutOfHouseScenario(ctx);
-
-  // Take a popo
-  await click(canContinue, {x: 1024, y: 806, radius: 5, double: true});
-
-  // Wait to be on the madrestam map
-  await waitForMapChange(ctx, {x: 7, y: -4});
+  try {
+    await rename(join('./inventory/last.png'), join(dir, `${Date.now()}.png`));
+  } catch {
+    // Nothing to copy
+  }
 };

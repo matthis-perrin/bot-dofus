@@ -12,6 +12,8 @@ import {startServer} from './server';
 import {soleilDb} from './soleil_db';
 import {loadFishPopupModel, loadMapModel} from './tensorflow';
 
+// {canContinue: async () => {}, ia: ai, updateStatus: console.log}
+
 async function run(): Promise<void> {
   const [mapModel, fishPopupModel] = await Promise.all([
     loadMapModel(),
