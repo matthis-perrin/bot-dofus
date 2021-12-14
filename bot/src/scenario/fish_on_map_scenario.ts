@@ -116,7 +116,7 @@ export const fishOnMapScenario: Scenario = async ctx => {
     const ignoredFishesStr = ignoredFishes
       .map(f => `${fishToString(f)} (${hashCoordinate(f.coordinate)})`)
       .join(', ');
-    await logError('fish map', `incomplete fishes ${ignoredFishesStr}`);
+    // await logError('fish map', `incomplete fishes ${ignoredFishesStr}`);
     updateStatus(`*** WARNING *** Poissons incomplets : ${ignoredFishesStr}`);
   }
 

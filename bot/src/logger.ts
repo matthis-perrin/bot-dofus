@@ -58,13 +58,13 @@ export async function logError(context: string, err: unknown): Promise<void> {
       .map(log => `[${new Date(log.time).toLocaleString()}] ${log.value}`)
       .join('\n')}`
   );
-  // const currentScreenshot = {image: screenshot().game, ts: Date.now()};
-  // await Promise.all(
-  //   [currentScreenshot, ...lastScreenshots].map(async (s, i) =>
-  //     writeFile(
-  //       join(dir, `screenshot-${i}-${new Date(s.ts).toLocaleTimeString()}.png`),
-  //       await convertToPng(s.image)
-  //     )
-  //   )
-  // );
+  const currentScreenshot = {image: screenshot().game, ts: Date.now()};
+  await Promise.all(
+    [currentScreenshot, ...lastScreenshots].map(async (s, i) =>
+      writeFile(
+        join(dir, `screenshot-${i}-${new Date(s.ts).toLocaleTimeString()}.png`),
+        await convertToPng(s.image)
+      )
+    )
+  );
 }

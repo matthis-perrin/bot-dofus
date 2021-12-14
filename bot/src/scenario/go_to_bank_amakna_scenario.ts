@@ -49,7 +49,9 @@ export const goToBankAmaknaScenario: Scenario = async ctx => {
     if (indexInMapLoop === -1) {
       updateStatus(`Map courante (${coordinateStr}) n'est pas dans le chemin. Prise de popo.`);
       await click(canContinue, {x: 1024, y: 806, radius: 5, double: true});
-      return;
+      // Wait to be on the madrestam map
+      await waitForMapChange(ctx, {x: 7, y: -4});
+      continue;
     }
     if (indexInMapLoop === mapFromZaapToBankAmakna.length - 1) {
       updateStatus(`Arrivé sur la map de la bank. On rentre à l'intérieur`);
