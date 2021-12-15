@@ -74,6 +74,21 @@ async function identifyParticipants(
   return {ennemies, player};
 }
 
+async function clickSquare(ctx: ScenarioContext, coordinate: GridCoordinate): Promise<void> {
+  const mapCoordinate = gridToMap(coordinate);
+  const {x, y} = mapCoordinate;
+  const center = squareCenter(mapCoordinateToImageCoordinate(mapCoordinate));
+  // Circle option square
+  if (x === 12 && y === 27) {
+    await click(ctx.canContinue, {x: center.x, y: center.y - 8, radius: 4});
+  }
+  // Tactical option square
+  if (x === 12 && y === 27) {
+    await click(ctx.canContinue, {x: center.x, y: center.y - 6, radius: 5});
+  }
+  await click(ctx.canContinue, {...center, radius: 5});
+}
+
 async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Promise<void> {
   const mapScan = scanMap();
   const result = await identifyParticipants(ctx.canContinue, mapScan, fightContext);
@@ -99,10 +114,7 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
     }
     ctx.updateStatus(`Placement du coffre en ${hashCoordinate(coffrePosition)}`);
     keyTap('1');
-    await click(ctx.canContinue, {
-      ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(coffrePosition))),
-      radius: 10,
-    });
+    await clickSquare(ctx, coffrePosition);
     // eslint-disable-next-line require-atomic-updates
     fightContext.coffre = coffrePosition;
     return;
@@ -117,10 +129,7 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
     fightContext.chanceDone = true;
     ctx.updateStatus(`Chance pas encore faite, lancement du sort.`);
     keyTap('2');
-    await click(ctx.canContinue, {
-      ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(player))),
-      radius: 10,
-    });
+    await clickSquare(ctx, player);
     await moveToSafeZone(ctx.canContinue);
   }
 
@@ -139,10 +148,7 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
         const lastSquare = firstPath.at(-1);
         if (lastSquare) {
           pmLeft -= firstPath.length;
-          await click(ctx.canContinue, {
-            ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(lastSquare))),
-            radius: 10,
-          });
+          await clickSquare(ctx, lastSquare);
         }
         paLeft -= Spells[spell].pa;
         ctx.updateStatus(
@@ -156,10 +162,7 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
           radius: 10,
         });
         // Click the ennemy
-        await click(ctx.canContinue, {
-          ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(easiestEnnemy.ennemy))),
-          radius: 10,
-        });
+        await clickSquare(ctx, easiestEnnemy.ennemy);
         // Move to safe zone
         await moveToSafeZone(ctx.canContinue);
         // Wait for animations
@@ -198,10 +201,7 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
       const targetSquare = closestEnnemy.path.slice(0, -1).slice(0, pmLeft).at(-1);
       if (targetSquare) {
         // Move toward ennemy
-        await click(ctx.canContinue, {
-          ...squareCenter(mapCoordinateToImageCoordinate(gridToMap(targetSquare))),
-          radius: 10,
-        });
+        await clickSquare(ctx, targetSquare);
       }
     }
     break;
