@@ -23,6 +23,7 @@ import {scanMap} from '../screenshot';
 
 interface FightContext {
   coffre?: GridCoordinate;
+  initialEnnemiesCount?: number;
   chanceDone: boolean;
 }
 
@@ -99,6 +100,10 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
   }
   const {player, ennemies} = result;
 
+  if (ennemies.length > 0 && fightContext.initialEnnemiesCount === undefined) {
+    fightContext.initialEnnemiesCount = ennemies.length;
+  }
+
   ctx.updateStatus(
     `Début du tour. Player: ${hashCoordinate(player)}. Coffre: ${
       fightContext.coffre ? hashCoordinate(fightContext.coffre) : 'non posé'
@@ -106,7 +111,7 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
   );
 
   // POSITIONNING OF THE COFFRE
-  if (fightContext.coffre === undefined) {
+  if (fightContext.coffre === undefined && fightContext.initialEnnemiesCount === 1) {
     const coffrePosition = bestCoffrePosition(mapScan, player, ennemies);
     if (coffrePosition === undefined) {
       ctx.updateStatus(`Aucune position pour le coffre disponible, pas d'action possible`);
