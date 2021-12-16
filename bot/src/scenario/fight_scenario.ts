@@ -187,14 +187,13 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
       ctx.updateStatus(`${freshResult.error}, aucune action possible`);
       return;
     }
-    if (
-      await maybeSpell(freshScan, freshResult.player, freshResult.ennemies, Spell.LancerDePieces)
-    ) {
+    const preferRoulageDePelle = Math.random() < 1 / 5;
+    const spell1 = preferRoulageDePelle ? Spell.RoulageDePelle : Spell.LancerDePieces;
+    const spell2 = preferRoulageDePelle ? Spell.LancerDePieces : Spell.RoulageDePelle;
+    if (await maybeSpell(freshScan, freshResult.player, freshResult.ennemies, spell1)) {
       continue;
     }
-    if (
-      await maybeSpell(freshScan, freshResult.player, freshResult.ennemies, Spell.RoulageDePelle)
-    ) {
+    if (await maybeSpell(freshScan, freshResult.player, freshResult.ennemies, spell2)) {
       continue;
     }
     const ennemiesDistance = freshResult.ennemies.map(ennemy => ({
