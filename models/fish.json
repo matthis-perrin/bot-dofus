@@ -1357,7 +1357,10 @@
       "coordinate": {
         "x": 11,
         "y": 20
-      }
+      },
+      "type": "Rivère",
+      "size": "Gros",
+      "distance": 4
     },
     {
       "coordinate": {
@@ -1660,17 +1663,7 @@
         "y": 8
       },
       "type": "Rivère",
-      "size": "Petit",
-      "distance": 1
-    },
-    {
-      "coordinate": {
-        "x": 10,
-        "y": 27
-      },
-      "type": "Rivère",
-      "size": "Petit",
-      "distance": 1
+      "size": "Petit"
     },
     {
       "coordinate": {
@@ -1680,6 +1673,15 @@
       "type": "Rivère",
       "size": "Petit",
       "distance": 5
+    },
+    {
+      "coordinate": {
+        "x": 10,
+        "y": 27
+      },
+      "type": "Rivère",
+      "size": "Petit",
+      "distance": 1
     }
   ],
   "7/18": [
@@ -1844,7 +1846,8 @@
         "y": 8
       },
       "type": "Rivère",
-      "size": "Géant"
+      "size": "Géant",
+      "distance": 5
     },
     {
       "coordinate": {
@@ -1924,7 +1927,10 @@
       "coordinate": {
         "x": 10,
         "y": 6
-      }
+      },
+      "type": "Rivère",
+      "size": "Gros",
+      "distance": 5
     },
     {
       "coordinate": {
@@ -1972,7 +1978,10 @@
       "coordinate": {
         "x": 8,
         "y": 15
-      }
+      },
+      "type": "Rivère",
+      "size": "Petit",
+      "distance": 1
     },
     {
       "coordinate": {
@@ -2003,7 +2012,10 @@
       "coordinate": {
         "x": 9,
         "y": 27
-      }
+      },
+      "type": "Rivère",
+      "size": "Gros",
+      "distance": 4
     },
     {
       "coordinate": {
@@ -2087,7 +2099,10 @@
       "coordinate": {
         "x": 4,
         "y": 1
-      }
+      },
+      "type": "Rivère",
+      "size": "Gros",
+      "distance": 4
     },
     {
       "coordinate": {
@@ -2390,7 +2405,10 @@
       "coordinate": {
         "x": 5,
         "y": 21
-      }
+      },
+      "type": "Rivère",
+      "size": "Gros",
+      "distance": 3
     },
     {
       "coordinate": {
@@ -3556,7 +3574,8 @@
         "y": 13
       },
       "type": "Mer",
-      "size": "Gros"
+      "size": "Gros",
+      "distance": 5
     },
     {
       "coordinate": {
@@ -3610,7 +3629,7 @@
       },
       "type": "Mer",
       "size": "Normal",
-      "distance": 3
+      "distance": 4
     },
     {
       "coordinate": {
@@ -3827,7 +3846,10 @@
       "coordinate": {
         "x": 8,
         "y": 10
-      }
+      },
+      "type": "Mer",
+      "size": "Gros",
+      "distance": 5
     },
     {
       "coordinate": {
@@ -3871,7 +3893,8 @@
         "y": 22
       },
       "type": "Mer",
-      "size": "Géant"
+      "size": "Géant",
+      "distance": 5
     },
     {
       "coordinate": {
@@ -3916,7 +3939,7 @@
       },
       "type": "Mer",
       "size": "Petit",
-      "distance": 3
+      "distance": 2
     },
     {
       "coordinate": {
@@ -3924,7 +3947,8 @@
         "y": 2
       },
       "type": "Mer",
-      "size": "Gros"
+      "size": "Gros",
+      "distance": 2
     }
   ],
   "13/4": [
