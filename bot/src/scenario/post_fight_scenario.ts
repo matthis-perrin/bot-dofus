@@ -15,8 +15,6 @@ export const postFightScenario: Scenario = async ctx => {
   await sleep(canContinue, 1000);
   updateStatus('Closing post fight window');
   await pressEscape(canContinue);
-  // Wait a bit
-  await randSleep(canContinue, 1000, 1500);
   // Click on the inventory icon if needed
   if (!isInventoryOpen()) {
     await click(canContinue, {x: 840, y: 690, radius: 0});

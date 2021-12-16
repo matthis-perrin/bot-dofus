@@ -140,7 +140,7 @@ export const fishOnMapScenario: Scenario = async ctx => {
     };
     const currentPos = await click(canContinue, {
       ...fishTarget,
-      radius: squareHeight / 4,
+      radius: 5,
       button: 'right',
     });
 
@@ -161,7 +161,6 @@ export const fishOnMapScenario: Scenario = async ctx => {
       if (isTalkingToPnj()) {
         updateStatus('Fermeture de la fenêtre de dialogue');
         await pressEscape(canContinue);
-        await sleep(canContinue, 1000);
       }
 
       continue;
