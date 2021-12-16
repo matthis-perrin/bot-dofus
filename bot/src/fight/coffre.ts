@@ -14,7 +14,10 @@ export function bestCoffrePosition(
   ennemies: GridCoordinate[]
 ): GridCoordinate | undefined {
   // Get the positions where putting the coffre is possible
-  const availablePositionForCoffre = getAvailableTargets(mapScan, player, COFFRE_RANGE);
+  // Filter out squares that are not reachable (can't put coffre on "island" of squares)
+  const availablePositionForCoffre = getAvailableTargets(mapScan, player, COFFRE_RANGE).filter(
+    p => shortestPathLength(mapScan, player, p) !== undefined
+  );
 
   // Compute for each available position
   // - how many PM for the ennemies to get to a line of sight
