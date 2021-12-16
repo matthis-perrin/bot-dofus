@@ -21,10 +21,7 @@ export async function ensureCleanFightZone(ctx: ScenarioContext): Promise<void> 
   const {canContinue, updateStatus} = ctx;
 
   // Check for the timeline visibility
-  const timelineCoordinates = [
-    {x: 1088, y: 607},
-    {x: 1088, y: 630},
-  ];
+  const timelineCoordinates = [{x: 1088, y: 640}];
   if (checkForColor(timelineCoordinates, BLUE, 15) || checkForColor(timelineCoordinates, RED, 15)) {
     updateStatus('Cache timeline');
     await click(canContinue, {x: 1119, y: 628, radius: 3, fast: true});
