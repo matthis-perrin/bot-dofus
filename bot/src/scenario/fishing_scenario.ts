@@ -121,6 +121,8 @@ export const fishingScenario: Scenario = async ctx => {
   const {ia, canContinue, updateStatus} = ctx;
   await canContinue();
 
+  let previousIndexInMapLoop: number | undefined;
+
   /* eslint-disable no-await-in-loop */
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -140,7 +142,20 @@ export const fishingScenario: Scenario = async ctx => {
     const coordinateStr = hashCoordinate(coordinate);
 
     // Map identification
-    const indexInMapLoop = mapLoop.findIndex(m => m.x === coordinate.x && m.y === coordinate.y);
+    let indexInMapLoop = mapLoop.findIndex(m => m.x === coordinate.x && m.y === coordinate.y);
+    // If we know the previous index we take instead the next index
+    if (previousIndexInMapLoop !== undefined) {
+      const nextIndex = (previousIndexInMapLoop + 1) % mapLoop.length;
+      const coordinatesAtNextIndex = mapLoop[nextIndex];
+      // Ensure this is the index correspond to the actual map we are in
+      if (
+        coordinatesAtNextIndex !== undefined &&
+        coordinatesAtNextIndex.x === coordinate.x &&
+        coordinatesAtNextIndex.y === coordinate.y
+      ) {
+        indexInMapLoop = nextIndex;
+      }
+    }
     if (indexInMapLoop === -1) {
       updateStatus(`Map courante (${coordinateStr}) n'est pas dans le chemin. Prise de popo.`);
       await click(canContinue, {x: 1024, y: 806, radius: 5, double: true});
@@ -164,6 +179,7 @@ export const fishingScenario: Scenario = async ctx => {
 
     // Change map
     const nextMap = mapLoop[(indexInMapLoop + 1) % mapLoop.length]!;
+    previousIndexInMapLoop = indexInMapLoop;
     await changeMap(ctx, lastData, coordinate, nextMap, 3);
     updateStatus(`Déplacement terminé`);
   }
