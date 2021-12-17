@@ -356,3 +356,14 @@ export function isTalkingToMerchand(): boolean {
     )
   );
 }
+
+export function isMenuModalOpened(clickPos: Coordinate): boolean {
+  return checkForColor(
+    [
+      {x: clickPos.x + 5, y: clickPos.y + 8},
+      {x: clickPos.x + 10, y: clickPos.y + 8},
+    ],
+    HEADER_BROWN,
+    5
+  );
+}

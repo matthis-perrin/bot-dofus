@@ -8,6 +8,7 @@ import {
 } from '../../../common/src/coordinates';
 import {ScenarioType} from '../../../common/src/model';
 import {click, moveToSafeZone, sleep, waitForMapChange} from '../actions';
+import {isMenuModalOpened} from '../detectors';
 import {hashCoordinate} from '../fight';
 import {Data} from '../intelligence';
 import {logError} from '../logger';
@@ -118,8 +119,30 @@ export async function changeMap(
   const soleilPx = mapCoordinateToImageCoordinate(soleil.coordinate);
   const soleilCenter = squareCenter(soleilPx);
 
-  await click(canContinue, {...soleilCenter, radius: 10});
+  const clickPos = await click(canContinue, {...soleilCenter, radius: 10});
   await moveToSafeZone(canContinue);
+
+  // Check if a player is in front of it
+  if (isMenuModalOpened(clickPos)) {
+    await click(canContinue, {x: clickPos.x + 5, y: clickPos.y + 8, radius: 2});
+    // Move the player one square away from it (in case we are the one in the way)
+    const nextToSoleil = {...soleil.coordinate};
+    if (direction === Direction.Bottom) {
+      nextToSoleil.y -= 2;
+    } else if (direction === Direction.Top) {
+      nextToSoleil.y += 2;
+    } else if (direction === Direction.Left) {
+      nextToSoleil.x += 1;
+    } else {
+      nextToSoleil.x -= 1;
+    }
+    const nextToSoleilPx = mapCoordinateToImageCoordinate(nextToSoleil);
+    const nextToSoleilCenter = squareCenter(nextToSoleilPx);
+    await click(canContinue, {...nextToSoleilCenter, radius: 10});
+    await moveToSafeZone(canContinue);
+    // Retry
+    return changeMap(ctx, data, currentMap, nextMap, maxTries - 1);
+  }
 
   // In case no map changed occured, we restart
   if (!(await waitForMapChange(ctx, nextMap))) {
