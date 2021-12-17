@@ -133,14 +133,18 @@ export const fishOnMapScenario: Scenario = async ctx => {
 
     updateStatus(`Pêche de ${fishToString(fish)} en ${hashCoordinate(fish.coordinate)}`);
     // Click on the fish
+
+    // If we are dealing with a fish at the far right, prevent clicking on the second half of the square
+    const radius = 5;
+    const xOffset = fish.coordinate.x === 13 && fish.coordinate.y % 2 === 1 ? -radius : 0;
     const fishTopLeft = mapCoordinateToImageCoordinate(fish.coordinate);
     const fishTarget = {
-      x: fishTopLeft.x + squareWidth / 2,
+      x: fishTopLeft.x + squareWidth / 2 + xOffset,
       y: fishTopLeft.y + (3 * squareHeight) / 4,
     };
     const currentPos = await click(canContinue, {
       ...fishTarget,
-      radius: 5,
+      radius,
       button: 'right',
     });
 
