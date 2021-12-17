@@ -153,16 +153,16 @@ export const fishOnMapScenario: Scenario = async ctx => {
     const hasFish = await ia.hasFishPopup(popupTopLeft);
     await canContinue();
 
+    // Check that we haven't clicked on a pnj, percepteur or merchand
+    if (isTalkingToPnj() || isTalkingToMerchand()) {
+      updateStatus('Fermeture de la fenêtre de dialogue');
+      await pressEscape(canContinue);
+      continue;
+    }
+
     if (!hasFish) {
       updateStatus(`Poisson non présent. Click dans la safe-zone.`);
       await click(canContinue, {x: currentPos.x + 15, y: currentPos.y + 15, radius: 5});
-
-      // Check that we haven't clicked on a pnj, percepteur or merchand
-      if (isTalkingToPnj() || isTalkingToMerchand()) {
-        updateStatus('Fermeture de la fenêtre de dialogue');
-        await pressEscape(canContinue);
-      }
-
       continue;
     }
 
