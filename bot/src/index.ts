@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import 'source-map-support/register';
 
+import {isTalkingToMerchand} from './detectors';
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
@@ -27,7 +28,7 @@ async function run(): Promise<void> {
   const ai = new Intelligence(mapModel, fishPopupModel);
   const runner = new ScenarioRunner(ai);
   startServer(ai, runner);
-  // runner.start();
+  runner.start();
   console.log(new Date().toLocaleString());
   setInterval(() => console.log(new Date().toLocaleString()), 15 * 60 * 1000);
 }

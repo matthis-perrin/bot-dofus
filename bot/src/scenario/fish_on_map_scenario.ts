@@ -18,7 +18,7 @@ import {
 } from '../../../common/src/model';
 import {click, moveToSafeZone, pressEscape, randSleep, sleep} from '../actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from '../coordinate';
-import {hasLevelUpModal, isTalkingToPnj} from '../detectors';
+import {hasLevelUpModal, isTalkingToMerchand, isTalkingToPnj} from '../detectors';
 import {hashCoordinate} from '../fight';
 import {fishDb} from '../fish_db';
 import {logError, logEvent} from '../logger';
@@ -157,8 +157,8 @@ export const fishOnMapScenario: Scenario = async ctx => {
       updateStatus(`Poisson non présent. Click dans la safe-zone.`);
       await click(canContinue, {x: currentPos.x + 15, y: currentPos.y + 15, radius: 5});
 
-      // Check that we haven't clicked on a pnj or percepteur
-      if (isTalkingToPnj()) {
+      // Check that we haven't clicked on a pnj, percepteur or merchand
+      if (isTalkingToPnj() || isTalkingToMerchand()) {
         updateStatus('Fermeture de la fenêtre de dialogue');
         await pressEscape(canContinue);
       }

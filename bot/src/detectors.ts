@@ -319,3 +319,40 @@ export function isMainMenuOpened(): boolean {
     )
   );
 }
+
+export function isTalkingToMerchand(): boolean {
+  return (
+    checkForColor(
+      [
+        {x: 213, y: 221},
+        {x: 297, y: 221},
+      ],
+      HEADER_BROWN,
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 1074, y: 221},
+        {x: 1033, y: 221},
+      ],
+      HEADER_BROWN,
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 160, y: 600},
+        {x: 160, y: 627},
+      ],
+      MODAL_BACK,
+      5
+    ) &&
+    checkForColor(
+      [
+        {x: 841, y: 597},
+        {x: 925, y: 597},
+      ],
+      MODAL_BACK,
+      5
+    )
+  );
+}
