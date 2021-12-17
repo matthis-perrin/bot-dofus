@@ -48,7 +48,10 @@ export function addScreenshot(rgbImage: RgbImage): void {
 
 export async function logError(context: string, err: unknown): Promise<void> {
   const dateStr = new Date().toLocaleTimeString();
-  const dir = join(getTodayPath(), `error-${dateStr}`);
+  const dir = join(
+    getTodayPath(),
+    `error-${dateStr}-${context}-${String(err).replaceAll('/', '_')}`
+  );
   await mkdir(dir, {recursive: true});
   const errStr = `[${context}] ${String(err)}`;
   console.log(errStr);
