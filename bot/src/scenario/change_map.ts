@@ -8,6 +8,7 @@ import {
 } from '../../../common/src/coordinates';
 import {ScenarioType} from '../../../common/src/model';
 import {click, moveToSafeZone, sleep, waitForMapChange} from '../actions';
+import {safeZone} from '../coordinate';
 import {isMenuModalOpened} from '../detectors';
 import {hashCoordinate} from '../fight';
 import {Data} from '../intelligence';
@@ -140,6 +141,16 @@ export async function changeMap(
     const nextToSoleilCenter = squareCenter(nextToSoleilPx);
     await click(canContinue, {...nextToSoleilCenter, radius: 10});
     await moveToSafeZone(canContinue);
+    // Retry
+    return changeMap(ctx, data, currentMap, nextMap, maxTries - 1);
+  }
+
+  // Check if a percepteur modal is opened
+  if (isMenuModalOpened(clickPos)) {
+    // Dismiss by clicking the safe zone
+    await click(canContinue, {...safeZone, radius: 0});
+    // Wait for the percepteur du move
+    await sleep(canContinue, 10000);
     // Retry
     return changeMap(ctx, data, currentMap, nextMap, maxTries - 1);
   }

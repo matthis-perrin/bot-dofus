@@ -367,3 +367,14 @@ export function isMenuModalOpened(clickPos: Coordinate): boolean {
     5
   );
 }
+
+export function isPercepteurMenuOpened(clickPos: Coordinate): boolean {
+  return checkForColor(
+    [
+      {x: clickPos.x + 5, y: clickPos.y + 8},
+      {x: clickPos.x + 10, y: clickPos.y + 8},
+    ],
+    MODAL_BACK,
+    5
+  );
+}
