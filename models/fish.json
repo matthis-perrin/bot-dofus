@@ -1351,7 +1351,8 @@
         "y": 21
       },
       "type": "Rivère",
-      "size": "Normal"
+      "size": "Normal",
+      "distance": 3
     },
     {
       "coordinate": {
@@ -1366,7 +1367,10 @@
       "coordinate": {
         "x": 9,
         "y": 22
-      }
+      },
+      "type": "Rivère",
+      "size": "Petit",
+      "distance": 2
     },
     {
       "coordinate": {
@@ -1401,7 +1405,8 @@
         "y": 20
       },
       "type": "Rivère",
-      "size": "Normal"
+      "size": "Normal",
+      "distance": 4
     },
     {
       "coordinate": {
@@ -1409,7 +1414,8 @@
         "y": 23
       },
       "type": "Rivère",
-      "size": "Petit"
+      "size": "Petit",
+      "distance": 1
     },
     {
       "coordinate": {
@@ -1936,7 +1942,10 @@
       "coordinate": {
         "x": 10,
         "y": 1
-      }
+      },
+      "type": "Rivère",
+      "size": "Gros",
+      "distance": 4
     },
     {
       "coordinate": {
@@ -2021,7 +2030,10 @@
       "coordinate": {
         "x": 11,
         "y": 24
-      }
+      },
+      "type": "Rivère",
+      "size": "Géant",
+      "distance": 7
     },
     {
       "coordinate": {
@@ -2071,7 +2083,10 @@
       "coordinate": {
         "x": 2,
         "y": 15
-      }
+      },
+      "type": "Rivère",
+      "size": "Gros",
+      "distance": 4
     },
     {
       "coordinate": {
@@ -2087,7 +2102,8 @@
         "y": 7
       },
       "type": "Rivère",
-      "size": "Gros"
+      "size": "Gros",
+      "distance": 5
     },
     {
       "coordinate": {
@@ -2111,7 +2127,10 @@
       "coordinate": {
         "x": 3,
         "y": 17
-      }
+      },
+      "type": "Rivère",
+      "size": "Géant",
+      "distance": 6
     },
     {
       "coordinate": {
@@ -2251,7 +2270,8 @@
         "y": 9
       },
       "type": "Rivère",
-      "size": "Normal"
+      "size": "Normal",
+      "distance": 4
     },
     {
       "coordinate": {
@@ -2277,7 +2297,8 @@
         "y": 5
       },
       "type": "Rivère",
-      "size": "Normal"
+      "size": "Normal",
+      "distance": 5
     },
     {
       "coordinate": {
@@ -2312,13 +2333,17 @@
         "y": 1
       },
       "type": "Rivère",
-      "size": "Normal"
+      "size": "Normal",
+      "distance": 3
     },
     {
       "coordinate": {
         "x": 4,
         "y": 12
-      }
+      },
+      "type": "Mer",
+      "size": "Gros",
+      "distance": 5
     }
   ],
   "10/12": [
