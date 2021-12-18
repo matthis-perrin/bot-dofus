@@ -131,7 +131,10 @@ export async function changeMap(
     if (direction === Direction.Bottom) {
       nextToSoleil.y -= 2;
     } else if (direction === Direction.Top) {
-      nextToSoleil.y += 2;
+      nextToSoleil.y += 1;
+      if (nextToSoleil.x < HORIZONTAL_SQUARES / 2) {
+        nextToSoleil.x -= 1;
+      }
     } else if (direction === Direction.Left) {
       nextToSoleil.x += 1;
     } else {
