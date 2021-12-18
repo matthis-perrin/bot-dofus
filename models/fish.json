@@ -4106,6 +4106,24 @@
     {
       "coordinate": {
         "x": 1,
+        "y": 22
+      },
+      "type": "Mer",
+      "size": "Petit",
+      "distance": 1
+    },
+    {
+      "coordinate": {
+        "x": 0,
+        "y": 11
+      },
+      "type": "Mer",
+      "size": "Petit",
+      "distance": 1
+    },
+    {
+      "coordinate": {
+        "x": 1,
         "y": 11
       },
       "type": "Mer",
@@ -4120,15 +4138,6 @@
       "type": "Mer",
       "size": "Normal",
       "distance": 2
-    },
-    {
-      "coordinate": {
-        "x": 0,
-        "y": 11
-      },
-      "type": "Mer",
-      "size": "Petit",
-      "distance": 1
     }
   ],
   "12/4": [
