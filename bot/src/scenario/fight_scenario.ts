@@ -81,7 +81,7 @@ async function clickSquare(ctx: ScenarioContext, coordinate: GridCoordinate): Pr
   const center = squareCenter(mapCoordinateToImageCoordinate(mapCoordinate));
   // Circle option square
   if (x === 12 && y === 27) {
-    await click(ctx.canContinue, {x: center.x, y: center.y - 8, radius: 0});
+    await click(ctx.canContinue, {x: center.x, y: center.y - 10, radius: 0});
   }
   // Tactical option square
   if (x === 12 && y === 27) {
