@@ -25,7 +25,7 @@ async function run(): Promise<void> {
   const ia = new Intelligence(mapModel, fishPopupModel);
   const runner = new ScenarioRunner(ia);
   startServer(ia, runner);
-  // runner.start();
+  runner.start();
   // const ctx = {canContinue: async () => {}, ia, updateStatus: console.log};
   console.log(new Date().toLocaleString());
   setInterval(() => console.log(new Date().toLocaleString()), 15 * 60 * 1000);

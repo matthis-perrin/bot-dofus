@@ -7,6 +7,7 @@ import {
   GAME_WIDTH,
   HORIZONTAL_SQUARES,
   mapCoordinateToImageCoordinate,
+  SQUARE_SIZE,
   VERTICAL_SQUARES,
 } from '../../common/src/coordinates';
 import {fishPopupScreenshotSize, MapScan, SquareType} from '../../common/src/model';
@@ -20,12 +21,24 @@ export interface RgbImage {
   height: number;
 }
 
+interface CharacterSquareScreenshot {
+  coordinate: Coordinate;
+  image: RgbImage;
+}
+
 const ALL_SOLEIL_POS: Coordinate[] = [];
 for (let x = 0; x < HORIZONTAL_SQUARES; x++) {
   ALL_SOLEIL_POS.push({x, y: 0}, {x, y: VERTICAL_SQUARES - 1});
 }
 for (let y = 1; y < VERTICAL_SQUARES - 1; y++) {
   ALL_SOLEIL_POS.push({x: 0, y}, {x: HORIZONTAL_SQUARES - 1, y});
+}
+
+const ALL_SQUARE_POS: Coordinate[] = [];
+for (let y = 0; y < VERTICAL_SQUARES * 2 - 1; y++) {
+  for (let x = 0; x < HORIZONTAL_SQUARES - (y % 2); x++) {
+    ALL_SQUARE_POS.push({x, y});
+  }
 }
 
 function identifyColor(circleColor: Rgb, squareColor: Rgb): SquareType {
@@ -98,23 +111,19 @@ export function scanMap(): MapScan {
   }
 
   const scan: MapScan = {};
+  for (const {x, y} of ALL_SQUARE_POS) {
+    // Identify square type
+    const isTopRight = x === HORIZONTAL_SQUARES - 1 && y === 0;
+    const circleColor = findPixelColor(x, y, getOffsets(x, y));
+    const squareColor = isTopRight ? circleColor : findPixelColor(x, y, [{x: 40, y: 15}]);
+    const squareType = identifyColor(circleColor, squareColor);
 
-  // const topRightOffset = {x: 41, y: 33};
-  for (let y = 0; y < VERTICAL_SQUARES * 2 - 1; y++) {
-    for (let x = 0; x < HORIZONTAL_SQUARES - (y % 2); x++) {
-      // Identify square type
-      const isTopRight = x === HORIZONTAL_SQUARES - 1 && y === 0;
-      const circleColor = findPixelColor(x, y, getOffsets(x, y));
-      const squareColor = isTopRight ? circleColor : findPixelColor(x, y, [{x: 40, y: 15}]);
-      const squareType = identifyColor(circleColor, squareColor);
-
-      // Add to map scan
-      const scanX = scan[x];
-      if (scanX === undefined) {
-        scan[x] = {[y]: squareType};
-      } else {
-        scanX[y] = squareType;
-      }
+    // Add to map scan
+    const scanX = scan[x];
+    if (scanX === undefined) {
+      scan[x] = {[y]: squareType};
+    } else {
+      scanX[y] = squareType;
     }
   }
 
@@ -123,6 +132,7 @@ export function scanMap(): MapScan {
 
 export function screenshot(): {
   game: RgbImage;
+  characterSquares: CharacterSquareScreenshot[];
 } {
   // Take a screenshot of the game zone
   const {x, y} = gameCoordinates;
@@ -141,7 +151,33 @@ export function screenshot(): {
 
   const gameImage = {data: game, width: 2 * GAME_WIDTH, height: 2 * GAME_HEIGHT};
   addScreenshot(gameImage);
-  return {game: gameImage};
+
+  const characterSquares = ALL_SQUARE_POS.filter(p => p.y < VERTICAL_SQUARES * 2 - 3).map(pos => {
+    const {x, y} = mapCoordinateToImageCoordinate(pos);
+    const xPx = Math.round(x * 2);
+    const yPx = Math.round(y * 2);
+    const wPx = Math.round(SQUARE_SIZE.width);
+    const hPx = Math.round(SQUARE_SIZE.height * 2);
+    const buffer = Buffer.allocUnsafe(wPx * hPx * 3);
+    for (let i = 0; i < hPx; i++) {
+      game.copy(
+        buffer,
+        i * wPx * 3,
+        (xPx + (yPx + i) * GAME_WIDTH * 2) * 3,
+        (xPx + (yPx + i) * GAME_WIDTH * 2 + wPx) * 3
+      );
+    }
+    return {
+      coordinate: {x: pos.x, y: pos.y},
+      image: {
+        data: buffer,
+        width: wPx,
+        height: hPx,
+      },
+    };
+  });
+
+  return {game: gameImage, characterSquares};
 }
 
 export function fishingPopupScreenshot(mousePos: Coordinate): RgbImage {

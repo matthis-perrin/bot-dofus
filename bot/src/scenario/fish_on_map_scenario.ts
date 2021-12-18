@@ -17,6 +17,7 @@ import {
   FishType,
 } from '../../../common/src/model';
 import {click, moveToSafeZone, pressEscape, randSleep, sleep} from '../actions';
+import {saveCharacterImages} from '../character_screenshots';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from '../coordinate';
 import {hasLevelUpModal, isTalkingToMerchand, isTalkingToPnj} from '../detectors';
 import {hashCoordinate} from '../fight';
@@ -177,7 +178,17 @@ export const fishOnMapScenario: Scenario = async ctx => {
     updateStatus(`Attente de fin de pêche`);
     const waitTime =
       5000 + fishingTimePerFish[fish.type ?? FishType.River][fish.size ?? FishSize.Giant];
+
+    // After 5 seconds, saves a screenshot of the character squares
+    setTimeout(() => {
+      saveCharacterImages().catch(console.error);
+    }, 5000);
+
     await sleep(canContinue, waitTime);
+
+    // After fishing save screenshot one more time
+    await saveCharacterImages().catch(console.error);
+
     await checkLvlUp(canContinue);
 
     const newLastData = await ia.refresh();
