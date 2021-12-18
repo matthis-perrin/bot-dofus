@@ -179,15 +179,15 @@ export const fishOnMapScenario: Scenario = async ctx => {
     const waitTime =
       5000 + fishingTimePerFish[fish.type ?? FishType.River][fish.size ?? FishSize.Giant];
 
-    // After 5 seconds, saves a screenshot of the character squares
-    setTimeout(() => {
-      saveCharacterImages().catch(console.error);
-    }, 5000);
+    // // After 5 seconds, saves a screenshot of the character squares
+    // setTimeout(() => {
+    //   saveCharacterImages().catch(console.error);
+    // }, 5000);
 
     await sleep(canContinue, waitTime);
 
-    // After fishing save screenshot one more time
-    await saveCharacterImages().catch(console.error);
+    // // After fishing save screenshot one more time
+    // await saveCharacterImages().catch(console.error);
 
     await checkLvlUp(canContinue);
 
