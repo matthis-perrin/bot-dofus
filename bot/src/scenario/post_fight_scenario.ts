@@ -12,7 +12,7 @@ const {writeFile, mkdir} = promises;
 
 export const postFightScenario: Scenario = async ctx => {
   const {canContinue, updateStatus} = ctx;
-  await sleep(canContinue, 1000);
+  await sleep(canContinue, 2000);
   updateStatus('Closing post fight window');
   await pressEscape(canContinue);
   // Click on the inventory icon if needed
