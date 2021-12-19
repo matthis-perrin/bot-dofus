@@ -5,6 +5,7 @@ import {join} from 'path';
 
 import {Coordinate, GAME_HEIGHT, GAME_WIDTH} from '../../common/src/coordinates';
 import {Fish, Message, Soleil} from '../../common/src/model';
+import {getImage, getNextBatch, markBatch} from './character_screenshots';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
@@ -49,6 +50,9 @@ export async function apiHandler(
       inventory: inventory.toString('base64'),
       mapScan: scanMap(),
     };
+  } else if (url === '/mark-character-batch') {
+    await markBatch(params);
+    return {};
   }
   console.log(url, params);
   if (url === '/set-fish') {
@@ -84,6 +88,8 @@ export async function apiHandler(
     runner.start();
   } else if (url === '/stop-scenario') {
     runner.stop();
+  } else if (url === '/character-batch') {
+    return getNextBatch();
   }
 
   return Promise.resolve(`unknown URL ${url}`);
@@ -132,6 +138,19 @@ export function startServer(ai: Intelligence, runner: ScenarioRunner): void {
           res.flushHeaders();
           res.write('\n');
           runner.sendStatus();
+          return;
+        }
+        if (file.startsWith('/images/')) {
+          getImage(file.slice('/images/'.length))
+            .then(img => {
+              res.setHeader('Content-Type', 'image/png');
+              res.statusCode = 200;
+              res.end(img);
+            })
+            .catch(err => {
+              res.statusCode = 500;
+              res.end(String(err));
+            });
           return;
         }
         if (file === '/' || file === '/index.html') {

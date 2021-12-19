@@ -17,7 +17,6 @@ import {
   FishType,
 } from '../../../common/src/model';
 import {click, moveToSafeZone, pressEscape, randSleep, sleep} from '../actions';
-import {saveCharacterImages} from '../character_screenshots';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from '../coordinate';
 import {hasLevelUpModal, isTalkingToMerchand, isTalkingToPnj} from '../detectors';
 import {hashCoordinate} from '../fight';
