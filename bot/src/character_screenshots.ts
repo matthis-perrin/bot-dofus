@@ -50,6 +50,18 @@ export async function markBatch(values: CharacterDb): Promise<void> {
   for (const [key, value] of Object.entries(values)) {
     db[key] = value;
   }
+  let done = 0;
+  let notDone = 0;
+  for (const [key, value] of Object.entries(db)) {
+    if (value === false) {
+      notDone++;
+    } else {
+      done++;
+    }
+  }
+  const total = done + notDone;
+  const percent = Math.round((1000 * done) / total) / 10;
+  console.log(`${done}/${total} (${percent}%)`);
   await saveDb();
 }
 
