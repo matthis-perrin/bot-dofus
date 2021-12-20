@@ -2,21 +2,19 @@ import React, {Fragment, useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components';
 
 import {apiCall} from './api';
-import {Modules} from './modules';
-import {ScreenshotView} from './screenshot_view';
 
 type Status = 'fetching' | 'sending' | 'idle';
 type Batch = Record<string, 'yes' | 'no'>;
 
 export const CharacterForm: React.FC = () => {
-  const [status, setStatus] = useState('fetching');
+  const [status, setStatus] = useState<Status>('fetching');
   const [batch, setBatch] = useState<Batch | undefined>();
 
   const nextBatch = useCallback(() => {
     setStatus('fetching');
-    apiCall('/character-batch')
+    apiCall('/all-characters')
       .then((res: string[]) => {
-        setBatch(Object.fromEntries(res.map(name => [name, 'no'])));
+        setBatch(Object.fromEntries(res.map(name => [name, 'yes'])));
       })
       .catch(err => {
         alert(`Erreur lors de la récupération des images: ${String(err)}`);
@@ -61,7 +59,7 @@ export const CharacterForm: React.FC = () => {
                 borderColor: e[1] === 'yes' ? 'red' : undefined,
               }}
               key={e[0]}
-              onClick={() => setBatch(batch => ({...batch, [e[0]]: e[1] === 'yes' ? 'no' : 'yes'}))}
+              onClick={() => console.log(e[0])}
               src={`/images/${e[0]}`}
             />
           ))

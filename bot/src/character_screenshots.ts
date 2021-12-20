@@ -24,7 +24,7 @@ export async function saveCharacterImages(): Promise<void> {
   );
 }
 
-type CharacterDb = Record<string, 'yes' | 'no' | false>;
+export type CharacterDb = Record<string, 'yes' | 'no' | false>;
 let db: CharacterDb = {};
 const dbPath = join('./models/character.json');
 
@@ -46,13 +46,19 @@ export function getNextBatch(): string[] {
     .map(e => e[0]);
 }
 
+export function getAllCharacters(): string[] {
+  return Object.entries(db)
+    .filter(e => e[1] === 'yes')
+    .map(e => e[0]);
+}
+
 export async function markBatch(values: CharacterDb): Promise<void> {
   for (const [key, value] of Object.entries(values)) {
     db[key] = value;
   }
   let done = 0;
   let notDone = 0;
-  for (const [key, value] of Object.entries(db)) {
+  for (const value of Object.values(db)) {
     if (value === false) {
       notDone++;
     } else {

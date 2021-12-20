@@ -5,7 +5,13 @@ import {join} from 'path';
 
 import {Coordinate, GAME_HEIGHT, GAME_WIDTH} from '../../common/src/coordinates';
 import {Fish, Message, Soleil} from '../../common/src/model';
-import {getImage, getNextBatch, markBatch} from './character_screenshots';
+import {
+  CharacterDb,
+  getAllCharacters,
+  getImage,
+  getNextBatch,
+  markBatch,
+} from './character_screenshots';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
@@ -51,7 +57,7 @@ export async function apiHandler(
       mapScan: scanMap(),
     };
   } else if (url === '/mark-character-batch') {
-    await markBatch(params);
+    await markBatch(params as CharacterDb);
     return {};
   }
   console.log(url, params);
@@ -90,6 +96,8 @@ export async function apiHandler(
     runner.stop();
   } else if (url === '/character-batch') {
     return getNextBatch();
+  } else if (url === '/all-characters') {
+    return getAllCharacters();
   }
 
   return Promise.resolve(`unknown URL ${url}`);
