@@ -2467,7 +2467,10 @@
       "coordinate": {
         "x": 6,
         "y": 29
-      }
+      },
+      "type": "Rivère",
+      "size": "Gros",
+      "distance": 3
     },
     {
       "coordinate": {
