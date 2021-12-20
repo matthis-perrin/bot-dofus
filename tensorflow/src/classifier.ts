@@ -3,7 +3,7 @@ import {promises} from 'fs';
 import Jimp from 'jimp';
 import {join, resolve} from 'path';
 
-const {readdir, writeFile} = promises;
+const {readdir, writeFile, readFile} = promises;
 
 interface ImageInfo {
   img: {
@@ -12,6 +12,7 @@ interface ImageInfo {
     height: number;
   };
   label: string;
+  src: string;
 }
 
 async function loadImages(dir: string, targetSize: number): Promise<ImageInfo[]> {
@@ -71,6 +72,7 @@ async function loadImages(dir: string, targetSize: number): Promise<ImageInfo[]>
               height: targetSize,
             },
             label: dirName,
+            src: f.name,
           };
         })
       );
@@ -83,6 +85,94 @@ async function loadImages(dir: string, targetSize: number): Promise<ImageInfo[]>
   );
 
   return imagesAndLabels.sort(() => (Math.random() > 0.5 ? -1 : 1));
+}
+
+const randSort = (): number => (Math.random() > 0.5 ? -1 : 1);
+
+async function loadCharacterImages(targetSize: number): Promise<ImageInfo[]> {
+  const characterJsonContent = await readFile('../models/character.json');
+  const characterJson = JSON.parse(characterJsonContent.toString()) as Record<string, unknown>;
+  const entries = Object.entries(characterJson);
+  const yesImages = entries
+    .filter(e => e[1] === 'yes')
+    .map(e => ({name: e[0], label: 'yes'}))
+    .sort(randSort);
+  const noImages = entries
+    .filter(e => e[1] === 'no')
+    .map(e => ({name: e[0], label: 'no'}))
+    .sort(randSort);
+  const otherEntries = entries.filter(e => e[1] !== 'no' && e[1] !== 'yes');
+  if (otherEntries.length > 0) {
+    console.log('Extra entries found', otherEntries);
+    throw new Error('Stop');
+  }
+
+  // console.log(yesImages.length, noImages.length);
+  const targetPerLabel = 50000;
+  const imageFiles: {
+    name: string;
+    label: string;
+  }[] = [];
+  for (let i = 0; i < targetPerLabel; i++) {
+    imageFiles.push(yesImages[i % yesImages.length]!);
+  }
+  for (let i = 0; i < targetPerLabel; i++) {
+    imageFiles.push(noImages[i % noImages.length]!);
+  }
+
+  const chunkSize = 1000;
+  const chunks: {name: string; label: string}[][] = [];
+  for (const imageFile of imageFiles) {
+    let last = chunks.at(-1);
+    if (last === undefined || last.length >= chunkSize) {
+      last = [];
+      chunks.push(last);
+    }
+    last.push(imageFile);
+  }
+
+  const imagesAndLabels: ImageInfo[] = [];
+  let done = 0;
+  for (const chunk of chunks) {
+    imagesAndLabels.push(
+      // eslint-disable-next-line no-await-in-loop
+      ...(await Promise.all(
+        chunk.map(async ({name, label}) => {
+          const filePath = join('../images/character', name);
+          const bitmap = (await Jimp.read(filePath)).bitmap;
+
+          const rgbBuffer = Buffer.allocUnsafe(3 * targetSize * targetSize);
+          for (let dstX = 0; dstX < targetSize; dstX++) {
+            for (let dstY = 0; dstY < targetSize; dstY++) {
+              const srcX = Math.round((dstX * bitmap.width) / targetSize);
+              const srcY = Math.round((dstY * bitmap.height) / targetSize);
+
+              const srcOffset = (srcY * bitmap.width + srcX) * 4;
+              const dstOffset = (dstY * targetSize + dstX) * 3;
+
+              rgbBuffer[dstOffset] = bitmap.data[srcOffset]!;
+              rgbBuffer[dstOffset + 1] = bitmap.data[srcOffset + 1]!;
+              rgbBuffer[dstOffset + 2] = bitmap.data[srcOffset + 2]!;
+            }
+          }
+
+          return {
+            img: {
+              data: rgbBuffer,
+              width: targetSize,
+              height: targetSize,
+            },
+            label,
+            src: name,
+          };
+        })
+      ))
+    );
+    done += chunk.length;
+    console.log(`${Math.round((100 * done) / imageFiles.length)}%`);
+  }
+
+  return imagesAndLabels.sort(randSort);
 }
 
 function processImageInfo(imageInfo: ImageInfo[]): {
@@ -165,11 +255,13 @@ export async function runClassifier(
 ): Promise<void> {
   const {imageTargetSize, epochs, batchSize} = opts;
   const modelDir = resolve(`../models/${name}`);
-  const imageDir = resolve(`../images/${name}`);
 
   console.log('Start');
   console.log('Loading image');
-  const imageInfo = await loadImages(imageDir, imageTargetSize);
+  const imageDir = resolve(`../images/${name}`);
+  const imageInfo = await (name === 'character'
+    ? loadCharacterImages(imageTargetSize)
+    : loadImages(imageDir, imageTargetSize));
 
   //
 
@@ -189,10 +281,8 @@ export async function runClassifier(
     validationSplit,
   });
   console.log('Saving model');
-  await Promise.all([
-    model.save(`file://${modelDir}`),
-    writeFile(join(modelDir, 'labels.json'), JSON.stringify([...labelByNumber.entries()])),
-  ]);
+  await model.save(`file://${modelDir}`);
+  await writeFile(join(modelDir, 'labels.json'), JSON.stringify([...labelByNumber.entries()]));
 
   //
 
@@ -205,18 +295,40 @@ export async function runClassifier(
 
   //
 
-  let worstPrediction = {label: '', score: 1, expected: ''};
+  const maxWorstCount = 10;
+  let topWorst: {label: string; score: number; expected: string; source: string}[] = [];
 
-  function printPrediction(prediction: {label: string; score: number}, expected: string): void {
+  function printPrediction(
+    prediction: {label: string; score: number; source: string},
+    expected: string
+  ): void {
     const isCorrect = prediction.label === expected;
-    console.log(
-      `${isCorrect ? '✅' : '❌'} Input ${expected} - Output ${prediction.label} (Confidence ${
-        Math.round(prediction.score * 1000) / 10
-      }%)`
-    );
+    if (
+      // (expected === 'yes' && prediction.score < 0.9) ||
+      // (prediction.label === 'yes' && !isCorrect)
+      prediction.score < 0.8 ||
+      !isCorrect
+    ) {
+      console.log(
+        `${isCorrect ? '✅' : '❌'} Input ${expected} - Output ${prediction.label} (Confidence ${
+          Math.round(prediction.score * 1000) / 10
+        }%) for ${prediction.source}`
+      );
+    }
   }
 
-  for (const {img, label} of imageInfo) {
+  console.log('Starting predictions');
+  let counter = 0;
+  const alreadyProcessed = new Set<string>();
+  for (const {img, label, src} of imageInfo) {
+    counter++;
+    if (counter % 5000 === 0) {
+      console.log(`${Math.round((100 * counter) / imageInfo.length)}%`);
+    }
+    if (alreadyProcessed.has(src)) {
+      continue;
+    }
+    alreadyProcessed.add(src);
     const res = model.predict(
       tf.browser
         .fromPixels(img, 3)
@@ -234,16 +346,19 @@ export async function runClassifier(
       .map((s, i) => ({
         score: s,
         label: labelByNumber.get(i)!,
+        source: src,
       }))
       .sort((v1, v2) => v2.score - v1.score);
     const prediction = predictions[0]!;
-    if (prediction.score < worstPrediction.score) {
-      worstPrediction = {...prediction, expected: label};
+    if (topWorst.length < maxWorstCount || prediction.score < topWorst.at(-1)!.score) {
+      topWorst.push({...prediction, expected: label, source: src});
+      topWorst.sort((w1, w2) => w1.score - w2.score);
+      topWorst = topWorst.slice(0, maxWorstCount);
     }
     printPrediction(prediction, label);
   }
 
-  console.log('=== WORST PREDICTION ===');
-  printPrediction(worstPrediction, worstPrediction.expected);
+  console.log(`=== TOP ${maxWorstCount} WORST PREDICTIONS ===`);
+  topWorst.map(w => printPrediction(w, w.expected)).join('\n');
   console.log('========================');
 }
