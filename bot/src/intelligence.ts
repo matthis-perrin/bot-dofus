@@ -17,7 +17,8 @@ export class Intelligence {
 
   public constructor(
     private readonly mapModel: Predictor,
-    private readonly fishPopupModel: Predictor
+    private readonly fishPopupModel: Predictor,
+    private readonly characterModel: Predictor
   ) {}
 
   public async getData(): Promise<Data> {
@@ -31,8 +32,19 @@ export class Intelligence {
   }
 
   public async refresh(): Promise<Data> {
-    const {game} = screenshot();
+    const {game, characterSquares} = screenshot();
     const mapPrediction = await this.mapModel(game);
+    const characterPredictions = await Promise.all(
+      characterSquares.map(async square => ({
+        coordinate: square.coordinate,
+        prediction: await this.characterModel(square.image),
+      }))
+    );
+    console.log(
+      characterPredictions.filter(
+        ({prediction}) => prediction.label === 'yes' || prediction.score < 0.9
+      )
+    );
     const [x = '', y = ''] = mapPrediction.label.split('h')!;
     const coordinate = {...mapPrediction, coordinate: {x: parseFloat(x), y: parseFloat(y)}};
     const soleil = soleilDb.get(coordinate.coordinate);

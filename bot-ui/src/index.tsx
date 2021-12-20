@@ -28,5 +28,5 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-// subscribeToEvents();
-// startRefreshLoop();
+subscribeToEvents();
+startRefreshLoop();
