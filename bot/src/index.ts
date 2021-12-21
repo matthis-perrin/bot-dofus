@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-unassigned-import
 import 'source-map-support/register';
 
-// import {initDb} from './character_screenshots';
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
@@ -22,7 +21,6 @@ async function run(): Promise<void> {
     fishDb.init(),
     soleilDb.init(),
     getCredentials(),
-    // initDb(),
   ]);
   analyzeMaps();
   const ia = new Intelligence(mapModel, fishPopupModel, characterModel);

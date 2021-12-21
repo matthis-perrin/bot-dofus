@@ -4,7 +4,7 @@ import {join} from 'path';
 
 import {convertToPng, screenshot} from './screenshot';
 
-const {access, writeFile, readFile} = promises;
+const {cp, access, writeFile, readFile} = promises;
 
 let saved = 0;
 export async function saveCharacterImages(): Promise<void> {
@@ -72,5 +72,14 @@ export async function markBatch(values: CharacterDb): Promise<void> {
 }
 
 export async function getImage(img: string): Promise<Buffer> {
-  return readFile(join(`./images/character/${img}`));
+  return readFile(join(`./images/character`, img));
+}
+
+export async function copyCharacterImages(): Promise<void> {
+  await initDb();
+  const dir = join('./images/character_fishing');
+  for (const img of getAllCharacters()) {
+    // eslint-disable-next-line no-await-in-loop
+    await cp(join(`./images/character`, img), join(dir, img));
+  }
 }

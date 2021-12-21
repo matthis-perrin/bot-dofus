@@ -54,8 +54,15 @@ export interface CoordinateData {
 }
 export const COORDINATE_MIN_SCORE = 0.7;
 
+export interface Character {
+  score: number;
+  label: string;
+  coordinate: Coordinate;
+}
+
 export type FishData = Fish[];
 export type SoleilData = Soleil[];
+export type CharacterData = Character[];
 
 //
 

@@ -25,20 +25,20 @@ import {logError, logEvent} from '../logger';
 import {restart} from '../process';
 import {CanContinue, Scenario} from '../scenario_runner';
 
-const MAX_PO = 6;
+const MAX_PO = 8;
 
 const fishingTimePerFish: Record<FishType, Record<FishSize, number>> = {
   [FishType.River]: {
-    [FishSize.Small]: 7000,
-    [FishSize.Medium]: 6000,
-    [FishSize.Big]: 5000,
-    [FishSize.Giant]: 4700,
+    [FishSize.Small]: 5000,
+    [FishSize.Medium]: 4000,
+    [FishSize.Big]: 3000,
+    [FishSize.Giant]: 3000,
   },
   [FishType.Sea]: {
-    [FishSize.Small]: 7000,
-    [FishSize.Medium]: 6000,
-    [FishSize.Big]: 4700,
-    [FishSize.Giant]: 4700,
+    [FishSize.Small]: 5000,
+    [FishSize.Medium]: 4000,
+    [FishSize.Big]: 3000,
+    [FishSize.Giant]: 3000,
   },
 };
 
