@@ -3,6 +3,7 @@ import {promises} from 'fs';
 import {join} from 'path';
 
 import {convertToPng, screenshot} from './screenshot';
+import {loadCharacterModel, Predictor} from './tensorflow';
 
 const {cp, access, writeFile, readFile} = promises;
 
@@ -22,6 +23,34 @@ export async function saveCharacterImages(): Promise<void> {
       }
     })
   );
+}
+
+let saved2 = 0;
+let characterModel: Predictor | undefined;
+
+export async function saveCharacterImage(): Promise<void> {
+  if (characterModel === undefined) {
+    await loadCharacterModel();
+  }
+  const dir = join('./images/temp');
+  const [character] = (
+    await Promise.all(
+      screenshot().characterSquares.map(async square => ({
+        coordinate: square.coordinate,
+        image: square,
+        ...(await characterModel!(square.image)),
+      }))
+    )
+  )
+    .filter(p => p.label === 'yes' && p.score >= 0.9)
+    .sort((c1, c2) => c2.score - c1.score);
+  if (character !== undefined) {
+    const hash = createHash('md5').update(character.image.image.data).digest('hex');
+    const image = await convertToPng(character.image.image);
+    saved2++;
+    console.log(saved2);
+    await writeFile(join(dir, `${hash}.png`), image);
+  }
 }
 
 export type CharacterDb = Record<string, 'yes' | 'no' | false>;
