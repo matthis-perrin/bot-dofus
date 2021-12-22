@@ -146,6 +146,8 @@ export const fishOnMapScenario: Scenario = async ctx => {
       ...fishTarget,
       radius,
       button: 'right',
+      fast: true,
+      noBreak: true,
     });
 
     // Check if the fishing popup is here
@@ -166,12 +168,24 @@ export const fishOnMapScenario: Scenario = async ctx => {
 
     if (!hasFish) {
       updateStatus(`Poisson non présent. Click dans la safe-zone.`);
-      await click(canContinue, {x: currentPos.x + 15, y: currentPos.y + 15, radius: 5});
+      await click(canContinue, {
+        x: currentPos.x + 15,
+        y: currentPos.y + 15,
+        radius: 5,
+        fast: true,
+        noBreak: true,
+      });
       continue;
     }
 
     // Click on the popup
-    await click(canContinue, {x: popupCoordinate.x + 20, y: popupCoordinate.y + 48, radius: 10});
+    await click(canContinue, {
+      x: popupCoordinate.x + 20,
+      y: popupCoordinate.y + 48,
+      radius: 10,
+      fast: true,
+      noBreak: true,
+    });
     await moveToSafeZone(canContinue);
 
     // Wait until done fishing

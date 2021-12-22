@@ -21,9 +21,10 @@ export async function click(
     fast?: boolean;
     double?: boolean;
     byPassCanContinue?: boolean;
+    noBreak?: boolean;
   }
 ): Promise<Coordinate> {
-  const {x, y, radius, button = 'left', fast, double, byPassCanContinue} = opts;
+  const {x, y, radius, button = 'left', fast, double, byPassCanContinue, noBreak} = opts;
 
   const canContinueInternal: CanContinue = async () =>
     byPassCanContinue ? Promise.resolve() : canContinue();
@@ -45,7 +46,9 @@ export async function click(
   moveMouseSmooth(clickCoordinate.x, clickCoordinate.y, randomSpeed);
   await canContinueInternal();
 
-  await sleep(canContinueInternal, Math.random() * 500);
+  if (!noBreak) {
+    await sleep(canContinueInternal, Math.random() * 500);
+  }
   await canContinueInternal();
 
   mouseClick(button);
@@ -56,7 +59,9 @@ export async function click(
   await canContinueInternal();
   screenshot(); // Take a screenshot so the logger has it in its history
 
-  await sleep(canContinueInternal, Math.random() * 500);
+  if (!noBreak) {
+    await sleep(canContinueInternal, Math.random() * 500);
+  }
   await canContinueInternal();
 
   return screenCoordinateToImageCoordinate(clickCoordinate);
