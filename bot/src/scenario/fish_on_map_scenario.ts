@@ -17,7 +17,6 @@ import {
   FishType,
 } from '../../../common/src/model';
 import {click, moveToSafeZone, pressEscape, randSleep, sleep} from '../actions';
-import {saveCharacterImage} from '../character_screenshots';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from '../coordinate';
 import {hasLevelUpModal, isTalkingToMerchand, isTalkingToPnj} from '../detectors';
 import {hashCoordinate} from '../fight';
@@ -175,19 +174,28 @@ export const fishOnMapScenario: Scenario = async ctx => {
     await click(canContinue, {x: popupCoordinate.x + 20, y: popupCoordinate.y + 48, radius: 10});
     await moveToSafeZone(canContinue);
 
+    // Wait until done fishing
     updateStatus(`Attente de fin de pêche`);
-    const waitTime =
-      3500 + fishingTimePerFish[fish.type ?? FishType.River][fish.size ?? FishSize.Giant];
-
-    // After 5 seconds, saves a screenshot of the character squares
-    setTimeout(() => {
-      saveCharacterImage().catch(console.error);
-    }, 3500);
-
-    await sleep(canContinue, waitTime);
-
-    // After fishing save screenshot one more time
-    await saveCharacterImage().catch(console.error);
+    const maxWaitTime =
+      5000 + 2 * fishingTimePerFish[fish.type ?? FishType.River][fish.size ?? FishSize.Giant];
+    const start = Date.now();
+    let wasFishing = false;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (Date.now() - start >= maxWaitTime) {
+        break;
+      }
+      const player = await ia.findPlayer();
+      if (player === undefined) {
+        continue;
+      }
+      if (wasFishing && !player.isFishing) {
+        break;
+      } else if (player.isFishing) {
+        wasFishing = true;
+      }
+      await sleep(canContinue, 100);
+    }
 
     await checkLvlUp(canContinue);
 

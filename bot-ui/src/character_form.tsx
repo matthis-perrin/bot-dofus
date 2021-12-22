@@ -59,7 +59,7 @@ export const CharacterForm: React.FC = () => {
                 borderColor: e[1] === 'yes' ? 'red' : undefined,
               }}
               key={e[0]}
-              onClick={() => console.log(e[0])}
+              // onClick={() => console.log(e[0])}
               src={`/images/${e[0]}`}
             />
           ))

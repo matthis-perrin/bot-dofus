@@ -1,9 +1,11 @@
+// eslint-disable-next-line import/no-unassigned-import
 import 'source-map-support/register';
 
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
 import {Intelligence} from './intelligence';
+import {analyzeMaps} from './map_quality';
 import {getCredentials} from './scenario/connection_scenario';
 import {ScenarioRunner} from './scenario_runner';
 import {startServer} from './server';
@@ -26,11 +28,11 @@ async function run(): Promise<void> {
     soleilDb.init(),
     getCredentials(),
   ]);
-  // analyzeMaps();
+  analyzeMaps();
   const ia = new Intelligence(mapModel, fishPopupModel, characterModel, characterFishingModel);
   const runner = new ScenarioRunner(ia);
   startServer(ia, runner);
-  // runner.start();
+  runner.start();
 
   // const ctx = {canContinue: async () => {}, ia, updateStatus: console.log};
   console.log(new Date().toLocaleString());

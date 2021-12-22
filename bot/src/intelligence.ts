@@ -1,5 +1,6 @@
 import {Coordinate} from '../../common/src/coordinates';
-import {CharacterData, CoordinateData, FishData, SoleilData} from '../../common/src/model';
+import {CoordinateData, FishData, SoleilData} from '../../common/src/model';
+import {MapCoordinate} from './fight';
 import {fishDb} from './fish_db';
 import {fishingPopupScreenshot, RgbImage, screenshot} from './screenshot';
 import {soleilDb} from './soleil_db';
@@ -10,7 +11,6 @@ export interface Data {
   coordinate: CoordinateData;
   soleil: SoleilData;
   fish: FishData;
-  character: CharacterData;
 }
 
 export class Intelligence {
@@ -33,18 +33,31 @@ export class Intelligence {
     return prediction.score >= 0.98 && prediction.label === 'OK';
   }
 
+  public async findPlayer(): Promise<{coordinates: MapCoordinate; isFishing: boolean} | undefined> {
+    const {characterSquares} = screenshot();
+    const [character] = (
+      await Promise.all(
+        characterSquares.map(async square => ({
+          ...square,
+          ...(await this.characterModel(square.image)),
+        }))
+      )
+    )
+      .filter(p => p.label === 'yes' && p.score >= 0.95)
+      .sort((p1, p2) => p2.score - p1.score);
+
+    if (character === undefined) {
+      return undefined;
+    }
+
+    const isFishingPrediction = await this.characterFishingModel(character.image);
+    const isFishing = isFishingPrediction.label === 'fishing';
+    return {coordinates: character.coordinate as MapCoordinate, isFishing};
+  }
+
   public async refresh(): Promise<Data> {
-    const {game, characterSquares} = screenshot();
+    const {game} = screenshot();
     const mapPrediction = await this.mapModel(game);
-    // const character = (
-    //   await Promise.all(
-    //     characterSquares.map(async square => ({
-    //       coordinate: square.coordinate,
-    //       ...(await this.characterModel(square.image)),
-    //     }))
-    //   )
-    // ).filter(p => p.label === 'yes' && p.score >= 0.95);
-    // console.log(character);
     const [x = '', y = ''] = mapPrediction.label.split('h')!;
     const coordinate = {...mapPrediction, coordinate: {x: parseFloat(x), y: parseFloat(y)}};
     const soleil = soleilDb.get(coordinate.coordinate);
@@ -55,7 +68,6 @@ export class Intelligence {
       coordinate,
       fish,
       soleil,
-      character: [],
     };
   }
 }
