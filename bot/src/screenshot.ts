@@ -236,3 +236,25 @@ export async function convertToPng(
     });
   });
 }
+
+export async function readPng(filePath: string): Promise<RgbImage> {
+  const {bitmap} = await Jimp.read(filePath);
+
+  const rgbBuffer = Buffer.allocUnsafe(3 * bitmap.width * bitmap.height);
+  for (let srcX = 0; srcX < bitmap.width; srcX++) {
+    for (let srcY = 0; srcY < bitmap.height; srcY++) {
+      const srcOffset = (srcY * bitmap.width + srcX) * 4;
+      const dstOffset = (srcY * bitmap.width + srcX) * 3;
+
+      rgbBuffer[dstOffset] = bitmap.data[srcOffset]!;
+      rgbBuffer[dstOffset + 1] = bitmap.data[srcOffset + 1]!;
+      rgbBuffer[dstOffset + 2] = bitmap.data[srcOffset + 2]!;
+    }
+  }
+
+  return {
+    data: rgbBuffer,
+    width: bitmap.width,
+    height: bitmap.height,
+  };
+}

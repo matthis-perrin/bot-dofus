@@ -81,3 +81,5 @@ export const loadFishPopupModel = async (): Promise<Predictor> =>
   loadModel('./models/fish_popup', 40);
 export const loadCharacterModel = async (): Promise<Predictor> =>
   loadModel('./models/character', 40);
+export const loadCharacterFishingModel = async (): Promise<Predictor> =>
+  loadModel('./models/character_fishing', 40);

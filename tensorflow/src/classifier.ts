@@ -265,56 +265,49 @@ export async function runClassifier(
 
   //
 
-  console.log('Processing images');
-  const {images, labels, labelIndex} = processImageInfo(imageInfo);
-  const labelByNumber = new Map([...labelIndex.entries()].map(([label, index]) => [index, label]));
+  // console.log('Processing images');
+  // const {images, labels, labelIndex} = processImageInfo(imageInfo);
+  // const labelByNumber = new Map([...labelIndex.entries()].map(([label, index]) => [index, label]));
 
-  console.log('Preparing model');
-  const model = prepareModel(labelIndex.size, imageTargetSize);
-  console.log('Model summary');
-  model.summary();
-  const validationSplit = 0.15;
-  console.log('Start learning');
-  await model.fit(images, labels, {
-    epochs,
-    batchSize,
-    validationSplit,
-  });
-  console.log('Saving model');
-  await model.save(`file://${modelDir}`);
-  await writeFile(join(modelDir, 'labels.json'), JSON.stringify([...labelByNumber.entries()]));
+  // console.log('Preparing model');
+  // const model = prepareModel(labelIndex.size, imageTargetSize);
+  // console.log('Model summary');
+  // model.summary();
+  // const validationSplit = 0.15;
+  // console.log('Start learning');
+  // await model.fit(images, labels, {
+  //   epochs,
+  //   batchSize,
+  //   validationSplit,
+  // });
+  // console.log('Saving model');
+  // await model.save(`file://${modelDir}`);
+  // await writeFile(join(modelDir, 'labels.json'), JSON.stringify([...labelByNumber.entries()]));
 
   //
 
-  // const model = (await tf.loadLayersModel(
-  //   `file://${modelDir}/model.json`
-  // )) as unknown as tf.Sequential;
-  // const labelByNumber = new Map<number, string>(
-  //   JSON.parse(await (await readFile(join(modelDir, 'labels.json'))).toString())
-  // );
+  const model = (await tf.loadLayersModel(
+    `file://${modelDir}/model.json`
+  )) as unknown as tf.Sequential;
+  const labelByNumber = new Map<number, string>(
+    JSON.parse(await (await readFile(join(modelDir, 'labels.json'))).toString())
+  );
 
   //
 
   const maxWorstCount = 10;
-  let topWorst: {label: string; score: number; expected: string; source: string}[] = [];
+  let lowestScores: {label: string; score: number; expected: string; source: string}[] = [];
 
   function printPrediction(
     prediction: {label: string; score: number; source: string},
     expected: string
   ): void {
     const isCorrect = prediction.label === expected;
-    if (
-      // (expected === 'yes' && prediction.score < 0.9) ||
-      // (prediction.label === 'yes' && !isCorrect)
-      prediction.score < 0.9 ||
-      !isCorrect
-    ) {
-      console.log(
-        `${isCorrect ? '✅' : '❌'} Input ${expected} - Output ${prediction.label} (Confidence ${
-          Math.round(prediction.score * 1000) / 10
-        }%) for ${prediction.source}`
-      );
-    }
+    console.log(
+      `${isCorrect ? '✅' : '❌'} Input ${expected} - Output ${prediction.label} (Confidence ${
+        Math.round(prediction.score * 1000) / 10
+      }%) for ${prediction.source}`
+    );
   }
 
   console.log('Starting predictions');
@@ -350,15 +343,25 @@ export async function runClassifier(
       }))
       .sort((v1, v2) => v2.score - v1.score);
     const prediction = predictions[0]!;
-    if (topWorst.length < maxWorstCount || prediction.score < topWorst.at(-1)!.score) {
-      topWorst.push({...prediction, expected: label, source: src});
-      topWorst.sort((w1, w2) => w1.score - w2.score);
-      topWorst = topWorst.slice(0, maxWorstCount);
+    if (lowestScores.length < maxWorstCount || prediction.score < lowestScores.at(-1)!.score) {
+      lowestScores.push({...prediction, expected: label, source: src});
+      lowestScores.sort((w1, w2) => w1.score - w2.score);
+      lowestScores = lowestScores.slice(0, maxWorstCount);
     }
-    printPrediction(prediction, label);
+    const isCorrect = prediction.label === label;
+    if (
+      // (expected === 'yes' && prediction.score < 0.9) ||
+      // (prediction.label === 'yes' && !isCorrect)
+      prediction.score < 0.9 ||
+      !isCorrect
+    ) {
+      printPrediction(prediction, label);
+    }
   }
 
-  console.log(`=== TOP ${maxWorstCount} WORST PREDICTIONS ===`);
-  topWorst.map(w => printPrediction(w, w.expected)).join('\n');
+  console.log(`Processed ${alreadyProcessed.size} images`);
+
+  console.log(`=== TOP ${maxWorstCount} LOWEST SCORES ===`);
+  lowestScores.map(w => printPrediction(w, w.expected)).join('\n');
   console.log('========================');
 }

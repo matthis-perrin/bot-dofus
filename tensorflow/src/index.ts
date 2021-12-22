@@ -11,7 +11,7 @@ if (mode === 'map') {
 } else if (mode === 'character') {
   runClassifier(mode, {imageTargetSize: 40, epochs: 3, batchSize: 128}).catch(console.error);
 } else if (mode === 'character_fishing') {
-  runClassifier(mode, {imageTargetSize: 40, epochs: 10, batchSize: 1}).catch(console.error);
+  runClassifier(mode, {imageTargetSize: 40, epochs: 10, batchSize: 4}).catch(console.error);
 } else {
   console.error(`Unknown mode "${mode}"`);
 }

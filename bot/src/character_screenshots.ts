@@ -1,9 +1,9 @@
 import {createHash} from 'crypto';
-import {promises} from 'fs';
+import {promises, readdirSync, renameSync} from 'fs';
 import {join} from 'path';
 
-import {convertToPng, screenshot} from './screenshot';
-import {loadCharacterModel, Predictor} from './tensorflow';
+import {convertToPng, readPng, screenshot} from './screenshot';
+import {loadCharacterFishingModel, loadCharacterModel, Predictor} from './tensorflow';
 
 const {cp, access, writeFile, readFile, readdir} = promises;
 
@@ -31,6 +31,7 @@ let characterModel: Predictor | undefined;
 
 export async function saveCharacterImage(): Promise<void> {
   if (characterModel === undefined) {
+    // eslint-disable-next-line require-atomic-updates
     characterModel = await loadCharacterModel();
   }
   const dir = join('./images/temp');
@@ -159,4 +160,42 @@ export async function copyCharacterImages(): Promise<void> {
     // eslint-disable-next-line no-await-in-loop
     await cp(join(`./images/character`, img), join(dir, img));
   }
+}
+
+export async function autoCharacterCategory(): Promise<void> {
+  const characterFishingModel = await loadCharacterFishingModel();
+  const files = readdirSync('./images/character_fishing').filter(f => f.endsWith('.png'));
+  const counter: Record<number, number> = {};
+  for (const f of files) {
+    // eslint-disable-next-line no-await-in-loop
+    const prediction = await characterFishingModel(
+      // eslint-disable-next-line no-await-in-loop
+      await readPng(`./images/character_fishing/${f}`)
+    );
+    if (prediction.score > 0.99) {
+      renameSync(
+        `./images/character_fishing/${f}`,
+        `./images/sort${prediction.label === 'fishing' ? '' : '-not'}-fishing/${f}`
+      );
+    }
+    const cat =
+      prediction.score >= 0.99999
+        ? Math.floor(1000000 * prediction.score) / 10000
+        : prediction.score >= 0.9999
+        ? Math.floor(100000 * prediction.score) / 1000
+        : prediction.score >= 0.999
+        ? Math.floor(10000 * prediction.score) / 100
+        : prediction.score >= 0.99
+        ? Math.floor(1000 * prediction.score) / 10
+        : Math.floor(100 * prediction.score);
+    if (cat === 99.9) {
+      console.log(prediction, f);
+    }
+    counter[cat] = (counter[cat] ?? 0) + 1;
+  }
+  console.log(
+    Object.fromEntries(
+      Object.entries(counter).sort((e1, e2) => parseFloat(e1[0]) - parseFloat(e2[0]))
+    )
+  );
 }

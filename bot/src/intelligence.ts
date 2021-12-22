@@ -19,7 +19,8 @@ export class Intelligence {
   public constructor(
     private readonly mapModel: Predictor,
     private readonly fishPopupModel: Predictor,
-    private readonly characterModel: Predictor
+    private readonly characterModel: Predictor,
+    private readonly characterFishingModel: Predictor
   ) {}
 
   public async getData(): Promise<Data> {
