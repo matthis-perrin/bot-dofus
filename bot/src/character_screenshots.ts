@@ -5,7 +5,7 @@ import {join} from 'path';
 import {convertToPng, screenshot} from './screenshot';
 import {loadCharacterModel, Predictor} from './tensorflow';
 
-const {cp, access, writeFile, readFile} = promises;
+const {cp, access, writeFile, readFile, readdir} = promises;
 
 let saved = 0;
 export async function saveCharacterImages(): Promise<void> {
@@ -26,31 +26,39 @@ export async function saveCharacterImages(): Promise<void> {
 }
 
 let saved2 = 0;
+let saved3 = 0;
 let characterModel: Predictor | undefined;
 
 export async function saveCharacterImage(): Promise<void> {
   if (characterModel === undefined) {
-    await loadCharacterModel();
+    characterModel = await loadCharacterModel();
   }
   const dir = join('./images/temp');
-  const [character] = (
-    await Promise.all(
-      screenshot().characterSquares.map(async square => ({
-        coordinate: square.coordinate,
-        image: square,
-        ...(await characterModel!(square.image)),
-      }))
-    )
-  )
-    .filter(p => p.label === 'yes' && p.score >= 0.9)
-    .sort((c1, c2) => c2.score - c1.score);
+  const dir2 = join('./images/temp2');
+  const characters = await Promise.all(
+    screenshot().characterSquares.map(async square => ({
+      coordinate: square.coordinate,
+      image: square,
+      ...(await characterModel!(square.image)),
+    }))
+  );
+  const yesImages = characters.filter(p => p.label === 'yes').sort((c1, c2) => c2.score - c1.score);
+  const [character, ...others] = yesImages;
   if (character !== undefined) {
     const hash = createHash('md5').update(character.image.image.data).digest('hex');
     const image = await convertToPng(character.image.image);
     saved2++;
-    console.log(saved2);
     await writeFile(join(dir, `${hash}.png`), image);
   }
+  await Promise.all(
+    others.map(async c => {
+      const hash = createHash('md5').update(c.image.image.data).digest('hex');
+      const image = await convertToPng(c.image.image);
+      saved3++;
+      await writeFile(join(dir2, `${hash}.png`), image);
+    })
+  );
+  console.log(saved2, saved3);
 }
 
 export type CharacterDb = Record<string, 'yes' | 'no' | false>;
@@ -62,8 +70,48 @@ export async function initDb(): Promise<void> {
   db = JSON.parse(content.toString());
 }
 
+export async function checkDb(): Promise<void> {
+  console.log('Checking DB <-> files integrity');
+  await initDb();
+  const files = await readdir(join('./images/character'));
+  console.log('Checking files');
+  for (const f of files) {
+    if (!(f in db)) {
+      console.log(f);
+    }
+  }
+  console.log('Checking DB');
+  for (const [key, value] of Object.entries(db)) {
+    if (!['yes', 'no'].includes(value as string)) {
+      console.log(key, value);
+    }
+  }
+}
+
+export async function addCharacterImages(dir: string, value: 'yes' | 'no'): Promise<void> {
+  await initDb();
+  const files = await readdir(join(`./images/${dir}`));
+  for (const f of files) {
+    db[f] = value;
+  }
+  await saveDb();
+  for (const f of files) {
+    // eslint-disable-next-line no-await-in-loop
+    await cp(join(`./images/${dir}/${f}`), join(`./images/character/${f}`));
+  }
+  if (value === 'yes') {
+    for (const f of files) {
+      // eslint-disable-next-line no-await-in-loop
+      await cp(join(`./images/${dir}/${f}`), join(`./images/character_fishing/${f}`));
+    }
+  }
+}
+
 export async function saveDb(): Promise<void> {
-  await writeFile(dbPath, JSON.stringify(db));
+  const sorted = Object.fromEntries(
+    Object.entries(db).sort((e1, e2) => e1[0].localeCompare(e2[0]))
+  );
+  await writeFile(dbPath, JSON.stringify(sorted, undefined, 2));
 }
 
 const imagesByBatch = 66;

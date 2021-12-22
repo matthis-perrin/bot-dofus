@@ -177,12 +177,12 @@ export const fishOnMapScenario: Scenario = async ctx => {
 
     updateStatus(`Attente de fin de pêche`);
     const waitTime =
-      5000 + fishingTimePerFish[fish.type ?? FishType.River][fish.size ?? FishSize.Giant];
+      3500 + fishingTimePerFish[fish.type ?? FishType.River][fish.size ?? FishSize.Giant];
 
     // After 5 seconds, saves a screenshot of the character squares
     setTimeout(() => {
       saveCharacterImage().catch(console.error);
-    }, 5000);
+    }, 3500);
 
     await sleep(canContinue, waitTime);
 
