@@ -265,33 +265,33 @@ export async function runClassifier(
 
   //
 
-  // console.log('Processing images');
-  // const {images, labels, labelIndex} = processImageInfo(imageInfo);
-  // const labelByNumber = new Map([...labelIndex.entries()].map(([label, index]) => [index, label]));
+  console.log('Processing images');
+  const {images, labels, labelIndex} = processImageInfo(imageInfo);
+  const labelByNumber = new Map([...labelIndex.entries()].map(([label, index]) => [index, label]));
 
-  // console.log('Preparing model');
-  // const model = prepareModel(labelIndex.size, imageTargetSize);
-  // console.log('Model summary');
-  // model.summary();
-  // const validationSplit = 0.15;
-  // console.log('Start learning');
-  // await model.fit(images, labels, {
-  //   epochs,
-  //   batchSize,
-  //   validationSplit,
-  // });
-  // console.log('Saving model');
-  // await model.save(`file://${modelDir}`);
-  // await writeFile(join(modelDir, 'labels.json'), JSON.stringify([...labelByNumber.entries()]));
+  console.log('Preparing model');
+  const model = prepareModel(labelIndex.size, imageTargetSize);
+  console.log('Model summary');
+  model.summary();
+  const validationSplit = 0.15;
+  console.log('Start learning');
+  await model.fit(images, labels, {
+    epochs,
+    batchSize,
+    validationSplit,
+  });
+  console.log('Saving model');
+  await model.save(`file://${modelDir}`);
+  await writeFile(join(modelDir, 'labels.json'), JSON.stringify([...labelByNumber.entries()]));
 
   //
 
-  const model = (await tf.loadLayersModel(
-    `file://${modelDir}/model.json`
-  )) as unknown as tf.Sequential;
-  const labelByNumber = new Map<number, string>(
-    JSON.parse(await (await readFile(join(modelDir, 'labels.json'))).toString())
-  );
+  // const model = (await tf.loadLayersModel(
+  //   `file://${modelDir}/model.json`
+  // )) as unknown as tf.Sequential;
+  // const labelByNumber = new Map<number, string>(
+  //   JSON.parse(await (await readFile(join(modelDir, 'labels.json'))).toString())
+  // );
 
   //
 
