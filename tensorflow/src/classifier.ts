@@ -306,7 +306,7 @@ export async function runClassifier(
     if (
       // (expected === 'yes' && prediction.score < 0.9) ||
       // (prediction.label === 'yes' && !isCorrect)
-      prediction.score < 0.8 ||
+      prediction.score < 0.9 ||
       !isCorrect
     ) {
       console.log(
