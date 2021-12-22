@@ -55,6 +55,19 @@ export class Intelligence {
     return {coordinates: character.coordinate as MapCoordinate, isFishing};
   }
 
+  public async checkPlayerIsFishing(coordinate: MapCoordinate): Promise<boolean> {
+    const {characterSquares} = screenshot();
+    const characterImage = characterSquares.find(
+      s => s.coordinate.x === coordinate.x && s.coordinate.y === coordinate.y
+    );
+    if (characterImage === undefined) {
+      throw new Error(`Unknown coordinates ${coordinate.x};${coordinate.y}`);
+    }
+    const isFishingPrediction = await this.characterFishingModel(characterImage.image);
+    const isFishing = isFishingPrediction.label === 'fishing';
+    return isFishing;
+  }
+
   public async refresh(): Promise<Data> {
     const {game} = screenshot();
     const mapPrediction = await this.mapModel(game);

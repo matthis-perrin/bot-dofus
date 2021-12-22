@@ -19,7 +19,7 @@ import {
 import {click, moveToSafeZone, pressEscape, randSleep, sleep} from '../actions';
 import {imageCoordinateToScreenCoordinate, screenCoordinateToImageCoordinate} from '../coordinate';
 import {hasLevelUpModal, isTalkingToMerchand, isTalkingToPnj} from '../detectors';
-import {hashCoordinate} from '../fight';
+import {hashCoordinate, MapCoordinate} from '../fight';
 import {fishDb} from '../fish_db';
 import {logError, logEvent} from '../logger';
 import {restart} from '../process';
@@ -179,20 +179,29 @@ export const fishOnMapScenario: Scenario = async ctx => {
     const maxWaitTime =
       5000 + 2 * fishingTimePerFish[fish.type ?? FishType.River][fish.size ?? FishSize.Giant];
     const start = Date.now();
-    let wasFishing = false;
+    let player:
+      | {
+          coordinates: MapCoordinate;
+          isFishing: boolean;
+        }
+      | undefined;
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (Date.now() - start >= maxWaitTime) {
         break;
       }
-      const player = await ia.findPlayer();
       if (player === undefined) {
-        continue;
-      }
-      if (wasFishing && !player.isFishing) {
-        break;
-      } else if (player.isFishing) {
-        wasFishing = true;
+        player = await ia.findPlayer();
+        if (player === undefined) {
+          continue;
+        }
+      } else {
+        const isFishing = await ia.checkPlayerIsFishing(player.coordinates);
+        if (isFishing) {
+          player.isFishing = true;
+        } else if (player.isFishing) {
+          break;
+        }
       }
       await sleep(canContinue, 100);
     }
