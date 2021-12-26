@@ -147,7 +147,6 @@ export const fishOnMapScenario: Scenario = async ctx => {
       radius,
       button: 'right',
       fast: true,
-      noBreak: true,
     });
 
     // Check if the fishing popup is here
@@ -173,7 +172,6 @@ export const fishOnMapScenario: Scenario = async ctx => {
         y: currentPos.y + 15,
         radius: 5,
         fast: true,
-        noBreak: true,
       });
       continue;
     }
@@ -184,7 +182,6 @@ export const fishOnMapScenario: Scenario = async ctx => {
       y: popupCoordinate.y + 48,
       radius: 10,
       fast: true,
-      noBreak: true,
     });
     await moveToSafeZone(canContinue);
 
@@ -202,12 +199,16 @@ export const fishOnMapScenario: Scenario = async ctx => {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (Date.now() - start >= maxWaitTime) {
+        console.log('Timeout');
         break;
       }
       if (player === undefined) {
         player = await ia.findPlayer();
         if (player === undefined) {
           continue;
+        }
+        if (!player.isFishing) {
+          break;
         }
       } else {
         const isFishing = await ia.checkPlayerIsFishing(player.coordinates);

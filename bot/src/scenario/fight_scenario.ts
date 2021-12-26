@@ -1,10 +1,10 @@
 /* eslint-disable no-await-in-loop */
-import {keyTap} from 'robotjs';
+import {keyTap, moveMouseSmooth} from 'robotjs';
 
 import {mapCoordinateToImageCoordinate, squareCenter} from '../../../common/src/coordinates';
 import {MapScan} from '../../../common/src/model';
 import {click, moveToSafeZone, sleep, sleepInternal} from '../actions';
-import {isInFightPreparation} from '../detectors';
+import {isInFight, isInFightPreparation} from '../detectors';
 import {
   firstShortestPaths,
   getEnnemiesCoordinates,
@@ -81,13 +81,13 @@ async function clickSquare(ctx: ScenarioContext, coordinate: GridCoordinate): Pr
   const center = squareCenter(mapCoordinateToImageCoordinate(mapCoordinate));
   // Circle option square
   if (x === 12 && y === 27) {
-    await click(ctx.canContinue, {x: center.x, y: center.y - 10, radius: 0});
+    await click(ctx.canContinue, {x: center.x, y: center.y - 10, radius: 0, fast: true});
   }
   // Tactical option square
   if (x === 12 && y === 27) {
-    await click(ctx.canContinue, {x: center.x, y: center.y - 6, radius: 0});
+    await click(ctx.canContinue, {x: center.x, y: center.y - 6, radius: 0, fast: true});
   }
-  await click(ctx.canContinue, {...center, radius: 5});
+  await click(ctx.canContinue, {...center, radius: 5, fast: true});
 }
 
 async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Promise<void> {
@@ -165,13 +165,14 @@ async function playerTurn(ctx: ScenarioContext, fightContext: FightContext): Pro
         await click(ctx.canContinue, {
           ...Spells[spell].coordinate,
           radius: 10,
+          fast: true,
         });
         // Click the ennemy
         await clickSquare(ctx, easiestEnnemy.ennemy);
         // Move to safe zone
         await moveToSafeZone(ctx.canContinue);
         // Wait for animations
-        await sleep(ctx.canContinue, 1500);
+        await sleep(ctx.canContinue, 2500);
         return true;
       }
     }
@@ -252,7 +253,10 @@ export const fightScenario: Scenario = async ctx => {
     await playerTurn(ctx, fightContext);
 
     // Pass turn
-    await click(canContinue, {x: 745, y: 812, radius: 5});
+    moveMouseSmooth(745, 812, 0.35);
+    if (isInFight()) {
+      await click(canContinue, {x: 745, y: 812, radius: 5, fast: true});
+    }
 
     // Wait a bit
     await sleep(canContinue, 2000);

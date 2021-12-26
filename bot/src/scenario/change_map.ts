@@ -112,7 +112,6 @@ export async function changeMap(
         .map(s => hashCoordinate(s.coordinate))
         .join(', ')}. Le premier soleil qui n'est pas un angle est choisi.`
     );
-    // }
   }
 
   // Click on the soleil
@@ -120,12 +119,12 @@ export async function changeMap(
   const soleilPx = mapCoordinateToImageCoordinate(soleil.coordinate);
   const soleilCenter = squareCenter(soleilPx);
 
-  const clickPos = await click(canContinue, {...soleilCenter, radius: 10});
+  const clickPos = await click(canContinue, {...soleilCenter, radius: 10, fast: true});
   await moveToSafeZone(canContinue);
 
   // Check if a player is in front of it
   if (isMenuModalOpened(clickPos)) {
-    await click(canContinue, {x: clickPos.x + 5, y: clickPos.y + 8, radius: 2});
+    await click(canContinue, {x: clickPos.x + 5, y: clickPos.y + 8, radius: 2, fast: true});
     // Move the player one square away from it (in case we are the one in the way)
     const nextToSoleil = {...soleil.coordinate};
     if (direction === Direction.Bottom) {
@@ -142,7 +141,7 @@ export async function changeMap(
     }
     const nextToSoleilPx = mapCoordinateToImageCoordinate(nextToSoleil);
     const nextToSoleilCenter = squareCenter(nextToSoleilPx);
-    await click(canContinue, {...nextToSoleilCenter, radius: 10});
+    await click(canContinue, {...nextToSoleilCenter, radius: 10, fast: true});
     await moveToSafeZone(canContinue);
     // Retry
     return changeMap(ctx, data, currentMap, nextMap, maxTries - 1);
@@ -151,7 +150,7 @@ export async function changeMap(
   // Check if a percepteur modal is opened
   if (isMenuModalOpened(clickPos)) {
     // Dismiss by clicking the safe zone
-    await click(canContinue, {...safeZone, radius: 0});
+    await click(canContinue, {...safeZone, radius: 0, fast: true});
     // Wait for the percepteur du move
     await sleep(canContinue, 10000);
     // Retry
