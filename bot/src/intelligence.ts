@@ -35,14 +35,14 @@ export class Intelligence {
 
   public async findPlayer(): Promise<{coordinates: MapCoordinate; isFishing: boolean} | undefined> {
     const {characterSquares} = screenshot();
-    const [character] = (
-      await Promise.all(
-        characterSquares.map(async square => ({
-          ...square,
-          ...(await this.characterModel(square.image)),
-        }))
-      )
-    )
+    const squarePredictions = await Promise.all(
+      characterSquares.map(async square => ({
+        ...square,
+        ...(await this.characterModel(square.image)),
+      }))
+    );
+
+    const [character] = squarePredictions
       .filter(p => p.label === 'yes' && p.score >= 0.95)
       .sort((p1, p2) => p2.score - p1.score);
 

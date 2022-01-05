@@ -6,6 +6,11 @@ import {
   GAME_HEIGHT,
   GAME_WIDTH,
   HORIZONTAL_SQUARES,
+  INVENTORY_HEIGHT,
+  INVENTORY_SQUARE_SCREEN_SIZE,
+  INVENTORY_WIDTH,
+  InventoryCoordinate,
+  inventoryCoordinateToImageCoordinate,
   mapCoordinateToImageCoordinate,
   SQUARE_SIZE,
   VERTICAL_SQUARES,
@@ -26,6 +31,11 @@ interface CharacterSquareScreenshot {
   image: RgbImage;
 }
 
+interface InventorySquareScreenshot {
+  coordinate: InventoryCoordinate;
+  image: RgbImage;
+}
+
 const ALL_SOLEIL_POS: Coordinate[] = [];
 for (let x = 0; x < HORIZONTAL_SQUARES; x++) {
   ALL_SOLEIL_POS.push({x, y: 0}, {x, y: VERTICAL_SQUARES - 1});
@@ -38,6 +48,13 @@ const ALL_SQUARE_POS: Coordinate[] = [];
 for (let y = 0; y < VERTICAL_SQUARES * 2 - 1; y++) {
   for (let x = 0; x < HORIZONTAL_SQUARES - (y % 2); x++) {
     ALL_SQUARE_POS.push({x, y});
+  }
+}
+
+const ALL_INVENTORY_POS: InventoryCoordinate[] = [];
+for (let column = 0; column < INVENTORY_WIDTH; column++) {
+  for (let row = 0; row < INVENTORY_HEIGHT; row++) {
+    ALL_INVENTORY_POS.push({row, column});
   }
 }
 
@@ -178,6 +195,56 @@ export function screenshot(): {
   });
 
   return {game: gameImage, characterSquares};
+}
+
+export function screenshotInventory(): {
+  game: RgbImage;
+  inventorySquares: InventorySquareScreenshot[];
+} {
+  // Take a screenshot of the game zone
+  const {x, y} = gameCoordinates;
+  const bitmap: Buffer = screen.capture(x, y, GAME_WIDTH, GAME_HEIGHT).image;
+
+  // Convert from BGRA to RGB
+  const game = Buffer.allocUnsafe(2 * GAME_WIDTH * 2 * GAME_HEIGHT * 3);
+  for (let sourceIndex = 0; sourceIndex < bitmap.length; sourceIndex += 4) {
+    const targetIndex = (3 * sourceIndex) / 4;
+    [game[targetIndex], game[targetIndex + 1], game[targetIndex + 2]] = [
+      bitmap[sourceIndex + 2]!,
+      bitmap[sourceIndex + 1]!,
+      bitmap[sourceIndex]!,
+    ];
+  }
+
+  const gameImage = {data: game, width: 2 * GAME_WIDTH, height: 2 * GAME_HEIGHT};
+  addScreenshot(gameImage);
+
+  const inventorySquares = ALL_INVENTORY_POS.map(pos => {
+    const {x, y} = inventoryCoordinateToImageCoordinate(pos);
+    const xPx = Math.round(x * 2);
+    const yPx = Math.round(y * 2);
+    const wPx = INVENTORY_SQUARE_SCREEN_SIZE;
+    const hPx = INVENTORY_SQUARE_SCREEN_SIZE;
+    const buffer = Buffer.allocUnsafe(wPx * hPx * 3);
+    for (let i = 0; i < hPx; i++) {
+      game.copy(
+        buffer,
+        i * wPx * 3,
+        (xPx + (yPx + i) * GAME_WIDTH * 2) * 3,
+        (xPx + (yPx + i) * GAME_WIDTH * 2 + wPx) * 3
+      );
+    }
+    return {
+      coordinate: {...pos},
+      image: {
+        data: buffer,
+        width: wPx,
+        height: hPx,
+      },
+    };
+  });
+
+  return {game: gameImage, inventorySquares};
 }
 
 export function fishingPopupScreenshot(mousePos: Coordinate): RgbImage {

@@ -14,12 +14,33 @@ export const SQUARE_SIZE = {
   height: (2 * GAME_HEIGHT) / VERTICAL_SQUARES,
 };
 
+export const INVENTORY_WIDTH = 6;
+export const INVENTORY_HEIGHT = 6;
+export const INVENTORY_SQUARE_SCREEN_SIZE = 84;
+export const INVENTORY_SQUARE_SCREEN_HGAP = 13;
+export const INVENTORY_SQUARE_SCREEN_VGAP = 13;
+export const INVENTORY_TOP_LEFT_IMAGE_COORDINATE: Coordinate = {x: 786, y: 288}
+
+export interface InventoryCoordinate {
+  row: number;
+  column: number;
+}
+
 export function mapCoordinateToImageCoordinate(coordinate: Coordinate): Coordinate {
   const {x, y} = coordinate;
 
   return {
     x: ((y % 2 === 0 ? x : x + 0.5) * SQUARE_SIZE.width) / 2,
     y: (y * SQUARE_SIZE.height) / 4,
+  };
+}
+
+export function inventoryCoordinateToImageCoordinate(coordinate: InventoryCoordinate): Coordinate {
+  const {row, column} = coordinate;
+
+  return {
+    x: INVENTORY_TOP_LEFT_IMAGE_COORDINATE.x + column * (INVENTORY_SQUARE_SCREEN_SIZE + INVENTORY_SQUARE_SCREEN_HGAP) / 2,
+    y: INVENTORY_TOP_LEFT_IMAGE_COORDINATE.y + row * (INVENTORY_SQUARE_SCREEN_SIZE + INVENTORY_SQUARE_SCREEN_VGAP) / 2,
   };
 }
 
