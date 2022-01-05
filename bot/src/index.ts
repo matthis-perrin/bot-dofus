@@ -35,16 +35,7 @@ async function run(): Promise<void> {
   const ia = new Intelligence(mapModel, fishPopupModel, characterModel, characterFishingModel);
   const runner = new ScenarioRunner(ia);
   startServer(ia, runner);
-  // runner.start();
-
-  const {game, inventorySquares} = screenshotInventory();
-  for (const {coordinate, image} of inventorySquares) {
-    await writeFile(
-      `./images/rune/${coordinate.column};${coordinate.row}.png`,
-      await convertToPng(image)
-    );
-  }
-  await writeFile(`./images/rune/game.png`, await convertToPng(game));
+  runner.start();
 
   // const ctx = {canContinue: async () => {}, ia, updateStatus: console.log};
   console.log(new Date().toLocaleString());
