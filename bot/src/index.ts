@@ -1,8 +1,6 @@
 // eslint-disable-next-line import/no-unassigned-import
 import 'source-map-support/register';
 
-import {writeFile} from 'fs/promises';
-
 import {initDofusWindow} from './dofus_window';
 import {handleError} from './error';
 import {fishDb} from './fish_db';
@@ -10,7 +8,6 @@ import {Intelligence} from './intelligence';
 import {analyzeMaps} from './map_quality';
 import {getCredentials} from './scenario/connection_scenario';
 import {ScenarioRunner} from './scenario_runner';
-import {convertToPng, screenshotInventory} from './screenshot';
 import {startServer} from './server';
 import {soleilDb} from './soleil_db';
 import {
